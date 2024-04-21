@@ -1,3 +1,4 @@
+import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
 import 'package:flutter/material.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -10,6 +11,11 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold(
+        body: Center(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      ScreenTitle(title: "Calendario"),
+    ])));
   }
 }

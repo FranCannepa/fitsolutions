@@ -1,4 +1,9 @@
-import 'package:fitsolutions/Screens/Home/HomeScreen.dart';
+// import 'package:fitsolutions/Screens/Home/HomeScreen.dart';
+import 'package:fitsolutions/Screens/Home/homeScreen.dart';
+import 'package:fitsolutions/Screens/Login/login_screen.dart';
+import 'package:fitsolutions/Screens/Profile/perfilUsuarioBasico.dart';
+import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
+import 'package:fitsolutions/Theme/light_theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,34 +17,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-      ),
-      body: HomeScreen(),
+      theme: lightTheme,
+      home: const LoginScreen(),
+      routes: <String, WidgetBuilder>{
+        '/home': (BuildContext context) => HomeScreen(),
+        '/registro': (BuildContext context) => RegistroScreen(),
+        '/login': (BuildContext context) => LoginScreen(),
+        '/perfil': (BuildContext context) => DailyActivityScreen()
+        // '/calendario' (BuildContext context) => CalendarioSCr(),
+      },
     );
   }
 }
