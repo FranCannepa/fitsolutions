@@ -12,7 +12,12 @@
           "package_name": "com.example.fitsolutions"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "33886156711-1udh507oc20c58qt6913va65putpg0l8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBSGmUNct1wnUsCrlnaR8F4D1uhiWRgMZY"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "33886156711-1udh507oc20c58qt6913va65putpg0l8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

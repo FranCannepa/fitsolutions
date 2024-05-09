@@ -1,8 +1,20 @@
+import 'package:fitsolutions/Modelo/Calendario.dart';
+import 'package:fitsolutions/Modelo/Gimnasio.dart';
+import 'package:fitsolutions/Modelo/UsuarioParticular.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class CalendarioBoard extends StatefulWidget {
-  const CalendarioBoard({Key? key}) : super(key: key);
+  //final Calendario calendario;
+  final Gimnasio? gimnasio;
+  final UsuarioParticular? usuarioParticular;
+
+  const CalendarioBoard({
+    Key? key,
+    //required this.calendario,
+    this.gimnasio,
+    this.usuarioParticular,
+  }) : super(key: key);
 
   @override
   _CalendarioBoardState createState() => _CalendarioBoardState();
@@ -20,24 +32,22 @@ class _CalendarioBoardState extends State<CalendarioBoard> {
           children: const [
             TableRow(
               children: [
-                TableCell(
-                  child: Text("Lunes"),
-                ),
-                TableCell(
-                  child: Text("Martes"),
-                ),
-                TableCell(
-                  child: Text("Miercoles"),
-                ),
-                TableCell(
-                  child: Text("Jueves"),
-                ),
-                TableCell(
-                  child: Text("Vienres"),
-                )
+                TableCell(child: Text("Lunes")),
+                TableCell(child: Text("Martes")),
+                TableCell(child: Text("Miercoles")),
+                TableCell(child: Text("Jueves")),
+                TableCell(child: Text("Viernes")),
               ],
             ),
-            TableRow()
+            TableRow(
+              children: [
+                TableCell(child: Text("")), // Empty cell for Monday
+                TableCell(child: Text("")), // Empty cell for Tuesday
+                TableCell(child: Text("")), // Empty cell for Wednesday
+                TableCell(child: Text("")), // Empty cell for Thursday
+                TableCell(child: Text("")), // Empty cell for Friday
+              ],
+            ),
           ],
         ),
       ),

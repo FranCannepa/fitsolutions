@@ -1,4 +1,4 @@
-import 'package:fitsolutions/Models/Actividad.dart'; // Assuming Actividad.dart defines Actividad class
+import 'package:fitsolutions/Modelo/Actividad.dart'; // Assuming Actividad.dart defines Actividad class
 import 'package:flutter/material.dart';
 
 class CartaActividad extends StatelessWidget {
@@ -22,7 +22,7 @@ class CartaActividad extends StatelessWidget {
             Row(
               children: [
                 const Icon(Icons.timer, size: 16),
-                Text(' ${activity.duracion.inMinutes} minutes'),
+                Text(' ${activity.duracion}'),
               ],
             ),
             const SizedBox(height: 4),
@@ -38,16 +38,3 @@ class CartaActividad extends StatelessWidget {
     );
   }
 }
-
-// Usage: Create a list of CartaActividad objects
-
-final List<CartaActividad> actividades = [
-  CartaActividad(
-    activity: Actividad(
-      nombre: "Yoga matutino",
-      duracion: const Duration(minutes: 60),
-      cupos: 10,
-    ),
-  ),
-  // ... other CartaActividad objects using Actividad data
-];

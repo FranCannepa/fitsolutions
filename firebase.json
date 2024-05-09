@@ -1,0 +1,22 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "fitsolutions-a214d",
+                    "appId": "1:33886156711:android:db790b8a61301540cfa882",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "fitsolutions-a214d",
+                    "configurations": {
+                        "android": "1:33886156711:android:db790b8a61301540cfa882",
+                        "ios": "1:33886156711:ios:63a7d10474c6eb9ecfa882"
+                    }
+                }
+            }
+        }
+    }
+}

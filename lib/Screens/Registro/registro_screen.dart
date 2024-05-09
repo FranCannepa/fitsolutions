@@ -1,37 +1,54 @@
-import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
-import 'package:fitsolutions/Components/RegisterComponents/registro_componentes.dart';
-import 'package:fitsolutions/Screens/Home/homeScreen.dart';
 import 'package:flutter/material.dart';
 
 class RegistroScreen extends StatefulWidget {
-  const RegistroScreen({super.key});
+  final Object? userData;
+  const RegistroScreen({super.key, required this.userData});
 
   @override
   _RegistroScreenState createState() => _RegistroScreenState();
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
-  Future<void> handleRegister(String email, String password) async {
-   
-    print("PRESIONADO REGISTRO BUTTON");
+  void navigateToEntrenadorForm() {
+    print('Navigate to Entrenador form');
+  }
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomeScreen()),
-    );
+  void navigateToPropietarioForm() {
+    print('Navigate to Propietario form');
+  }
+
+  void navigateToClienteForm() {
+    print('Navigate to Cliente form');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const ScreenTitle(title: "Crea tu cuenta"),
-          FormRegistro(onSubmit: handleRegister),
-        ],
+      body: Center(
+        child: SizedBox(
+          height: 100,
+          child: Column(
+            mainAxisAlignment:
+                MainAxisAlignment.center, 
+            children: [
+              ElevatedButton(
+                onPressed: navigateToEntrenadorForm,
+                child: const Text('Quiero entrenar'),
+              ),
+              const SizedBox(height: 10), // Add spacing between buttons
+              ElevatedButton(
+                onPressed: navigateToPropietarioForm,
+                child: const Text('Soy propietario'),
+              ),
+              const SizedBox(height: 10), // Add spacing between buttons
+              ElevatedButton(
+                onPressed: navigateToClienteForm,
+                child: const Text('Soy entrenador'),
+              ),
+            ],
+          ),
+        ),
       ),
-    ));
+    );
   }
 }
