@@ -1,8 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
-import 'package:fitsolutions/Screens/Ejercicios/ejercicios_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
+import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
+import 'package:fitsolutions/Utilities/NavigatorService.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/Screens/Home/home_screen.dart';
 import 'package:fitsolutions/Screens/Login/login_screen.dart';
@@ -14,15 +15,11 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Create a single instance of UserData for the entire app
   final userData = UserData();
-
   runApp(
-    // Wrap MaterialApp with ChangeNotifierProvider to expose UserData
     ChangeNotifierProvider<UserData>(
       create: (context) => userData,
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -32,6 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: NavigationService.navigatorKey,
       theme: lightTheme,
       home: const LoginScreen(),
       routes: <String, WidgetBuilder>{
@@ -39,8 +37,8 @@ class MyApp extends StatelessWidget {
         '/login': (BuildContext context) => const LoginScreen(),
         '/perfil': (BuildContext context) => const PerfilScreen(),
         '/dieta': (BuildContext context) => const DietasScreen(),
-        '/ejercicios': (BuildContext context) => const EjerciciosScreen(),
         '/membresia': (BuildContext context) => const MembresiaScreen(),
+        '/registro': (BuildContext context) => const RegistroScreen(),
       },
     );
   }

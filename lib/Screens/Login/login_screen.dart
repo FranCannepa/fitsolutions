@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitsolutions/Modelo/UserData.dart';
+import 'package:fitsolutions/Utilities/NavigatorService.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,68 +14,91 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  Future<Map<String, dynamic>> _checkUserExistence(User user) async {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('usuario')
-        .where('email', isEqualTo: user.email)
-        .get();
-    final doc = querySnapshot.docs.first;
-    final docId = querySnapshot.docs.first.id;
-    final Map<String, dynamic> userData = doc.data();
-    userData['docId'] = docId;
-    return userData;
-  }
-
-  @override
-  void initState() {
-    super.initState();
+  Future<Map<String, dynamic>?> _checkUserExistence(User user) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('usuario')
+          .where('email', isEqualTo: user.email)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        final docId = querySnapshot.docs.first.id;
+        final Map<String, dynamic> userData =
+            doc.data() as Map<String, dynamic>;
+        userData['docId'] = docId;
+        return userData;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error checking user existence: $e");
+      return null;
+    }
   }
 
   void _handleGoogleSignIn() async {
+    final userProvider = context.read<UserData>();
     try {
-      //final userDataProvider = Provider.of<UserData>(context);
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
       final User user = userCredential.user!;
-      final Map<String, dynamic> userData =
-          await _checkUserExistence(user); // Remove const
-      if (userData != null) {
-        print("HAY USUARIO");
-        print(userData);
-        //Navigator.pushReplacementNamed(context, '/home');
+      final Map<String, dynamic>? existingUserData =
+          await _checkUserExistence(user);
+      if (existingUserData != null) {
+        userProvider.updateUserData(existingUserData);
+        NavigationService.instance.pushNamed("/home");
       } else {
-        print("NO HAY USUARIO");
-        // Navigator.pushReplacementNamed(context, '/register');
+        if (user.email != null) {
+          userProvider.firstLogin(user.email as String);
+          NavigationService.instance.pushNamed("/registro");
+        }
       }
     } on FirebaseAuthException catch (err) {
       print(err.code);
       print(err.message);
-      // Handle sign-in errors (e.g., show error message to user)
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-            child: SizedBox(
-                height: 100,
-                child: Column(
-                  children: [
-                    SignInButton(
-                      Buttons.google,
-                      text: "Sign up with Google",
-                      onPressed: () {
-                        _handleGoogleSignIn();
-                      },
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/registro');
-                      },
-                      child: const Text('Create Account'),
-                    ),
-                  ],
-                ))));
+      backgroundColor: Colors.blueGrey[900],
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  gradient: LinearGradient(
+                    colors: [Colors.blueGrey[800]!, Colors.blueGrey[600]!],
+                  ),
+                ),
+
+                //colocar logo applicacion
+                child: const Text(
+                  'Bienvenido',
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.0),
+              SignInButton(
+                Buttons.google,
+                text: "Continuar con Google",
+                onPressed: () {
+                  _handleGoogleSignIn();
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

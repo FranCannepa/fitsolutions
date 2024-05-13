@@ -1,0 +1,112 @@
+import 'package:fitsolutions/Components/CommonComponents/input_roundFields.dart';
+import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
+import 'package:flutter/material.dart';
+
+class BasicoForm extends StatefulWidget {
+  final Function(Map<String, dynamic>) registerFunction;
+
+  const BasicoForm({super.key, required this.registerFunction});
+
+  @override
+  _BasicoFormState createState() => _BasicoFormState();
+}
+
+class _BasicoFormState extends State<BasicoForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _fullNameController = TextEditingController();
+  final _dateOfBirthController = TextEditingController();
+  final _weightController = TextEditingController();
+  final _heightController = TextEditingController();
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _dateOfBirthController.dispose();
+    _weightController.dispose();
+    _heightController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, dynamic> _collectUserData() {
+      final nombreCompleto = _fullNameController.text;
+      final fechaNacimiento = _dateOfBirthController.text;
+      final peso = double.tryParse(_weightController.text);
+      final altura = double.tryParse(_heightController.text);
+      return {
+        'nombre_completo': nombreCompleto,
+        'fechaNacimiento': fechaNacimiento,
+        'peso': peso,
+        'altura': altura
+      };
+    }
+
+    return Form(
+        key: _formKey,
+        child: Column(children: [
+          RoundedInputField(
+            labelText: 'Nombre Completo',
+            controller: _fullNameController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Ingrese su nombre completo';
+              }
+              return null;
+            },
+          ),
+          RoundedInputField(
+            labelText: 'Fecha de Nacimiento (YYYY-MM-DD)',
+            controller: _dateOfBirthController,
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Ingrese su fecha de nacimiento';
+              }
+              RegExp datePattern = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+              if (!datePattern.hasMatch(value)) {
+                return 'Formato de fecha inválido. Debe ser YYYY-MM-DD';
+              }
+              return null;
+            },
+          ),
+          RoundedInputField(
+            labelText: 'Altura (en cm)',
+            controller: _heightController,
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Ingrese su fecha de nacimiento';
+              }
+              RegExp datePattern = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+              if (!datePattern.hasMatch(value)) {
+                return 'Formato de fecha inválido. Debe ser YYYY-MM-DD';
+              }
+              return null;
+            },
+          ),
+          RoundedInputField(
+            labelText: 'Peso (en kg)',
+            controller: _weightController,
+            keyboardType: TextInputType.number,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Ingrese su peso';
+              }
+              try {
+                double.parse(value);
+              } catch (e) {
+                return 'Ingrese un peso válido (solo números)';
+              }
+              return null;
+            },
+          ),
+          SubmitButton(
+              text: "Ingresar",
+              onPressed: () {
+                final userData = _collectUserData();
+                widget.registerFunction(userData);
+              })
+        ]));
+  }
+}
