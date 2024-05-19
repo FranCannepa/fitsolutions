@@ -4,6 +4,7 @@ import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/NavigatorService.dart';
+import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/Screens/Home/home_screen.dart';
 import 'package:fitsolutions/Screens/Login/login_screen.dart';
@@ -11,11 +12,13 @@ import 'package:fitsolutions/Screens/Profile/perfil_screen.dart';
 import 'package:fitsolutions/Theme/light_theme.dart';
 import 'package:fitsolutions/firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final userData = UserData();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     ChangeNotifierProvider<UserData>(
       create: (context) => userData,
@@ -26,12 +29,29 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  Future<bool>? isLoggedIn() async {
+    return await SharedPrefsHelper().getLoggedIn();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: NavigationService.navigatorKey,
       theme: lightTheme,
-      home: const LoginScreen(),
+      home: FutureBuilder<bool>(
+        future: isLoggedIn(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return ErrorWidget(snapshot.error as Object);
+          }
+          if (snapshot.hasData) {
+            final isLoggedIn = snapshot.data!;
+            return isLoggedIn ? const HomeScreen() : const LoginScreen();
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => const HomeScreen(),
         '/login': (BuildContext context) => const LoginScreen(),

@@ -13,27 +13,12 @@ class UserData extends ChangeNotifier {
   late String gimnasioId = '';
   late String calendarioId = '';
 
-  bool esBasico() {
-    return tipo == "Basico";
-  }
-
-  bool esPropietario() {
-    return tipo == "Propietario";
-  }
-
-  bool esParticular() {
-    return tipo == "Particular";
-  }
-
-  void updateCurrentGym(String gymId) {
-    gimnasioId = gymId;
-    notifyListeners();
-  }
-
   void updateNombreCompleto(String newNombreCompleto) {
     nombre_completo = newNombreCompleto;
     notifyListeners();
   }
+
+  
 
   void updateTipo(String newTipo) {
     tipo = newTipo;
@@ -74,12 +59,6 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormPropietario(Map<String, dynamic>? userData) {
-    nombre_completo = userData?['nombre_completo'];
-    tipo = 'Propietario';
-    notifyListeners();
-  }
-
   void firstLogin(User user) {
     if (user.email!.isNotEmpty) {
       email = user.email as String;
@@ -92,9 +71,9 @@ class UserData extends ChangeNotifier {
     docId = userData?['docId'] ?? '';
     nombre_completo = userData?['nombre_completo'] ?? '';
     tipo = userData?['tipo'] ?? '';
-    // fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    // altura = userData?['altura'] ?? 0;
-    // peso = userData?['peso'] ?? 0;
+    fechaNacimiento = userData?['fechaNacimiento'] ?? '';
+    altura = userData?['altura'] ?? 0;
+    peso = userData?['peso'] ?? 0;
     notifyListeners();
   }
 }

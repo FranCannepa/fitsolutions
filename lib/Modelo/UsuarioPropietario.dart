@@ -1,29 +1,14 @@
-import 'package:fitsolutions/Modelo/Actividad.dart';
-import 'package:fitsolutions/Modelo/Calendario.dart';
+import 'package:fitsolutions/Modelo/Gimnasio.dart';
 import 'package:fitsolutions/Modelo/Usuario.dart';
-import 'package:fitsolutions/Modelo/UsuarioBasico.dart';
 
 class UsuarioPropietario extends Usuario {
-  List<UsuarioBasico> clientes;
-  Calendario calendario;
+  String nombreCompleto;
+  String telefono;
+  late Gimnasio gimnasio;
 
-  UsuarioPropietario({
-    required String id,
-    required String nombre,
-    required String apellido,
-    required String email,
-    required this.clientes,
-    required this.calendario,
-  }) : super(
-            id: id,
-            nombre: nombre,
-            apellido: apellido,
-            email: email,
-            tipoUsuario: "Particular");
-
-  @override
-  Calendario getCalendario() {
-    // TODO: implement getActividades
-    throw UnimplementedError();
-  }
+  UsuarioPropietario(
+      {required super.docId,
+      required super.email,
+      required this.nombreCompleto,
+      required this.telefono});
 }
