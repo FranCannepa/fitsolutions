@@ -1,5 +1,4 @@
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
-import 'package:fitsolutions/Screens/Home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,15 +7,15 @@ Future<Map<String, dynamic>> getMembershipInfo() async {
     'nombre': 'John Doe',
     'gimnasio': 'Gimnasio Vida Sana',
     'costo': 5000,
-    'vencimiento': DateTime.now().add(Duration(days: 30)),
+    'vencimiento': DateTime.now().add(const Duration(days: 30)),
   };
 }
 
 class MembresiaScreen extends StatefulWidget {
-  const MembresiaScreen({Key? key}) : super(key: key);
+  const MembresiaScreen({super.key});
 
   @override
-  _MembresiaScreenState createState() => _MembresiaScreenState();
+  State<MembresiaScreen> createState() => _MembresiaScreenState();
 }
 
 class _MembresiaScreenState extends State<MembresiaScreen> {
@@ -69,7 +68,7 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(membershipData['costo'].toString() + ' \$'),
+                  Text('${membershipData['costo']} \$'),
                   const SizedBox(height: 10.0),
                   const Text(
                     'Vencimiento:',

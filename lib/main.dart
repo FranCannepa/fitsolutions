@@ -1,9 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
+import 'package:fitsolutions/Modelo/user_data.dart';
 import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
-import 'package:fitsolutions/Utilities/NavigatorService.dart';
+import 'package:fitsolutions/Utilities/navigator_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/Screens/Home/home_screen.dart';
 import 'package:fitsolutions/Screens/Login/login_screen.dart';

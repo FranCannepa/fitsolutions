@@ -1,13 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Screens/Home/home_screen.dart';
-import 'package:fitsolutions/Screens/Login/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  _MainScreenState createState() => _MainScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
@@ -19,9 +18,10 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _user = _auth.currentUser; // Check for existing logged-in user
   }
-
+  
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
         body:
             HomeScreen() //_user != null ? const HomeScreen() : const LoginScreen(),
         );

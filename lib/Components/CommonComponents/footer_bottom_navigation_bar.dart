@@ -5,24 +5,23 @@ import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Profile/perfil_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 class FooterBottomNavigationBar extends StatefulWidget {
   const FooterBottomNavigationBar({super.key});
 
   @override
-  _FooterBottomNavigationBarState createState() =>
+  State<FooterBottomNavigationBar> createState() =>
       _FooterBottomNavigationBarState();
 }
 
 class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
-    EjerciciosScreen(),
-    PerfilScreen(),
-    HomeScreen(),
-    DietasScreen(),
-    MembresiaScreen()
+    const EjerciciosScreen(),
+    const PerfilScreen(),
+    const HomeScreen(),
+    const DietasScreen(),
+    const MembresiaScreen()
   ];
   @override
   Widget build(BuildContext context) {

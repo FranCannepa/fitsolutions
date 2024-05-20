@@ -24,7 +24,7 @@ class ScreenTitle extends StatelessWidget {
 }
 
 class MainContainer extends StatelessWidget {
-  const MainContainer({Key? key}) : super(key: key);
+  const MainContainer({super.key});
 
   @override
   Widget build(BuildContext context) {

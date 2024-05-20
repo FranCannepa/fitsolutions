@@ -2,10 +2,10 @@ import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigatio
 import 'package:flutter/material.dart';
 
 class DietasScreen extends StatefulWidget {
-  const DietasScreen({Key? key}) : super(key: key);
+  const DietasScreen({super.key});
 
   @override
-  _DietasScreenState createState() => _DietasScreenState();
+  State<DietasScreen> createState() => _DietasScreenState();
 }
 
 class _DietasScreenState extends State<DietasScreen> {
