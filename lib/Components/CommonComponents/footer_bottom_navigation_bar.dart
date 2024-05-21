@@ -1,8 +1,8 @@
-import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
-import 'package:fitsolutions/Screens/Ejercicios/ejercicios_screen.dart';
-import 'package:fitsolutions/Screens/Home/home_screen.dart';
-import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
-import 'package:fitsolutions/Screens/Profile/perfil_screen.dart';
+import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
+import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';
+import 'package:fitsolutions/screens/Home/home_screen.dart';
+import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
+import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
