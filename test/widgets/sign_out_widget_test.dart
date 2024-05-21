@@ -4,26 +4,15 @@ import 'package:fitsolutions/repository/user_repository.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 
-class MockUserProvider extends Mock implements UserProvider {
-  final MockUserRepository repository;
-  MockUserProvider({required this.repository});
-}
+import 'sign_out_widget_test.mocks.dart';
 
-class MockFirebaseAuth extends Mock implements FirebaseAuth {}
-
-class MockUserRepository extends Mock implements UserRepository {
-  final MockFirebaseAuth auth;
-  MockUserRepository({required this.auth});
-}
-
-
+@GenerateNiceMocks([MockSpec<UserProvider>()])
 void main() {
-  MockFirebaseAuth auth = MockFirebaseAuth();
-  MockUserRepository repository = MockUserRepository(auth: auth);
-  MockUserProvider provider = MockUserProvider(repository: repository);
+  UserProvider provider = MockUserProvider();
 
   Widget makeTestable(Widget child) {
     return ChangeNotifierProvider<UserProvider>.value(
@@ -39,6 +28,14 @@ void main() {
     testWidgets('Sign out button is found', (WidgetTester tester) async {
       await tester.pumpWidget(makeTestable(const HomeScreen()));
       expect(signOutButton, findsOneWidget);
+    });
+    testWidgets('Sign out pressed', (WidgetTester tester) async {
+      when(provider.signOut()).thenAnswer((_) async => Future.value(null));
+
+      await tester.pumpWidget(makeTestable(const HomeScreen()));
+      await tester.tap(signOutButton);
+      await tester.pump();
+      verify(provider.signOut()).called(1);
     });
   });
 }
