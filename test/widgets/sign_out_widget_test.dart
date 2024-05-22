@@ -1,6 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
-import 'package:fitsolutions/repository/user_repository.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

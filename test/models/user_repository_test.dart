@@ -12,11 +12,11 @@ void main(){
 
     test('signOut should call FirebaseAuth.signOut', () async {
     // Arrange
+
     when(userRepository.logOut()).thenAnswer((_) async => Future.value(null));
 
     await userRepository.logOut();
 
     verify(userRepository.logOut()).called(1);
-
   });
 }

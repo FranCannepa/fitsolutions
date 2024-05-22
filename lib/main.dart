@@ -5,8 +5,10 @@ import 'package:fitsolutions/repository/user_repository.dart';
 import 'package:fitsolutions/repository/user_repository_imp.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
+import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
 import 'package:fitsolutions/screens/Login/login_screen.dart';
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         navigatorKey: NavigationService.navigatorKey,
         theme: lightTheme,
-        home: const LoginScreen(),
+        home: const PlanScreen(),
         routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => const HomeScreen(),
           '/login': (BuildContext context) => const LoginScreen(),
