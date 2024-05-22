@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         navigatorKey: NavigationService.navigatorKey,
         theme: lightTheme,
-        home: const PlanScreen(),
+        home: const LoginScreen(),
         routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => const HomeScreen(),
           '/login': (BuildContext context) => const LoginScreen(),
