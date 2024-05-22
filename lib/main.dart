@@ -1,14 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Modelo/user_data.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
-import 'package:fitsolutions/repository/user_repository.dart';
-import 'package:fitsolutions/repository/user_repository_imp.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
+import 'package:fitsolutions/screens/Login/login_email_screen.dart';
 import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
-import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/navigator_service.dart';
-import 'package:fitsolutions/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
 import 'package:fitsolutions/screens/Login/login_screen.dart';
@@ -20,12 +17,11 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(MyApp(UserRepositoryImp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final UserRepository userRepository;
-  const MyApp(this.userRepository,{super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +30,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => UserData(),
         ),
-        ChangeNotifierProvider(create: (context) => UserProvider(userRepository: userRepository))
+        ChangeNotifierProvider(create: (context) => UserProvider())
       ],
       child: MaterialApp(
         navigatorKey: NavigationService.navigatorKey,
         theme: lightTheme,
-        home: const LoginScreen(),
+        home: Consumer<UserProvider>(
+          builder: (BuildContext context, UserProvider value, Widget? child) {
+              return value.isAuthenticated ? const HomeScreen() : const LoginPage();
+            },),   
         routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => const HomeScreen(),
           '/login': (BuildContext context) => const LoginScreen(),
