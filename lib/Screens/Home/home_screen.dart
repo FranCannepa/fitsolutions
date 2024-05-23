@@ -1,7 +1,6 @@
 import 'package:fitsolutions/Components/CalendarComponents/calendario_board.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
-import 'package:fitsolutions/screens/Login/login_email_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,4 +1,4 @@
-import 'package:fitsolutions/screens/Login/login_screen.dart';
+import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -75,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     hoverColor: Colors.transparent,
                     highlightColor: Colors.transparent,
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const WelcomePage()));
                     },
                     child: Column(
                       mainAxisSize: MainAxisSize.max,

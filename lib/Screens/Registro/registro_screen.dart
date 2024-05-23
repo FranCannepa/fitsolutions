@@ -3,7 +3,6 @@ import 'package:fitsolutions/Components/RegisterComponents/basico_form.dart';
 import 'package:fitsolutions/Components/RegisterComponents/entrenador_form.dart';
 import 'package:fitsolutions/Components/RegisterComponents/propietario_form.dart';
 import 'package:fitsolutions/Modelo/user_data.dart';
-import 'package:fitsolutions/Utilities/navigator_service.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
