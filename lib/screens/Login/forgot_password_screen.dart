@@ -30,15 +30,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               onPressed: () async {
                 try {
                   await userProvider.resetPassword(_emailController.text);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Password reset email sent")),
-                  );
-                  Navigator.pop(context); // Return to login page
+                  if(context.mounted){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Password reset email sent")),
+                    );
+                    Navigator.pop(context); // Return to login page
+                  }
+
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Failed to send password reset email")),
-                  );
+                  if(context.mounted){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Error al enviar email de Reset")),
+                    );
+                  }
                 }
               },
               child: const Text("Reset Password"),

@@ -4,6 +4,7 @@ import 'package:fitsolutions/Components/RegisterComponents/entrenador_form.dart'
 import 'package:fitsolutions/Components/RegisterComponents/propietario_form.dart';
 import 'package:fitsolutions/Modelo/user_data.dart';
 import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -22,13 +23,14 @@ class _RegistroScreenState extends State<RegistroScreen> {
   Future<void> registerUser(Map<String, dynamic> userData) async {
     Logger logger = Logger();
     final userProvider = context.read<UserData>();
+    final authProvider = context.read<UserProvider>();
     logger.d(userProvider.email);
     try {
       final firestore = FirebaseFirestore.instance;
       userData['email'] = userProvider.email;
       await firestore.collection('usuario').add(userData);
       userProvider.updateUserData(userData);
-      NavigationService.instance.pushNamed("/home");
+      authProvider.registerCompleted();
     } on FirebaseException catch (e) {
       logger.d(e.code);
       logger.d(e.message);

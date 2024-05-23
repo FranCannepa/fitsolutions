@@ -7,11 +7,11 @@ import 'package:provider/provider.dart';
 
 import 'sign_in_widget_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<UserData>()])
+@GenerateNiceMocks([MockSpec<UserData>(),])
 void main() {
   UserData provider = MockUserData();
 
-  Widget _makeTestable(Widget child) {
+  Widget makeTestable(Widget child) {
     return ChangeNotifierProvider<UserData>.value(
         value: provider,
         child: MaterialApp(
@@ -24,7 +24,7 @@ void main() {
   group('login screen test', () {
     testWidgets('Sign In with Google button found',
         (WidgetTester tester) async {
-      await tester.pumpWidget(_makeTestable(const LoginScreen()));
+      await tester.pumpWidget(makeTestable(const LoginScreen()));
       expect(signInButton, findsOneWidget);
     });
   });

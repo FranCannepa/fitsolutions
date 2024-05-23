@@ -51,6 +51,7 @@ dependencies:
   logger: ^2.3.0
   mockito: ^5.4.4
   google_sign_in: ^6.2.1
+  firebase_core_platform_interface: ^5.0.0
 
 dev_dependencies:
   flutter_test:

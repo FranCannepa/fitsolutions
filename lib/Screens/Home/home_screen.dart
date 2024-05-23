@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bienvenido'),
@@ -23,11 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
               key: const Key('sign_out'),
               onPressed: () {
-                context.read<UserProvider>().signOut();
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (context) => const LoginPage()),
-                    (route) => false);
+                userProvider.signOut();
               },
               icon: const Icon(Icons.logout_outlined))
         ],

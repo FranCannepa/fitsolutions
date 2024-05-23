@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Modelo/user_data.dart';
-import 'package:fitsolutions/Utilities/navigator_service.dart';
 import 'package:fitsolutions/components/CommonComponents/custom_textfield.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/forgot_password_screen.dart';
@@ -18,57 +17,52 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-bool _validatePassword(String password){
-  return true;
-}
 
-  Future<Map<String, dynamic>?> _checkUserExistence(User user) async {
-        Logger logger = Logger();
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('usuario')
-          .where('email', isEqualTo: user.email)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        final doc = querySnapshot.docs.first;
-        final docId = querySnapshot.docs.first.id;
-        final Map<String, dynamic> userData =
-            doc.data();
-        userData['docId'] = docId;
-        return userData;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      logger.d("Error checking user existence: $e");
+Future<Map<String, dynamic>?> _checkUserExistence(User user) async {
+  Logger logger = Logger();
+  try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('usuario')
+        .where('email', isEqualTo: user.email)
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final doc = querySnapshot.docs.first;
+      final docId = querySnapshot.docs.first.id;
+      final Map<String, dynamic> userData = doc.data();
+      userData['docId'] = docId;
+      return userData;
+    } else {
       return null;
     }
+  } catch (e) {
+    logger.d("Error checking user existence: $e");
+    return null;
   }
+}
 
-  void _handleGoogleSignIn(BuildContext context) async {
-    Logger logger = Logger();
-    final userProvider = context.read<UserData>();
-    try {
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
-      final User user = userCredential.user!;
-      final Map<String, dynamic>? existingUserData =
-          await _checkUserExistence(user);
-      if (existingUserData != null) {
-        userProvider.updateUserData(existingUserData);
-        NavigationService.instance.pushNamed("/home");
-      } else {
-        if (user.email != null) {
-          userProvider.firstLogin(user.email as String);
-          NavigationService.instance.pushNamed("/registro");
-        }
+void _handleGoogleSignIn(BuildContext context) async {
+  Logger logger = Logger();
+  final userProvider = context.read<UserData>();
+  final authProvider = context.read<UserProvider>();
+  try {
+    final UserCredential userCredential = await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
+    final User user = userCredential.user!;
+    final Map<String, dynamic>? existingUserData =
+        await _checkUserExistence(user);
+    if (existingUserData != null) {
+      userProvider.updateUserData(existingUserData);
+    } else {
+      if (user.email != null) {
+        authProvider.firstTimeGoogle();
+        userProvider.firstLogin(user.email as String);
+
       }
-    } on FirebaseAuthException catch (err) {
-      logger.d(err.code);
-      logger.d(err.message);
     }
+  } on FirebaseAuthException catch (err) {
+    logger.d(err.code);
+    logger.d(err.message);
   }
-
+}
 
 class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
@@ -249,12 +243,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                                     _passwordController.text,
                                                   );
                                                 } catch (e) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text(
-                                                            "Failed to sign in")),
-                                                  );
+                                                  if (context.mounted) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                          content: Text(
+                                                              "Error al intentar Iniciar Sesion")),
+                                                    );
+                                                  }
                                                 }
                                               },
                                             ),
@@ -264,7 +261,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                               hoverColor: Colors.transparent,
                                               highlightColor:
                                                   Colors.transparent,
-                                              onTap: () {Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()));},
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const ForgotPasswordScreen()));
+                                              },
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.max,
                                                 children: [
@@ -298,8 +301,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                             SignInButton(Buttons.google,
                                                 text: "Continuar con Google",
                                                 onPressed: () {
-                                                  _handleGoogleSignIn(context);
-                                                }),
+                                              _handleGoogleSignIn(context);
+                                            }),
                                           ],
                                         ),
                                       ),
@@ -338,7 +341,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                             ),
                                             CustomTextfield(
                                               labelText: 'Confirmar contraseña',
-                                              inputControl: _passwordController,
+                                              inputControl: _confirmController,
                                               obscureText: !passwordVisibility,
                                               child: InkWell(
                                                 onTap: () => setState(
@@ -369,12 +372,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                                     _passwordController.text,
                                                   );
                                                 } catch (e) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                        content: Text(
-                                                            "Failed to sign in")),
-                                                  );
+                                                  if (context.mounted) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                          content: Text(
+                                                              "Error al intentar Registrar")),
+                                                    );
+                                                  }
                                                 }
                                               },
                                             ),

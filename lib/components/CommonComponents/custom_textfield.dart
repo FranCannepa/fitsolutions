@@ -6,7 +6,7 @@ class CustomTextfield extends StatefulWidget {
   final bool obscureText;
   final Widget? child; 
 
-  CustomTextfield(
+  const CustomTextfield(
       {super.key,
       required this.labelText,
       required this.inputControl,

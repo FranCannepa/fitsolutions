@@ -1,15 +1,13 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logger/logger.dart';
 
 
 class FitnessRepository {
   Logger log = Logger();
-  final FirebaseAuth _firebaseAuth;
+
   final planCollection = FirebaseFirestore.instance.collection('plan');
 
-  FitnessRepository({FirebaseAuth? firebaseAuth}) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   //Get
 

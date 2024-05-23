@@ -36,8 +36,15 @@ class MyApp extends StatelessWidget {
         navigatorKey: NavigationService.navigatorKey,
         theme: lightTheme,
         home: Consumer<UserProvider>(
-          builder: (BuildContext context, UserProvider value, Widget? child) {
-              return value.isAuthenticated ? const HomeScreen() : const LoginPage();
+          builder: (BuildContext context, UserProvider value,_) {
+                  if(value.isAuthenticated && !value.firstLogin){
+                    return const HomeScreen();
+                  }else if(value.isAuthenticated && value.firstLogin){
+                    return const RegistroScreen();
+                  }
+                  else{
+                    return const LoginPage();
+                  }
             },),   
         routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => const HomeScreen(),
