@@ -1,4 +1,6 @@
+import 'package:fitsolutions/components/CommonComponents/my_textfield.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,34 +13,59 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
-
+  String? _errorMsg;
+  
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text("Reset Password")),
+      backgroundColor: Colors.amber,
+      appBar: AppBar(title: const Text("RESTABLECER CONTRASEÑA"), backgroundColor: Colors.amber,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: "Email"),
+            const Text(
+              'Te enviaremos un email para restablecer tu contraseña',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontFamily: 'Inter',
+                letterSpacing: 0,
+                fontSize: 30,
+              ),
             ),
+            const SizedBox(height: 30),
+            MyTextField(
+                controller: _emailController,
+                hintText: 'Email',
+                obscureText: false,
+                keyboardType: TextInputType.emailAddress,
+                errorMsg: _errorMsg,
+                prefixIcon: const Icon(CupertinoIcons.mail_solid),
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return 'Porfavor llenar este campo';
+                  } else if (!RegExp(r'^[\w-\.]+@([\w-]+.)+[\w-]{2,4}$')
+                      .hasMatch(val)) {
+                    return 'Porfavor ingresar un email valido';
+                  }
+                  return null;
+                }),
+            const SizedBox(height: 30),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 try {
                   await userProvider.resetPassword(_emailController.text);
-                  if(context.mounted){
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Password reset email sent")),
+                      const SnackBar(
+                          content: Text("Se envio un email para restablecer su contraseña")),
                     );
                     Navigator.pop(context); // Return to login page
                   }
-
                 } catch (e) {
-                  if(context.mounted){
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text("Error al enviar email de Reset")),
@@ -46,7 +73,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   }
                 }
               },
-              child: const Text("Reset Password"),
+              child: const Text("Restablecer contraseña"),
             ),
           ],
         ),

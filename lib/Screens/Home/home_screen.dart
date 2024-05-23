@@ -1,6 +1,7 @@
 import 'package:fitsolutions/Components/CalendarComponents/calendario_board.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
+import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,11 +25,13 @@ class _HomeScreenState extends State<HomeScreen> {
               key: const Key('sign_out'),
               onPressed: () {
                 userProvider.signOut();
+                //Navigator.push(context, MaterialPageRoute(builder: (context) => const WelcomePage()));
               },
               icon: const Icon(Icons.logout_outlined))
         ],
       ),
-      body: const Center(
+      body: 
+        const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [CalendarioBoard()],

@@ -1,8 +1,10 @@
+import 'package:fitsolutions/Modelo/user_data.dart';
 import 'package:fitsolutions/components/CommonComponents/my_textfield.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RegisterEmailScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -17,8 +19,8 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
-  bool passwordVisibility = false;
-  bool confirmPasswordVisibility = false;
+  late bool passwordVisibility;
+  late bool confirmPasswordVisibility;
   String? _errorMsg;
 
   IconData iconPassword = CupertinoIcons.eye_fill;
@@ -86,7 +88,12 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
       );
     }
   }
-
+  @override
+  void initState() {
+    passwordVisibility = false;
+    confirmPasswordVisibility = false;
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -115,7 +122,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
           MyTextField(
             controller: _passwordController,
             hintText: 'Contraseña',
-            obscureText: passwordVisibility,
+            obscureText: !passwordVisibility,
             keyboardType: TextInputType.visiblePassword,
             prefixIcon: const Icon(CupertinoIcons.lock_fill),
             errorMsg: _errorMsg,
@@ -135,9 +142,9 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                 setState(() {
                   passwordVisibility = !passwordVisibility;
                   if (passwordVisibility) {
-                    iconPassword = CupertinoIcons.eye_fill;
-                  } else {
                     iconPassword = CupertinoIcons.eye_slash_fill;
+                  } else {
+                    iconPassword = CupertinoIcons.eye_fill;
                   }
                 });
               },
@@ -201,7 +208,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
           MyTextField(
             controller: _confirmController,
             hintText: 'Confirmar contraseña',
-            obscureText: confirmPasswordVisibility,
+            obscureText: !confirmPasswordVisibility,
             keyboardType: TextInputType.visiblePassword,
             prefixIcon: const Icon(CupertinoIcons.lock_fill),
             errorMsg: _errorMsg,
@@ -220,9 +227,9 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                 setState(() {
                   confirmPasswordVisibility = !confirmPasswordVisibility;
                   if (confirmPasswordVisibility) {
-                    iconConfirmPassword = CupertinoIcons.eye_fill;
-                  } else {
                     iconConfirmPassword = CupertinoIcons.eye_slash_fill;
+                  } else {
+                    iconConfirmPassword = CupertinoIcons.eye_fill;
                   }
                 });
               },
@@ -240,6 +247,8 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                     _emailController.text,
                     _passwordController.text,
                   );
+                  final userDataProvider = context.read<UserData>();
+                  userDataProvider.firstLogin(_emailController.text);
                 } else if(!valid) {
                   snackBarMessage(context, "El formulario tiene errores");
                 } else{

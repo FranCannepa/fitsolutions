@@ -69,10 +69,15 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   final _formKeyLogin = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool passwordVisibility = false;
+  late bool passwordVisibility;
   IconData iconPassword = CupertinoIcons.eye_fill;
   String? _errorMsg;
 
+  @override
+  void initState() {
+    passwordVisibility = false;
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -101,7 +106,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
           MyTextField(
             controller: _passwordController,
             hintText: 'Contraseña',
-            obscureText: passwordVisibility,
+            obscureText: !passwordVisibility,
             keyboardType: TextInputType.visiblePassword,
             prefixIcon: const Icon(CupertinoIcons.lock_fill),
             errorMsg: _errorMsg,
@@ -116,9 +121,9 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                 setState(() {
                   passwordVisibility = !passwordVisibility;
                   if (passwordVisibility) {
-                    iconPassword = CupertinoIcons.eye_fill;
-                  } else {
                     iconPassword = CupertinoIcons.eye_slash_fill;
+                  } else {
+                    iconPassword = CupertinoIcons.eye_fill;
                   }
                 });
               },
@@ -130,6 +135,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
             text: 'Iniciar Sesion',
             onPressed: () async {
               try {
+                /**/
                 await widget.userProvider.signIn(
                   _emailController.text,
                   _passwordController.text,
