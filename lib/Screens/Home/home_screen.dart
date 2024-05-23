@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/CalendarComponents/calendario_board.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
-import 'package:fitsolutions/Modelo/Calendario.dart';
+import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:fitsolutions/Utilities/NavigatorService.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,11 +14,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<Map<String, dynamic>?> getUserData() async {
-    final docIdFuture = SharedPrefsHelper().getDocId();
-    final docId = await docIdFuture as String;
+    final userProvider = context.read<UserData>();
     try {
-      final docRef =
-          FirebaseFirestore.instance.collection('usuario').doc(docId);
+      final docRef = FirebaseFirestore.instance
+          .collection('usuario')
+          .doc(userProvider.userId);
       final snapshot = await docRef.get();
       if (snapshot.exists) {
         return snapshot.data() as Map<String, dynamic>;

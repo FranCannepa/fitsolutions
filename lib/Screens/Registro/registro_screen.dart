@@ -28,6 +28,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
       userProvider.updateUserData(userData);
       final docRef =
           await FirebaseFirestore.instance.collection('usuario').add(userData);
+      prefs.setEmail(userProvider.email);
       prefs.setLoggedIn(true);
       prefs.setDocId(docRef.id);
       NavigationService.instance.pushNamed("/home");
