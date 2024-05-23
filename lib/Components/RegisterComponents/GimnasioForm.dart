@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class GimnasioForm extends StatefulWidget {
-  const GimnasioForm({super.key});
+  final Function refresh;
+  const GimnasioForm({super.key, required this.refresh});
   @override
   _GimnasioFormState createState() => _GimnasioFormState();
 }
@@ -33,10 +34,10 @@ class _GimnasioFormState extends State<GimnasioForm> {
     final prefs = SharedPrefsHelper();
     try {
       gymData['propietarioId'] = await prefs.getDocId();
-      print(gymData);
       final docRef =
-          await FirebaseFirestore.instance.collection('usuario').add(gymData);
+          await FirebaseFirestore.instance.collection('gimnasio').add(gymData);
       userProvider.updateCurrentGym(docRef.id);
+      widget.refresh();
     } on FirebaseException catch (e) {
       print(e.code);
       print(e.message);

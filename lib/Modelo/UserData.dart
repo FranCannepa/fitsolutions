@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
 import 'package:flutter/material.dart';
 
 class UserData extends ChangeNotifier {
   String nombre_completo = '';
   String tipo = '';
-  String docId = '';
+  String userId = '';
   String fechaNacimiento = '';
   int altura = 0;
   double peso = 0;
@@ -12,6 +14,41 @@ class UserData extends ChangeNotifier {
   String photoUrl = '';
   late String gimnasioId = '';
   late String calendarioId = '';
+  late String membresiaId = '';
+
+  final prefs = SharedPrefsHelper();
+
+  void initializeData() async {
+    final prefs = SharedPrefsHelper();
+    String? userEmail = await prefs.getEmail();
+    if (userEmail != null) {
+      final userData = await getUserData(userEmail);
+      final userTipo = userData?['tipo'];
+      if (userTipo == "Basico") {
+        dataFormBasic(userData);
+      } else if (userTipo == "Propietario") {
+        dataFormPropietario(userData);
+      } else {
+        dataFormParticular(userData);
+      }
+    } else {
+      print("EMPTY EMAIL!");
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserData(String email) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('usuario')
+        .where('email', isEqualTo: email)
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final docSnapshot = querySnapshot.docs.first;
+      final data = docSnapshot.data();
+      return data;
+    } else {
+      return {};
+    }
+  }
 
   bool esBasico() {
     return tipo == "Basico";
@@ -41,7 +78,7 @@ class UserData extends ChangeNotifier {
   }
 
   void updateDocId(String newDocId) {
-    docId = newDocId;
+    userId = newDocId;
     notifyListeners();
   }
 
@@ -65,17 +102,32 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormBasic(Map<String, dynamic>? userData) {
-    nombre_completo = userData?['nombre_completo'];
+  void dataFormBasic(Map<String, dynamic>? userData) async {
+    String? docId = userData?['docId'];
+    if (docId != null) {
+      userId = docId;
+    } else {
+      userId = await prefs.getDocId() as String;
+    }
+    nombre_completo = userData?['nombreCompleto'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    tipo = 'Basico';
+    gimnasioId = userData?['gimnasioId'] ?? '';
+    tipo = "Basico";
     altura = userData?['altura'] ?? 0;
     peso = userData?['peso'] ?? 0;
     notifyListeners();
   }
 
   void dataFormPropietario(Map<String, dynamic>? userData) {
-    nombre_completo = userData?['nombre_completo'];
+    userId = userData?['docId'] ?? prefs.getDocId();
+    nombre_completo = userData?['nombreCompleto'];
+    tipo = 'Propietario';
+    notifyListeners();
+  }
+
+  void dataFormParticular(Map<String, dynamic>? userData) {
+    userId = userData?['docId'] ?? prefs.getDocId();
+    nombre_completo = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();
   }
@@ -89,22 +141,9 @@ class UserData extends ChangeNotifier {
   }
 
   void updateUserData(Map<String, dynamic>? userData) {
-    docId = userData?['docId'] ?? '';
+    userId = userData?['docId'] ?? '';
     nombre_completo = userData?['nombre_completo'] ?? '';
     tipo = userData?['tipo'] ?? '';
-    // fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    // altura = userData?['altura'] ?? 0;
-    // peso = userData?['peso'] ?? 0;
     notifyListeners();
   }
 }
-
-class userDataPropietario extends UserData {
-  //docId
-  //nombre_completo
-  //email
-  //gimnasio
-  //membresia
-}
-
-class userDataParticular extends UserData {}

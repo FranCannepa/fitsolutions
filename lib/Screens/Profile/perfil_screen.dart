@@ -16,11 +16,11 @@ class PerfilScreen extends StatefulWidget {
 class _PerfilScreenState extends State<PerfilScreen> {
   late Map<String, dynamic> userData;
   Future<Map<String, dynamic>?> getUserData() async {
-    //final userProvider = context.read<UserData>();
-    final docId = await SharedPrefsHelper().getDocId();
+    final userProvider = context.read<UserData>();
     try {
-      final docRef =
-          await FirebaseFirestore.instance.collection('usuario').doc(docId);
+      final docRef = await FirebaseFirestore.instance
+          .collection('usuario')
+          .doc(userProvider.userId);
       final snapshot = await docRef.get();
       if (snapshot.exists) {
         userData = snapshot.data() as Map<String, dynamic>;
@@ -45,7 +45,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 userData = snapshot.data!;
-                print(userData);
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -6,6 +6,7 @@ class SharedPrefsHelper {
   final String _docIdKey = 'docId';
   final String _emailKey = 'email';
   final String _isLogged = 'isLoggedIn';
+  final String _currentGymId = '_currentGymId';
 
   static final SharedPrefsHelper _instance = SharedPrefsHelper._internal();
 
@@ -35,6 +36,16 @@ class SharedPrefsHelper {
   Future<String?> getDocId() async {
     final prefs = await _getInstance();
     return prefs.getString(_docIdKey);
+  }
+
+  Future<String?> getCurrentGymId() async {
+    final prefs = await _getInstance();
+    return prefs.getString(_currentGymId);
+  }
+
+  Future<void> setCurrentGymId(String gymId) async {
+    final prefs = await _getInstance();
+    await prefs.setString(_currentGymId, gymId);
   }
 
   Future<void> setEmail(String email) async {

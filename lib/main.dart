@@ -47,6 +47,10 @@ class MyApp extends StatelessWidget {
           }
           if (snapshot.hasData) {
             final isLoggedIn = snapshot.data!;
+            if (isLoggedIn) {
+              final userProvider = context.read<UserData>();
+              userProvider.initializeData();
+            }
             return isLoggedIn ? const HomeScreen() : const LoginScreen();
           }
           return const Center(child: CircularProgressIndicator());
