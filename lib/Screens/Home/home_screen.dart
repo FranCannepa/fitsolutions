@@ -1,7 +1,7 @@
-import 'package:fitsolutions/Components/CalendarComponents/calendario_board.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
-import 'package:fitsolutions/providers/user_provider.dart';
-import 'package:fitsolutions/screens/Login/login_screen.dart';
+import 'package:fitsolutions/Modelo/UserData.dart';
+import 'package:fitsolutions/Utilities/NavigatorService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,32 +13,70 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<Map<String, dynamic>?> getUserData() async {
+    final userProvider = context.read<UserData>();
+    try {
+      final docRef = FirebaseFirestore.instance
+          .collection('usuario')
+          .doc(userProvider.userId);
+      final snapshot = await docRef.get();
+      if (snapshot.exists) {
+        return snapshot.data() as Map<String, dynamic>;
+      } else {
+        NavigationService.instance.pushNamed("/login");
+      }
+    } catch (e) {
+      print("Error getting user: $e");
+      return null;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bienvenido'),
-        backgroundColor: Colors.orange,
-        actions: [
-          IconButton(
-              key: const Key('sign_out'),
-              onPressed: () {
-                context.read<UserProvider>().signOut();
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (context) => const LoginScreen()),
-                    (route) => false);
-              },
-              icon: const Icon(Icons.logout_outlined))
-        ],
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [CalendarioBoard()],
-        ),
-      ),
-      bottomNavigationBar: const FooterBottomNavigationBar(),
+    return FutureBuilder(
+      future: getUserData(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final userData = snapshot.data as Map<String, dynamic>;
+          final userTipo = userData['tipo'];
+          final tengoSubscripcion =
+              userData['gimnasio'] != null || userData['entrenador'] != null;
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (userTipo == "Basico") Text("SOY BASICO"),
+                  if (tengoSubscripcion)
+                    Text("TENGO SUBSCRIPCION")
+                  else
+                    Text("NO TENGO GYM O ENTRENADOR ASOCIADO"),
+                  if (userTipo == "Propietario" || userTipo == "Particular")
+                    Text("SOY PROPIETARIO O PARTICULAR"),
+                  if (!tengoSubscripcion) Text("CREAR CALENDARIO"),
+                  if (userTipo == null || userTipo.isEmpty)
+                    Text("Please update your user type!"),
+                ],
+              ),
+            ),
+            bottomNavigationBar: FooterBottomNavigationBar(),
+          );
+        } else if (snapshot.hasError) {
+          print(snapshot.error);
+          return const Scaffold(
+            body: Center(
+              child: Text("Error fetching user data!"),
+            ),
+          );
+        } else {
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(), // Loading indicator
+            ),
+          );
+        }
+      },
     );
   }
 }

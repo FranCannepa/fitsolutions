@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:fitsolutions/Utilities/NavigatorService.dart';
+import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -38,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleGoogleSignIn() async {
     final userProvider = context.read<UserData>();
+    final prefs = SharedPrefsHelper();
     try {
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
@@ -46,10 +49,13 @@ class _LoginScreenState extends State<LoginScreen> {
           await _checkUserExistence(user);
       if (existingUserData != null) {
         userProvider.updateUserData(existingUserData);
+        prefs.setEmail(existingUserData['email']);
+        prefs.setDocId(existingUserData['docId']);
+        prefs.setLoggedIn(true);
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
-          userProvider.firstLogin(user.email as String);
+          userProvider.firstLogin(user);
           NavigationService.instance.pushNamed("/registro");
         }
       }

@@ -4,6 +4,7 @@ import 'package:fitsolutions/Components/RegisterComponents/EntrenadorForm.dart';
 import 'package:fitsolutions/Components/RegisterComponents/PropietarioForm.dart';
 import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:fitsolutions/Utilities/NavigatorService.dart';
+import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,12 +21,16 @@ class _RegistroScreenState extends State<RegistroScreen> {
 
   Future<void> registerUser(Map<String, dynamic> userData) async {
     final userProvider = context.read<UserData>();
-    print(userProvider.email);
+    final prefs = SharedPrefsHelper();
     try {
-      final firestore = FirebaseFirestore.instance;
       userData['email'] = userProvider.email;
-      final docRef = await firestore.collection('usuario').add(userData);
+      userData['profilePic'] = userProvider.photoUrl;
       userProvider.updateUserData(userData);
+      final docRef =
+          await FirebaseFirestore.instance.collection('usuario').add(userData);
+      prefs.setEmail(userProvider.email);
+      prefs.setLoggedIn(true);
+      prefs.setDocId(docRef.id);
       NavigationService.instance.pushNamed("/home");
     } on FirebaseException catch (e) {
       print(e.code);
@@ -52,9 +57,9 @@ class _RegistroScreenState extends State<RegistroScreen> {
       case 'Quiero entrenar':
         return BasicoForm(registerFunction: registerUser);
       case 'Soy propietario':
-        return PropietarioForm();
+        return PropietarioForm(registerFunction: registerUser);
       case 'Soy entrenador':
-        return EntrenadorForm();
+        return EntrenadorForm(registerFunction: registerUser);
       default:
         return SizedBox();
     }
