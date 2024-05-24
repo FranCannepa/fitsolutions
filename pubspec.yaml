@@ -48,6 +48,8 @@ dependencies:
   cloud_firestore: ^4.17.3
   provider: ^6.1.2
   flutter_launcher_icons: "^0.13.1"
+  mockito: ^5.4.4
+  logger: ^2.3.0
 
 dev_dependencies:
   flutter_test:
