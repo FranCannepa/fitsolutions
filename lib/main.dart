@@ -4,7 +4,7 @@ import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/navigator_service.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
-import 'package:fitsolutions/modelo/user_data.dart';
+import 'package:fitsolutions/modelo/UserData.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/login_screen.dart';
 import 'package:flutter/material.dart';

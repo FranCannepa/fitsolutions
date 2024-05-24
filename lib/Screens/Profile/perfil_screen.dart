@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
 import 'package:fitsolutions/Screens/Profile/editar_perfil_screen.dart';
-import 'package:fitsolutions/modelo/user_data.dart';
+import 'package:fitsolutions/modelo/UserData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';

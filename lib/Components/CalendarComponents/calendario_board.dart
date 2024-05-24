@@ -1,7 +1,6 @@
 import 'package:fitsolutions/Modelo/Gimnasio.dart';
 import 'package:fitsolutions/modelo/usuario_particular.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class CalendarioBoard extends StatefulWidget {
   final Gimnasio? gimnasio;
@@ -10,10 +9,10 @@ class CalendarioBoard extends StatefulWidget {
   const CalendarioBoard({super.key, 
     this.gimnasio,
     this.usuarioParticular,
-  }) : super(key: key);
+  });
 
   @override
-  _CalendarioBoardState createState() => _CalendarioBoardState();
+  State<CalendarioBoard> createState() => _CalendarioBoardState();
 }
 
 class _CalendarioBoardState extends State<CalendarioBoard> {

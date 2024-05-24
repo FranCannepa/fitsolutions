@@ -1,5 +1,6 @@
-import 'package:fitsolutions/Components/CommonComponents/input_roundFields.dart';
+
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
+import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:flutter/material.dart';
 
 class BasicoForm extends StatefulWidget {
@@ -8,7 +9,7 @@ class BasicoForm extends StatefulWidget {
   const BasicoForm({super.key, required this.registerFunction});
 
   @override
-  _BasicoFormState createState() => _BasicoFormState();
+  State<BasicoForm> createState() => _BasicoFormState();
 }
 
 class _BasicoFormState extends State<BasicoForm> {
@@ -26,11 +27,7 @@ class _BasicoFormState extends State<BasicoForm> {
     _heightController.dispose();
     super.dispose();
   }
-
-  @override
-  Widget build(BuildContext context) {
-
-    Map<String, dynamic> collectUserData() {
+  Map<String, dynamic> collectUserData() {
       final pesoString = _weightController.text.replaceAll(",", ".");
       final nombreCompleto = _fullNameController.text;
       final fechaNacimiento = _dateOfBirthController.text;
@@ -44,6 +41,9 @@ class _BasicoFormState extends State<BasicoForm> {
         'tipo': "Basico"
       };
     }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Form(
         key: _formKey,
@@ -107,7 +107,7 @@ class _BasicoFormState extends State<BasicoForm> {
           SubmitButton(
               text: "Ingresar",
               onPressed: () {
-                final userData = _collectUserData();
+                final userData = collectUserData();
                 widget.registerFunction(userData);
               })
         ]));

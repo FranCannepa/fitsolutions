@@ -1,18 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/RegisterComponents/basico_form.dart';
 import 'package:fitsolutions/components/RegisterComponents/entrenador_form.dart';
 import 'package:fitsolutions/components/RegisterComponents/propietario_form.dart';
-import 'package:fitsolutions/modelo/user_data.dart';
+import 'package:fitsolutions/modelo/UserData.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
 
   @override
-  _RegistroScreenState createState() => _RegistroScreenState();
+  State<RegistroScreen> createState() => _RegistroScreenState();
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
@@ -62,7 +63,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
       case 'Soy entrenador':
         return EntrenadorForm(registerFunction: registerUser);
       default:
-        return SizedBox();
+        return const SizedBox();
     }
   }
 

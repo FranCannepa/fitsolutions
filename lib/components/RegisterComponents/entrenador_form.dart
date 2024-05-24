@@ -5,7 +5,7 @@ class EntrenadorForm extends StatefulWidget {
   const EntrenadorForm({super.key, required this.registerFunction});
 
   @override
-  _EntrenadorFormState createState() => _EntrenadorFormState();
+  State<EntrenadorForm> createState() => _EntrenadorFormState();
 }
 
 class _EntrenadorFormState extends State<EntrenadorForm> {

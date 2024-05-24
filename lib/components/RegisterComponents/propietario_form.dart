@@ -7,7 +7,7 @@ class PropietarioForm extends StatefulWidget {
   const PropietarioForm({super.key, required this.registerFunction});
 
   @override
-  _PropietarioFormState createState() => _PropietarioFormState();
+  State<PropietarioForm> createState() => _PropietarioFormState();
 }
 
 class _PropietarioFormState extends State<PropietarioForm> {

@@ -3,7 +3,7 @@ import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigatio
 import 'package:fitsolutions/Components/CommonComponents/screen_title.dart';
 import 'package:fitsolutions/Components/GimnasioComponents/my_gym.dart';
 import 'package:fitsolutions/components/RegisterComponents/gimnasio_form.dart';
-import 'package:fitsolutions/modelo/user_data.dart';
+import 'package:fitsolutions/modelo/UserData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
