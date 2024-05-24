@@ -1,10 +1,10 @@
-import 'package:fitsolutions/Modelo/user_data.dart';
+//import 'package:fitsolutions/Modelo/user_data.dart';
 import 'package:fitsolutions/components/CommonComponents/my_textfield.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 
 class RegisterEmailScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -247,8 +247,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                     _emailController.text,
                     _passwordController.text,
                   );
-                  final userDataProvider = context.read<UserData>();
-                  userDataProvider.firstLogin(_emailController.text);
+                  //final userDataProvider = context.read<UserData>();
                 } else if(!valid) {
                   snackBarMessage(context, "El formulario tiene errores");
                 } else{

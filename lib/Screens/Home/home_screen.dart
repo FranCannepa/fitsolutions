@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
-import 'package:fitsolutions/Utilities/NavigatorService.dart';
+import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
+import 'package:fitsolutions/providers/user_provider.dart';
+import 'package:fitsolutions/screens/Login/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Logger logger = Logger();
   Future<Map<String, dynamic>?> getUserData() async {
     final userProvider = context.read<UserData>();
     try {
@@ -26,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
         NavigationService.instance.pushNamed("/login");
       }
     } catch (e) {
-      print("Error getting user: $e");
+      logger.d("Error getting user: $e");
       return null;
     }
     return null;
@@ -34,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Logger log = Logger();
     return FutureBuilder(
       future: getUserData(),
       builder: (context, snapshot) {
@@ -43,34 +48,54 @@ class _HomeScreenState extends State<HomeScreen> {
           final tengoSubscripcion =
               userData['gimnasio'] != null || userData['entrenador'] != null;
           return Scaffold(
+            appBar: AppBar(
+              title: const Text('BIENVENIDO'),
+              actions: [
+                IconButton(
+                  onPressed: () async {
+                    UserProvider userProvider = context.read<UserProvider>();
+                    await userProvider.signOut();
+                    if(context.mounted){
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) => const LoginScreen(),
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.logout),
+                ),
+              ],
+            ),
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (userTipo == "Basico") Text("SOY BASICO"),
+                  if (userTipo == "Basico") const Text("SOY BASICO"),
                   if (tengoSubscripcion)
-                    Text("TENGO SUBSCRIPCION")
+                    const Text("TENGO SUBSCRIPCION")
                   else
-                    Text("NO TENGO GYM O ENTRENADOR ASOCIADO"),
+                    const Text("NO TENGO GYM O ENTRENADOR ASOCIADO"),
                   if (userTipo == "Propietario" || userTipo == "Particular")
-                    Text("SOY PROPIETARIO O PARTICULAR"),
-                  if (!tengoSubscripcion) Text("CREAR CALENDARIO"),
+                    const Text("SOY PROPIETARIO O PARTICULAR"),
+                  if (!tengoSubscripcion) const Text("CREAR CALENDARIO"),
                   if (userTipo == null || userTipo.isEmpty)
-                    Text("Please update your user type!"),
+                    const Text("Please update your user type!"),
                 ],
               ),
             ),
-            bottomNavigationBar: FooterBottomNavigationBar(),
+            bottomNavigationBar: const FooterBottomNavigationBar(),
           );
         } else if (snapshot.hasError) {
-          print(snapshot.error);
+          log.d(snapshot.error);
           return const Scaffold(
             body: Center(
               child: Text("Error fetching user data!"),
             ),
           );
         } else {
-          return Scaffold(
+          return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(), // Loading indicator
             ),

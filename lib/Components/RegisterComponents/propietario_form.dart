@@ -1,9 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/CommonComponents/input_roundFields.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
-import 'package:fitsolutions/Components/RegisterComponents/GimnasioForm.dart';
-import 'package:fitsolutions/Utilities/Registros.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:flutter/material.dart';
 
 class PropietarioForm extends StatefulWidget {
@@ -18,13 +14,14 @@ class _PropietarioFormState extends State<PropietarioForm> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   late Map<String, dynamic> userData = {};
+
+  Map<String, dynamic> _collectUserData() {
+    final nombreCompleto = _fullNameController.text;
+    return {'nombreCompleto': nombreCompleto, 'tipo': "Propietario"};
+  }
+
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> _collectUserData() {
-      final nombreCompleto = _fullNameController.text;
-      return {'nombreCompleto': nombreCompleto, 'tipo': "Propietario"};
-    }
-
     return Form(
         key: _formKey,
         child: Column(children: [

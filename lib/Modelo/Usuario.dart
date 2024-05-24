@@ -1,5 +1,3 @@
-import 'package:fitsolutions/Modelo/Calendario.dart';
-
 abstract class Usuario {
   String docId;
   String email;

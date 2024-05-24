@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Utilities/NavigatorService.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:logger/logger.dart';
 
 class Registro {
   // Future<void> registrarUsuario(Map<String, dynamic> userData) async {
@@ -23,6 +24,7 @@ class Registro {
 
   Future<void> registrarGimnasio(Map<String, dynamic> gymData) async {
     final prefs = SharedPrefsHelper();
+    Logger log = Logger();
     try {
       final docRef =
           await FirebaseFirestore.instance.collection('usuario').add(gymData);
@@ -30,8 +32,8 @@ class Registro {
       prefs.setDocId(docRef.id);
       NavigationService.instance.pushNamed("/home");
     } on FirebaseException catch (e) {
-      print(e.code);
-      print(e.message);
+      log.d(e.code);
+      log.d(e.message);
     }
   }
 }

@@ -1,17 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
-import 'package:fitsolutions/Utilities/NavigatorService.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
+import 'package:fitsolutions/providers/user_provider.dart';
+import 'package:fitsolutions/screens/Login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
 import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
 import 'package:fitsolutions/Theme/light_theme.dart';
 import 'package:fitsolutions/firebase_options.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiProvider(
+      providers: [
+      ChangeNotifierProvider(create: (_) => UserProvider()
+      ),
+      ],
+      child:MaterialApp(
       navigatorKey: NavigationService.navigatorKey,
       theme: lightTheme,
       home: FutureBuilder<bool>(
@@ -63,6 +69,7 @@ class MyApp extends StatelessWidget {
         '/membresia': (BuildContext context) => const MembresiaScreen(),
         '/registro': (BuildContext context) => const RegistroScreen(),
       },
+    ),
     );
   }
 }

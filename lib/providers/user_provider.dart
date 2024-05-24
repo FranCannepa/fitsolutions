@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
   Logger log = Logger();
@@ -60,6 +61,8 @@ class UserProvider extends ChangeNotifier {
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.clear();
       notifyListeners();
     } on FirebaseAuthException catch (e) {
       log.t(e);

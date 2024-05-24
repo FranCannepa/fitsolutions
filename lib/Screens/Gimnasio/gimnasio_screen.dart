@@ -2,23 +2,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
 import 'package:fitsolutions/Components/CommonComponents/screen_title.dart';
 import 'package:fitsolutions/Components/GimnasioComponents/my_gym.dart';
-import 'package:fitsolutions/Components/RegisterComponents/GimnasioForm.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/components/RegisterComponents/gimnasio_form.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class GimnasioScreen extends StatefulWidget {
-  const GimnasioScreen({Key? key}) : super(key: key);
+  const GimnasioScreen({super.key});
 
   @override
-  _GimnasioScreenState createState() => _GimnasioScreenState();
+  State<GimnasioScreen> createState() => _GimnasioScreenState();
 }
 
 class _GimnasioScreenState extends State<GimnasioScreen> {
   late Map<String, dynamic>? gymData;
   bool showGymForm = false;
-
+  Logger log = Logger();
+  
   Future<Map<String, dynamic>?> getGym() async {
     final userProvider = context.read<UserData>();
     try {
@@ -28,13 +29,13 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         final docSnapshot = querySnapshot.docs.first;
-        final data = docSnapshot.data() as Map<String, dynamic>;
+        final data = docSnapshot.data();
         return data;
       } else {
         return null;
       }
     } catch (e) {
-      print("Error getting gym data: $e");
+      log.d("Error getting gym data: $e");
       return null;
     }
   }

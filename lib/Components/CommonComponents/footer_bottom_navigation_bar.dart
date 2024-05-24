@@ -1,14 +1,13 @@
-import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/Screens/Ejercicios/ejercicios_screen.dart';
 import 'package:fitsolutions/Screens/Gimnasio/gimnasio_screen.dart';
 import 'package:fitsolutions/Screens/Home/home_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Profile/perfil_screen.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class FooterBottomNavigationBar extends StatefulWidget {
@@ -33,7 +32,6 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
   final prefs = SharedPrefsHelper();
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserData>();
 
     return Consumer<UserData>(
         builder: (context, value, child) => CupertinoTabBar(

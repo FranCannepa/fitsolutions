@@ -1,21 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
-import 'package:fitsolutions/Utilities/NavigatorService.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
-import 'package:flutter/foundation.dart';
+import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  Logger log = Logger();
   Future<Map<String, dynamic>?> _checkUserExistence(User user) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
@@ -26,14 +27,14 @@ class _LoginScreenState extends State<LoginScreen> {
         final doc = querySnapshot.docs.first;
         final docId = querySnapshot.docs.first.id;
         final Map<String, dynamic> userData =
-            doc.data() as Map<String, dynamic>;
+            doc.data();
         userData['docId'] = docId;
         return userData;
       } else {
         return null;
       }
     } catch (e) {
-      print("Error checking user existence: $e");
+      log.d("Error checking user existence: $e");
       return null;
     }
   }
@@ -41,6 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleGoogleSignIn() async {
     final userProvider = context.read<UserData>();
     final prefs = SharedPrefsHelper();
+    Logger log = Logger();
     try {
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
@@ -60,8 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     } on FirebaseAuthException catch (err) {
-      print(err.code);
-      print(err.message);
+      log.d(err.code);
+      log.d(err.message);
     }
   }
 
@@ -75,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                   gradient: LinearGradient(
@@ -93,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 20.0),
+              const SizedBox(height: 20.0),
               SignInButton(
                 Buttons.google,
                 text: "Continuar con Google",

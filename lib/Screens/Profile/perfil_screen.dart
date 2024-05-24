@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:fitsolutions/Screens/Profile/editar_perfil_screen.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class PerfilScreen extends StatefulWidget {
-  const PerfilScreen({Key? key}) : super(key: key);
+  const PerfilScreen({super.key});
 
   @override
   State<PerfilScreen> createState() => _PerfilScreenState();
@@ -15,10 +15,11 @@ class PerfilScreen extends StatefulWidget {
 
 class _PerfilScreenState extends State<PerfilScreen> {
   late Map<String, dynamic> userData;
+  Logger log = Logger();
   Future<Map<String, dynamic>?> getUserData() async {
     final userProvider = context.read<UserData>();
     try {
-      final docRef = await FirebaseFirestore.instance
+      final docRef = FirebaseFirestore.instance
           .collection('usuario')
           .doc(userProvider.userId);
       final snapshot = await docRef.get();
@@ -29,7 +30,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
         return null;
       }
     } catch (e) {
-      print("Error getting user: $e");
+      log.d("Error getting user: $e");
       return null;
     }
   }
@@ -56,7 +57,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                           : null,
                       child: userData['profilePic'] == null ||
                               userData['profilePic'].isEmpty
-                          ? Icon(Icons.person)
+                          ? const Icon(Icons.person)
                           : null,
                     ),
                     const SizedBox(height: 24.0),

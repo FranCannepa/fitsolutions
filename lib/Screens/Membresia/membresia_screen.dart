@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
-import 'package:fitsolutions/Components/MembresiaComponents/MembresiaForm.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/components/MembresiaComponents/membresia_form.dart';
+
+//import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 
 class MembresiaScreen extends StatefulWidget {
   const MembresiaScreen({super.key});
@@ -20,7 +21,7 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
   bool showMembresiaForm = false;
 
   Future<Map<String, dynamic>?> getMembershipInfo() async {
-    final userProvider = context.read<UserData>();
+    //final userProvider = context.read<UserData>();
     final prefs = SharedPrefsHelper();
     final gymId = await prefs.getCurrentGymId();
     try {
@@ -36,7 +37,7 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
         return null;
       }
     } catch (e) {
-      print("Error getting user: $e");
+      //print("Error getting user: $e");
       return null;
     }
   }
@@ -124,14 +125,14 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
               Center(
                 child: Column(
                   children: [
-                    Text('No existe membresia para su gimnasio'),
+                    const Text('No existe membresia para su gimnasio'),
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
                           showMembresiaForm = true;
                         });
                       },
-                      child: Text("Crear Membresia"),
+                      child: const Text("Crear Membresia"),
                     ),
                   ],
                 ),

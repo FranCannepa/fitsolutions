@@ -56,7 +56,7 @@ void _handleGoogleSignIn(BuildContext context) async {
     } else {
       if (user.email != null) {
         authProvider.firstTimeGoogle();
-        userProvider.firstLogin(user.email as String);
+        userProvider.firstLogin(user);
       }
     }
   } on FirebaseAuthException catch (err) {

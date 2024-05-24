@@ -1,13 +1,12 @@
 import 'package:fitsolutions/Modelo/Gimnasio.dart';
-import 'package:fitsolutions/Modelo/UsuarioParticular.dart';
+import 'package:fitsolutions/modelo/usuario_particular.dart';
 import 'package:flutter/material.dart';
 
 class CalendarioBoard extends StatefulWidget {
   final Gimnasio? gimnasio;
   final UsuarioParticular? usuarioParticular;
 
-  const CalendarioBoard({
-    Key? key,
+  const CalendarioBoard({super.key, 
     this.gimnasio,
     this.usuarioParticular,
   });

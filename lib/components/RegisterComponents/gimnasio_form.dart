@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/CommonComponents/input_roundFields.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class GimnasioForm extends StatefulWidget {
   final Function refresh;
   const GimnasioForm({super.key, required this.refresh});
   @override
-  _GimnasioFormState createState() => _GimnasioFormState();
+  State<GimnasioForm> createState() => _GimnasioFormState();
 }
 
 class _GimnasioFormState extends State<GimnasioForm> {
@@ -32,6 +33,7 @@ class _GimnasioFormState extends State<GimnasioForm> {
   Future<void> registerGym(Map<String, dynamic> gymData) async {
     final userProvider = context.read<UserData>();
     final prefs = SharedPrefsHelper();
+    Logger log = Logger();
     try {
       gymData['propietarioId'] = await prefs.getDocId();
       final docRef =
@@ -39,8 +41,8 @@ class _GimnasioFormState extends State<GimnasioForm> {
       userProvider.updateCurrentGym(docRef.id);
       widget.refresh();
     } on FirebaseException catch (e) {
-      print(e.code);
-      print(e.message);
+      log.d(e.code);
+      log.d(e.message);
     }
   }
 
@@ -75,7 +77,9 @@ class _GimnasioFormState extends State<GimnasioForm> {
                 labelText: 'Horario Apertura (24hrs)',
                 controller: _openingTimeController,
                 keyboardType: TextInputType.number,
-                validator: (value) {},
+                validator: (value) {
+                  return null;
+                },
               ),
             ),
             const SizedBox(width: 10),
@@ -84,7 +88,9 @@ class _GimnasioFormState extends State<GimnasioForm> {
                 labelText: 'Horario Cierre (24hrs)',
                 controller: _closingTimeController,
                 keyboardType: TextInputType.number,
-                validator: (value) {},
+                validator: (value) {
+                  return null;
+                },
               ),
             ),
           ],

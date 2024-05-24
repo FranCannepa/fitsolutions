@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/CommonComponents/input_roundFields.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class MembresiaForm extends StatefulWidget {
@@ -11,7 +11,7 @@ class MembresiaForm extends StatefulWidget {
   const MembresiaForm({super.key, required this.refresh});
 
   @override
-  _MembresiaFormState createState() => _MembresiaFormState();
+  State<MembresiaForm> createState() => _MembresiaFormState();
 }
 
 class _MembresiaFormState extends State<MembresiaForm> {
@@ -32,6 +32,7 @@ class _MembresiaFormState extends State<MembresiaForm> {
   Future<void> registrarMembresia() async {
     final userProvider = context.read<UserData>();
     final gymId = userProvider.gimnasioId;
+    Logger log = Logger();
     membresiaData['gimnasioId'] = gymId;
     try {
       final docRef = await FirebaseFirestore.instance
@@ -40,8 +41,8 @@ class _MembresiaFormState extends State<MembresiaForm> {
       userProvider.updateCurrentGym(docRef.id);
       widget.refresh();
     } on FirebaseException catch (e) {
-      print(e.code);
-      print(e.message);
+      log.d(e.code);
+      log.d(e.message);
     }
   }
 
@@ -88,6 +89,5 @@ class _MembresiaFormState extends State<MembresiaForm> {
         )
       ],
     );
-    ;
   }
 }

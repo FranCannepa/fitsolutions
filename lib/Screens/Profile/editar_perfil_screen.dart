@@ -1,24 +1,24 @@
-import 'package:fitsolutions/Components/CommonComponents/input_roundFields.dart';
 import 'package:fitsolutions/Components/CommonComponents/screen_title.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
-import 'package:fitsolutions/Modelo/UserData.dart'; // Assuming this defines UserData class
+import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EditarPerfilScreen extends StatefulWidget {
-  late Map<String, dynamic> newUserData;
+  //late Map<String, dynamic> newUserData;
 
-  EditarPerfilScreen({super.key});
+  const EditarPerfilScreen({super.key});
 
   @override
-  _EditarPerfilScreenState createState() => _EditarPerfilScreenState();
+  State<EditarPerfilScreen> createState() => _EditarPerfilScreenState();
 }
 
 class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _weightController = TextEditingController();
-  final _heigthController = TextEditingController();
+  //final _heigthController = TextEditingController();
   final _birthdayController = TextEditingController();
   late Map<String, dynamic> userData = {};
   Future<void> submitPropietarioInfo() async {}

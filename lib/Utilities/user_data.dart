@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class UserData extends ChangeNotifier {
-  String nombre_completo = '';
+  String nombreCompleto = '';
   String tipo = '';
   String docId = '';
   String fechaNacimiento = '';
@@ -14,7 +14,7 @@ class UserData extends ChangeNotifier {
   late String calendarioId = '';
 
   void updateNombreCompleto(String newNombreCompleto) {
-    nombre_completo = newNombreCompleto;
+    nombreCompleto = newNombreCompleto;
     notifyListeners();
   }
 
@@ -51,7 +51,7 @@ class UserData extends ChangeNotifier {
   }
 
   void dataFormBasic(Map<String, dynamic>? userData) {
-    nombre_completo = userData?['nombre_completo'];
+    nombreCompleto = userData?['nombre_completo'];
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
     tipo = 'Basico';
     altura = userData?['altura'] ?? 0;
@@ -69,7 +69,7 @@ class UserData extends ChangeNotifier {
 
   void updateUserData(Map<String, dynamic>? userData) {
     docId = userData?['docId'] ?? '';
-    nombre_completo = userData?['nombre_completo'] ?? '';
+    nombreCompleto = userData?['nombre_completo'] ?? '';
     tipo = userData?['tipo'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
     altura = userData?['altura'] ?? 0;
@@ -77,7 +77,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 }
-
+/*
 class userDataPropietario extends UserData {
   //docId
   //nombre_completo
@@ -87,3 +87,4 @@ class userDataPropietario extends UserData {
 }
 
 class userDataParticular extends UserData {}
+*/

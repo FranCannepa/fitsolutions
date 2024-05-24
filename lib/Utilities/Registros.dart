@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
-import 'package:fitsolutions/Utilities/NavigatorService.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:logger/logger.dart';
 
 class Registro {
+  Logger log = Logger();
+  
   Future<void> registrarGimnasio(Map<String, dynamic> gymData) async {
-    print(gymData);
+    log.d(gymData);
     final prefs = SharedPrefsHelper();
     try {
       final docRef =
@@ -13,8 +14,8 @@ class Registro {
       prefs.setLoggedIn(true);
       prefs.setDocId(docRef.id);
     } on FirebaseException catch (e) {
-      print(e.code);
-      print(e.message);
+      log.d(e.code);
+      log.d(e.message);
     }
   }
 }

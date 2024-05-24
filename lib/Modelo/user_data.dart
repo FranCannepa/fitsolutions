@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class UserData extends ChangeNotifier {
   String nombreCompleto = '';
@@ -20,6 +21,7 @@ class UserData extends ChangeNotifier {
 
   void initializeData() async {
     final prefs = SharedPrefsHelper();
+    Logger log = Logger();
     String? userEmail = await prefs.getEmail();
     if (userEmail != null) {
       final userData = await getUserData(userEmail);
@@ -32,7 +34,7 @@ class UserData extends ChangeNotifier {
         dataFormParticular(userData);
       }
     } else {
-      print("EMPTY EMAIL!");
+      log.d("EMPTY EMAIL!");
     }
   }
 
@@ -109,7 +111,7 @@ class UserData extends ChangeNotifier {
     } else {
       userId = await prefs.getDocId() as String;
     }
-    nombre_completo = userData?['nombreCompleto'] ?? '';
+    nombreCompleto = userData?['nombreCompleto'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
     gimnasioId = userData?['gimnasioId'] ?? '';
     tipo = "Basico";
@@ -120,14 +122,14 @@ class UserData extends ChangeNotifier {
 
   void dataFormPropietario(Map<String, dynamic>? userData) {
     userId = userData?['docId'] ?? prefs.getDocId();
-    nombre_completo = userData?['nombreCompleto'];
+    nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();
   }
 
   void dataFormParticular(Map<String, dynamic>? userData) {
     userId = userData?['docId'] ?? prefs.getDocId();
-    nombre_completo = userData?['nombreCompleto'];
+    nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();
   }
@@ -142,7 +144,7 @@ class UserData extends ChangeNotifier {
 
   void updateUserData(Map<String, dynamic>? userData) {
     userId = userData?['docId'] ?? '';
-    nombre_completo = userData?['nombre_completo'] ?? '';
+    nombreCompleto = userData?['nombre_completo'] ?? '';
     tipo = userData?['tipo'] ?? '';
     notifyListeners();
   }

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/RegisterComponents/BasicoForm.dart';
-import 'package:fitsolutions/Components/RegisterComponents/EntrenadorForm.dart';
-import 'package:fitsolutions/Components/RegisterComponents/PropietarioForm.dart';
-import 'package:fitsolutions/Modelo/UserData.dart';
-import 'package:fitsolutions/Utilities/NavigatorService.dart';
-import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/components/RegisterComponents/basico_form.dart';
+import 'package:fitsolutions/components/RegisterComponents/entrenador_form.dart';
+import 'package:fitsolutions/components/RegisterComponents/propietario_form.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -21,18 +21,24 @@ class _RegistroScreenState extends State<RegistroScreen> {
   bool showForm = false;
 
   Future<void> registerUser(Map<String, dynamic> userData) async {
-    Logger logger = Logger();
     final userProvider = context.read<UserData>();
     final prefs = SharedPrefsHelper();
+    Logger log = Logger();
     try {
       userData['email'] = userProvider.email;
+      userData['profilePic'] = userProvider.photoUrl;
+      userProvider.updateUserData(userData);
+      final docRef =
+          await FirebaseFirestore.instance.collection('usuario').add(userData);
+      prefs.setEmail(userProvider.email);
       prefs.setLoggedIn(true);
       prefs.setDocId(docRef.id);
       NavigationService.instance.pushNamed("/home");
     } on FirebaseException catch (e) {
-      logger.d(e.code);
-      logger.d(e.message);
+      log.d(e.code);
+      log.d(e.message);
     }
+  }
 
   void handleOptionSelected(String option) {
     setState(() {
