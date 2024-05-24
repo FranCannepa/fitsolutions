@@ -9,10 +9,10 @@ import 'package:intl/intl.dart';
 //import 'package:provider/provider.dart';
 
 class MembresiaScreen extends StatefulWidget {
-  const MembresiaScreen({super.key});
+  const MembresiaScreen({Key? key}) : super(key: key);
 
   @override
-  State<MembresiaScreen> createState() => _MembresiaScreenState();
+  _MembresiaScreenState createState() => _MembresiaScreenState();
 }
 
 class _MembresiaScreenState extends State<MembresiaScreen> {

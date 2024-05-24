@@ -75,7 +75,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EditarPerfilScreen()),
+                              builder: (context) => const EditarPerfilScreen()),
                         );
                       },
                       child: const Text('Editar Perfil'),

@@ -14,7 +14,7 @@ class FooterBottomNavigationBar extends StatefulWidget {
   const FooterBottomNavigationBar({super.key});
 
   @override
-  State<FooterBottomNavigationBar> createState() =>
+  _FooterBottomNavigationBarState createState() =>
       _FooterBottomNavigationBarState();
 }
 

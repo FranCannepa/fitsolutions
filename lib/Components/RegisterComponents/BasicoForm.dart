@@ -1,4 +1,4 @@
-import 'package:fitsolutions/Components/CommonComponents/input_round_fields.dart';
+import 'package:fitsolutions/Components/CommonComponents/input_roundFields.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +8,7 @@ class BasicoForm extends StatefulWidget {
   const BasicoForm({super.key, required this.registerFunction});
 
   @override
-  State<BasicoForm> createState() => _BasicoFormState();
+  _BasicoFormState createState() => _BasicoFormState();
 }
 
 class _BasicoFormState extends State<BasicoForm> {
@@ -107,7 +107,7 @@ class _BasicoFormState extends State<BasicoForm> {
           SubmitButton(
               text: "Ingresar",
               onPressed: () {
-                final userData = collectUserData();
+                final userData = _collectUserData();
                 widget.registerFunction(userData);
               })
         ]));

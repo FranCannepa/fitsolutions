@@ -4,12 +4,11 @@ import 'package:fitsolutions/Utilities/navigator_service.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -27,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final doc = querySnapshot.docs.first;
         final docId = querySnapshot.docs.first.id;
         final Map<String, dynamic> userData =
-            doc.data();
+            doc.data() as Map<String, dynamic>;
         userData['docId'] = docId;
         return userData;
       } else {
@@ -77,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                   gradient: LinearGradient(
@@ -95,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20.0),
+              SizedBox(height: 20.0),
               SignInButton(
                 Buttons.google,
                 text: "Continuar con Google",

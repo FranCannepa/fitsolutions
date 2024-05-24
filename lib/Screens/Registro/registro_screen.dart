@@ -6,14 +6,13 @@ import 'package:fitsolutions/components/RegisterComponents/entrenador_form.dart'
 import 'package:fitsolutions/components/RegisterComponents/propietario_form.dart';
 import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
 
   @override
-  State<RegistroScreen> createState() => _RegistroScreenState();
+  _RegistroScreenState createState() => _RegistroScreenState();
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
@@ -63,7 +62,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
       case 'Soy entrenador':
         return EntrenadorForm(registerFunction: registerUser);
       default:
-        return const SizedBox();
+        return SizedBox();
     }
   }
 
