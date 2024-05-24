@@ -29,16 +29,18 @@ class _BasicoFormState extends State<BasicoForm> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> collectUserData() {
+    Map<String, dynamic> _collectUserData() {
+      final pesoString = _weightController.text.replaceAll(",", ".");
       final nombreCompleto = _fullNameController.text;
       final fechaNacimiento = _dateOfBirthController.text;
-      final peso = double.tryParse(_weightController.text);
-      final altura = double.tryParse(_heightController.text);
+      final peso = double.tryParse(pesoString);
+      final altura = int.tryParse(_heightController.text);
       return {
-        'nombre_completo': nombreCompleto,
+        'nombreCompleto': nombreCompleto,
         'fechaNacimiento': fechaNacimiento,
         'peso': peso,
-        'altura': altura
+        'altura': altura,
+        'tipo': "Basico"
       };
     }
 

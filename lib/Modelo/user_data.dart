@@ -1,13 +1,71 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitsolutions/Utilities/SharedPrefsHelper.dart';
 import 'package:flutter/material.dart';
 
 class UserData extends ChangeNotifier {
   String nombreCompleto = '';
   String tipo = '';
-  String docId = '';
+  String userId = '';
   String fechaNacimiento = '';
-  double altura = 0;
+  int altura = 0;
   double peso = 0;
   String email = '';
+  String photoUrl = '';
+  late String gimnasioId = '';
+  late String calendarioId = '';
+  late String membresiaId = '';
+
+  final prefs = SharedPrefsHelper();
+
+  void initializeData() async {
+    final prefs = SharedPrefsHelper();
+    String? userEmail = await prefs.getEmail();
+    if (userEmail != null) {
+      final userData = await getUserData(userEmail);
+      final userTipo = userData?['tipo'];
+      if (userTipo == "Basico") {
+        dataFormBasic(userData);
+      } else if (userTipo == "Propietario") {
+        dataFormPropietario(userData);
+      } else {
+        dataFormParticular(userData);
+      }
+    } else {
+      print("EMPTY EMAIL!");
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserData(String email) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('usuario')
+        .where('email', isEqualTo: email)
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final docSnapshot = querySnapshot.docs.first;
+      final data = docSnapshot.data();
+      return data;
+    } else {
+      return {};
+    }
+  }
+
+  bool esBasico() {
+    return tipo == "Basico";
+  }
+
+  bool esPropietario() {
+    return tipo == "Propietario";
+  }
+
+  bool esParticular() {
+    return tipo == "Particular";
+  }
+
+  void updateCurrentGym(String gymId) {
+    gimnasioId = gymId;
+    notifyListeners();
+  }
 
   void updateNombreCompleto(String newNombreCompleto) {
     nombreCompleto = newNombreCompleto;
@@ -20,7 +78,7 @@ class UserData extends ChangeNotifier {
   }
 
   void updateDocId(String newDocId) {
-    docId = newDocId;
+    userId = newDocId;
     notifyListeners();
   }
 
@@ -29,7 +87,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateAltura(double newAltura) {
+  void updateAltura(int newAltura) {
     altura = newAltura;
     notifyListeners();
   }
@@ -44,29 +102,48 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormBasic(Map<String, dynamic>? userData) {
-    nombreCompleto = userData?['nombre_completo'];
+  void dataFormBasic(Map<String, dynamic>? userData) async {
+    String? docId = userData?['docId'];
+    if (docId != null) {
+      userId = docId;
+    } else {
+      userId = await prefs.getDocId() as String;
+    }
+    nombre_completo = userData?['nombreCompleto'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    tipo = 'Basico';
-    altura = userData?['altura'] ?? '';
-    peso = userData?['peso'] ?? '';
+    gimnasioId = userData?['gimnasioId'] ?? '';
+    tipo = "Basico";
+    altura = userData?['altura'] ?? 0;
+    peso = userData?['peso'] ?? 0;
     notifyListeners();
   }
 
-  void firstLogin(String email) {
-    if (email.isNotEmpty) {
-      this.email = email;
+  void dataFormPropietario(Map<String, dynamic>? userData) {
+    userId = userData?['docId'] ?? prefs.getDocId();
+    nombre_completo = userData?['nombreCompleto'];
+    tipo = 'Propietario';
+    notifyListeners();
+  }
+
+  void dataFormParticular(Map<String, dynamic>? userData) {
+    userId = userData?['docId'] ?? prefs.getDocId();
+    nombre_completo = userData?['nombreCompleto'];
+    tipo = 'Propietario';
+    notifyListeners();
+  }
+
+  void firstLogin(User user) {
+    if (user.email!.isNotEmpty) {
+      email = user.email as String;
+      photoUrl = user.photoURL as String;
     }
     notifyListeners();
   }
 
   void updateUserData(Map<String, dynamic>? userData) {
-    docId = userData?['docId'] ?? '';
-    nombreCompleto = userData?['nombre_completo'] ?? '';
+    userId = userData?['docId'] ?? '';
+    nombre_completo = userData?['nombre_completo'] ?? '';
     tipo = userData?['tipo'] ?? '';
-    fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    altura = userData?['altura'];
-    peso = userData?['peso'];
     notifyListeners();
   }
 }

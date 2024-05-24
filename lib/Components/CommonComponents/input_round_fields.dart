@@ -17,8 +17,7 @@ class RoundedInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-          vertical: 15.0, horizontal: 20.0), // Adjust horizontal padding
+      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
@@ -33,7 +32,6 @@ class RoundedInputField extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
             borderSide: const BorderSide(color: Colors.orange, width: 2.0),
           ),
-
         ),
         validator: validator,
       ),
