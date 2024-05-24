@@ -1,7 +1,9 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 class UserData extends ChangeNotifier {
-  String nombreCompleto = '';
+  String nombre_completo = '';
   String tipo = '';
   String docId = '';
   String fechaNacimiento = '';
@@ -10,7 +12,7 @@ class UserData extends ChangeNotifier {
   String email = '';
 
   void updateNombreCompleto(String newNombreCompleto) {
-    nombreCompleto = newNombreCompleto;
+    nombre_completo = newNombreCompleto;
     notifyListeners();
   }
 
@@ -45,7 +47,7 @@ class UserData extends ChangeNotifier {
   }
 
   void dataFormBasic(Map<String, dynamic>? userData) {
-    nombreCompleto = userData?['nombre_completo'];
+    nombre_completo = userData?['nombre_completo'];
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
     tipo = 'Basico';
     altura = userData?['altura'] ?? '';
@@ -62,7 +64,7 @@ class UserData extends ChangeNotifier {
 
   void updateUserData(Map<String, dynamic>? userData) {
     docId = userData?['docId'] ?? '';
-    nombreCompleto = userData?['nombre_completo'] ?? '';
+    nombre_completo = userData?['nombre_completo'] ?? '';
     tipo = userData?['tipo'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
     altura = userData?['altura'];

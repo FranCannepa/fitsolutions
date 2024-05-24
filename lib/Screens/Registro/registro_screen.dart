@@ -1,18 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/RegisterComponents/basico_form.dart';
-import 'package:fitsolutions/Components/RegisterComponents/entrenador_form.dart';
-import 'package:fitsolutions/Components/RegisterComponents/propietario_form.dart';
-import 'package:fitsolutions/Modelo/user_data.dart';
-import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/Components/RegisterComponents/BasicoForm.dart';
+import 'package:fitsolutions/Components/RegisterComponents/EntrenadorForm.dart';
+import 'package:fitsolutions/Components/RegisterComponents/PropietarioForm.dart';
+import 'package:fitsolutions/Modelo/UserData.dart';
+import 'package:fitsolutions/Utilities/NavigatorService.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
 
   @override
-  State<RegistroScreen> createState() => _RegistroScreenState();
+  _RegistroScreenState createState() => _RegistroScreenState();
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
@@ -20,18 +19,17 @@ class _RegistroScreenState extends State<RegistroScreen> {
   bool showForm = false;
 
   Future<void> registerUser(Map<String, dynamic> userData) async {
-    Logger logger = Logger();
     final userProvider = context.read<UserData>();
-    logger.d(userProvider.email);
+    print(userProvider.email);
     try {
       final firestore = FirebaseFirestore.instance;
       userData['email'] = userProvider.email;
-      await firestore.collection('usuario').add(userData);
+      final docRef = await firestore.collection('usuario').add(userData);
       userProvider.updateUserData(userData);
       NavigationService.instance.pushNamed("/home");
     } on FirebaseException catch (e) {
-      logger.d(e.code);
-      logger.d(e.message);
+      print(e.code);
+      print(e.message);
     }
   }
 
@@ -54,11 +52,11 @@ class _RegistroScreenState extends State<RegistroScreen> {
       case 'Quiero entrenar':
         return BasicoForm(registerFunction: registerUser);
       case 'Soy propietario':
-        return const PropietarioForm();
+        return PropietarioForm();
       case 'Soy entrenador':
-        return const EntrenadorForm();
+        return EntrenadorForm();
       default:
-        return const SizedBox();
+        return SizedBox();
     }
   }
 

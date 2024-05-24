@@ -3,7 +3,7 @@ import 'package:fitsolutions/Components/EjerciciosComponents/ejercicios_card.dar
 import 'package:flutter/material.dart';
 
 class EjerciciosScreen extends StatelessWidget {
-  const EjerciciosScreen({super.key});
+  const EjerciciosScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

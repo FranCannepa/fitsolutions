@@ -1,20 +1,24 @@
 import 'package:fitsolutions/Modelo/Calendario.dart';
-import 'package:fitsolutions/Modelo/dieta.dart';
-import 'package:fitsolutions/Modelo/ejercicio.dart';
-import 'package:fitsolutions/Modelo/usuario.dart';
+import 'package:fitsolutions/Modelo/Dieta.dart';
+import 'package:fitsolutions/Modelo/Ejercicio.dart';
+import 'package:fitsolutions/Modelo/Usuario.dart';
 
 class UsuarioBasico extends Usuario {
   List<Dieta> dietas;
   List<Ejercicio> ejercicios;
 
   UsuarioBasico({
-    required super.id,
-    required super.nombre,
-    required super.apellido,
-    required super.email,
+    required String id,
+    required String nombre,
+    required String apellido,
+    required String email,
     required this.dietas,
     required this.ejercicios,
   }) : super(
+      id: id,
+      nombre: nombre,
+      apellido: apellido,
+      email: email,
       tipoUsuario: "Basico"
   );
 

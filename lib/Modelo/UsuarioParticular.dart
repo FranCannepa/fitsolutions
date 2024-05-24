@@ -1,19 +1,24 @@
+import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Modelo/Calendario.dart';
-import 'package:fitsolutions/Modelo/usuario.dart';
-import 'package:fitsolutions/Modelo/usuario_basico.dart';
+import 'package:fitsolutions/Modelo/Usuario.dart';
+import 'package:fitsolutions/Modelo/UsuarioBasico.dart';
 
 class UsuarioParticular extends Usuario {
   List<UsuarioBasico> usuariosBasicos;
   Calendario calendario;
 
   UsuarioParticular({
-    required super.id,
-    required super.nombre,
-    required super.apellido,
-    required super.email,
+    required String id,
+    required String nombre,
+    required String apellido,
+    required String email,
     required this.usuariosBasicos,
     required this.calendario,
   }) : super(
+            id: id,
+            nombre: nombre,
+            apellido: apellido,
+            email: email,
             tipoUsuario: "Particular");
 
   @override

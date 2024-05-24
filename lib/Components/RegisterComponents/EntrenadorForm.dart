@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class EntrenadorForm extends StatefulWidget {
-  const EntrenadorForm({ super.key });
+  const EntrenadorForm({ Key? key }) : super(key: key);
 
   @override
-  State<EntrenadorForm> createState() => _EntrenadorFormState();
+  _EntrenadorFormState createState() => _EntrenadorFormState();
 }
 
 class _EntrenadorFormState extends State<EntrenadorForm> {

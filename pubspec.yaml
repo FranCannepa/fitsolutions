@@ -48,9 +48,12 @@ dependencies:
   cloud_firestore: ^4.17.3
   provider: ^6.1.2
   flutter_launcher_icons: "^0.13.1"
+<<<<<<< HEAD
   logger: ^2.3.0
   mockito: ^5.4.4
   google_sign_in: ^6.2.1
+=======
+>>>>>>> parent of 393f28a (Ajuste de nomeclatura Flutter)
 
 dev_dependencies:
   flutter_test:
@@ -62,8 +65,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+<<<<<<< HEAD
   test: ^1.25.2
   build_runner: ^2.4.10
+=======
+>>>>>>> parent of 393f28a (Ajuste de nomeclatura Flutter)
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

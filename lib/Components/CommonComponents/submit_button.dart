@@ -9,6 +9,7 @@ class SubmitButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      child: Text(text, style: const TextStyle(color: Colors.white)),
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -16,7 +17,6 @@ class SubmitButton extends StatelessWidget {
         backgroundColor: Colors.orange,
       ),
       onPressed: onPressed,
-      child: Text(text, style: const TextStyle(color: Colors.white)),
     );
   }
 }

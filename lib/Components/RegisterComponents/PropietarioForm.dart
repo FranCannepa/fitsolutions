@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class PropietarioForm extends StatefulWidget {
-  const PropietarioForm({super.key});
+  const PropietarioForm({Key? key}) : super(key: key);
 
   @override
-  State<PropietarioForm> createState() => _PropietarioFormState();
+  _PropietarioFormState createState() => _PropietarioFormState();
 }
 
 class _PropietarioFormState extends State<PropietarioForm> {

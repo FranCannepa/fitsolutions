@@ -2,11 +2,11 @@ import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigatio
 import 'package:flutter/material.dart';
 
 class PerfilScreen extends StatefulWidget {
-  const PerfilScreen({super.key, this.Usuario});
+  const PerfilScreen({Key? key, this.Usuario}) : super(key: key);
   final Usuario;
 
   @override
-  State<PerfilScreen> createState() => _PerfilScreenState();
+  _PerfilScreenState createState() => _PerfilScreenState();
 }
 
 class _PerfilScreenState extends State<PerfilScreen> {
