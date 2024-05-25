@@ -10,6 +10,8 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
+import '../../Utilities/utilities.dart';
+
 class LoginEmailScreen extends StatefulWidget {
   final UserProvider userProvider;
   const LoginEmailScreen({super.key, required this.userProvider});
@@ -18,51 +20,6 @@ class LoginEmailScreen extends StatefulWidget {
   State<LoginEmailScreen> createState() => _LoginEmailScreenState();
 }
 
-Future<Map<String, dynamic>?> _checkUserExistence(User user) async {
-  Logger logger = Logger();
-  try {
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('usuario')
-        .where('email', isEqualTo: user.email)
-        .get();
-    if (querySnapshot.docs.isNotEmpty) {
-      final doc = querySnapshot.docs.first;
-      final docId = querySnapshot.docs.first.id;
-      final Map<String, dynamic> userData = doc.data();
-      userData['docId'] = docId;
-      return userData;
-    } else {
-      return null;
-    }
-  } catch (e) {
-    logger.d("Error checking user existence: $e");
-    return null;
-  }
-}
-
-void _handleGoogleSignIn(BuildContext context) async {
-  Logger logger = Logger();
-  final userProvider = context.read<UserData>();
-  final authProvider = context.read<UserProvider>();
-  try {
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
-    final User user = userCredential.user!;
-    final Map<String, dynamic>? existingUserData =
-        await _checkUserExistence(user);
-    if (existingUserData != null) {
-      userProvider.updateUserData(existingUserData);
-    } else {
-      if (user.email != null) {
-        authProvider.firstTimeGoogle();
-        userProvider.firstLogin(user);
-      }
-    }
-  } on FirebaseAuthException catch (err) {
-    logger.d(err.code);
-    logger.d(err.message);
-  }
-}
 
 class _LoginEmailScreenState extends State<LoginEmailScreen> {
   final _formKeyLogin = GlobalKey<FormState>();
@@ -71,6 +28,57 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   late bool passwordVisibility;
   IconData iconPassword = CupertinoIcons.eye_fill;
   String? _errorMsg;
+  Logger log = Logger();
+
+  Future<Map<String, dynamic>?> _checkUserExistence(User user) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('usuario')
+          .where('email', isEqualTo: user.email)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final doc = querySnapshot.docs.first;
+        final docId = querySnapshot.docs.first.id;
+        final Map<String, dynamic> userData =
+            doc.data();
+        userData['docId'] = docId;
+        return userData;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log.d("Error checking user existence: $e");
+      return null;
+    }
+  }
+
+  void _handleGoogleSignIn() async {
+    final userProvider = context.read<UserData>();
+    final prefs = SharedPrefsHelper();
+    Logger log = Logger();
+    try {
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
+      final User user = userCredential.user!;
+      final Map<String, dynamic>? existingUserData =
+          await _checkUserExistence(user);
+      if (existingUserData != null) {
+        userProvider.updateUserData(existingUserData);
+        prefs.setEmail(existingUserData['email']);
+        prefs.setDocId(existingUserData['docId']);
+        prefs.setLoggedIn(true);
+        NavigationService.instance.pushNamed("/home");
+      } else {
+        if (user.email != null) {
+          userProvider.firstLogin(user);
+          NavigationService.instance.pushNamed("/registro");
+        }
+      }
+    } on FirebaseAuthException catch (err) {
+      log.d(err.code);
+      log.d(err.message);
+    }
+  }
 
   @override
   void initState() {
@@ -138,8 +146,11 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                 await widget.userProvider.signIn(
                   _emailController.text,
                   _passwordController.text,
+                  
                 );
+                NavigationService.instance.pushNamed("/home");
               } catch (e) {
+                log.d(e);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -184,7 +195,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
           ),
           SignInButton(Buttons.google, text: "Continuar con Google",
               onPressed: () {
-            _handleGoogleSignIn(context);
+            _handleGoogleSignIn();
           }),
         ],
       ),

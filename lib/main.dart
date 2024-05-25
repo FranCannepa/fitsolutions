@@ -6,6 +6,7 @@ import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/login_screen.dart';
+import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
 import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
@@ -49,14 +50,14 @@ class MyApp extends StatelessWidget {
               final userProvider = context.read<UserData>();
               userProvider.initializeData();
             }
-            return isLoggedIn ? const HomeScreen() : const LoginScreen();
+            return isLoggedIn ? const HomeScreen() : const WelcomePage();
           }
           return const Center(child: CircularProgressIndicator());
         },
       ),
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => const HomeScreen(),
-        '/login': (BuildContext context) => const LoginScreen(),
+        '/login': (BuildContext context) => const WelcomePage(),
         '/perfil': (BuildContext context) => const PerfilScreen(),
         '/dieta': (BuildContext context) => const DietasScreen(),
         '/membresia': (BuildContext context) => const MembresiaScreen(),

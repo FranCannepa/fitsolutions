@@ -137,7 +137,7 @@ class UserData extends ChangeNotifier {
   void firstLogin(User user) {
     if (user.email!.isNotEmpty) {
       email = user.email as String;
-      photoUrl = user.photoURL as String;
+      photoUrl = user.photoURL!= null ? user.photoURL as String : '';
     }
     notifyListeners();
   }

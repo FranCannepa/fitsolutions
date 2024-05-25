@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Utilities/utilities.dart';
+
 class UserProvider extends ChangeNotifier {
   Logger log = Logger();
   final FirebaseAuth _firebaseAuth;
@@ -30,17 +32,25 @@ class UserProvider extends ChangeNotifier {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+        final prefs = SharedPrefsHelper();
+        QuerySnapshot querySnapshot = await userCollection.where('email', isEqualTo: email).get();
+        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        final docData = documentSnapshot.data() as Map<String,dynamic>;
+        prefs.setEmail(docData['email']);
+        prefs.setDocId(documentSnapshot.id);
+        prefs.setLoggedIn(true);
     } on FirebaseAuthException catch (e) {
       log.e(e);
       rethrow;
     }
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<UserCredential> signUp(String email, String password) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
+      UserCredential userCred = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
       _firstLogin = true;
+      return userCred;
     } on FirebaseAuthException catch (e) {
       log.e(e);
       rethrow;

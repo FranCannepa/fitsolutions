@@ -19,10 +19,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Logger logger = Logger();
   Future<Map<String, dynamic>?> getUserData() async {
     final userProvider = context.read<UserData>();
+    final prefs = SharedPrefsHelper();
+
     try {
       final docRef = FirebaseFirestore.instance
           .collection('usuario')
-          .doc(userProvider.userId);
+          .doc(await prefs.getDocId());
       final snapshot = await docRef.get();
       if (snapshot.exists) {
         return snapshot.data() as Map<String, dynamic>;
@@ -56,12 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     UserProvider userProvider = context.read<UserProvider>();
                     await userProvider.signOut();
                     if(context.mounted){
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (BuildContext context) => const LoginScreen(),
-                        ),
-                      );
+                      NavigationService.instance.pushNamed("/login");
                     }
                   },
                   icon: const Icon(Icons.logout),
