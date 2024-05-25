@@ -16,14 +16,8 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final userData = UserData();
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    ChangeNotifierProvider<UserData>(
-      create: (context) => userData,
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -37,8 +31,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-      ChangeNotifierProvider(create: (_) => UserProvider()
-      ),
+        ChangeNotifierProvider<UserData>(create: (context) => UserData()),
+        ChangeNotifierProvider(create: (context) => UserProvider()),
       ],
       child:MaterialApp(
       navigatorKey: NavigationService.navigatorKey,
