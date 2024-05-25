@@ -1,6 +1,5 @@
 //import 'package:fitsolutions/Modelo/user_data.dart';
-import 'package:fitsolutions/components/CommonComponents/my_textfield.dart';
-import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
+import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

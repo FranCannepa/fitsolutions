@@ -1,7 +1,5 @@
-import 'package:fitsolutions/Components/CommonComponents/screen_title.dart';
-import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
-import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
+import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

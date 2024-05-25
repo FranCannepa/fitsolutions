@@ -1,5 +1,4 @@
-import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
-import 'package:fitsolutions/Components/EjerciciosComponents/ejercicios_card.dart'; // Assuming ejercicios_card.dart contains EjerciciosCards
+import 'package:fitsolutions/Components/components.dart'; // Assuming ejercicios_card.dart contains EjerciciosCards
 import 'package:flutter/material.dart';
 
 class EjerciciosScreen extends StatelessWidget {

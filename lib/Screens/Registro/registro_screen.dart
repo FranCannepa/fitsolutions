@@ -1,13 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Utilities/navigator_service.dart';
-import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
-import 'package:fitsolutions/components/RegisterComponents/basico_form.dart';
-import 'package:fitsolutions/components/RegisterComponents/entrenador_form.dart';
-import 'package:fitsolutions/components/RegisterComponents/propietario_form.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
+import 'package:fitsolutions/Utilities/utilities.dart';
+import 'package:fitsolutions/components/components.dart';
+import 'package:fitsolutions/modelo/models.dart';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});

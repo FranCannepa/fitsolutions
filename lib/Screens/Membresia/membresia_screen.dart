@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
-import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
-import 'package:fitsolutions/components/MembresiaComponents/membresia_form.dart';
+import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/Utilities/utilities.dart';
 
 //import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';

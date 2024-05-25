@@ -1,5 +1,5 @@
 import 'package:fitsolutions/Modelo/Calendario.dart';
-import 'package:fitsolutions/Modelo/UsuarioBasico.dart';
+import 'package:fitsolutions/modelo/usuario_basico.dart';
 
 class Gimnasio {
   String docId;
