@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
+import 'package:fitsolutions/Components/CommonComponents/screen_title.dart';
+import 'package:fitsolutions/Components/GimnasioComponents/my_gym.dart';
+import 'package:fitsolutions/Components/RegisterComponents/gimnasio_form.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
+import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +51,6 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const FooterBottomNavigationBar(),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -84,6 +87,9 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
             if (showGymForm) GimnasioForm(refresh: refreshScreen),
           ],
         ),
+      ),
+      bottomNavigationBar: const FooterBottomNavigationBar(
+        initialScreen: ScreenType.gym,
       ),
     );
   }

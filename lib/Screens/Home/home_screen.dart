@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Utilities/utilities.dart';
-import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
+import 'package:fitsolutions/Modelo/UserData.dart';
+import 'package:fitsolutions/Utilities/navigator_service.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
-import 'package:fitsolutions/screens/Login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -82,7 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            bottomNavigationBar: const FooterBottomNavigationBar(),
+            bottomNavigationBar: const FooterBottomNavigationBar(
+              initialScreen: ScreenType.home,
+            ),
           );
         } else if (snapshot.hasError) {
           log.d(snapshot.error);
@@ -94,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
         } else {
           return const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(), // Loading indicator
+              child: CircularProgressIndicator(),
             ),
           );
         }

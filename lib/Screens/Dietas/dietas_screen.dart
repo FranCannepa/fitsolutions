@@ -1,4 +1,5 @@
-import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:flutter/material.dart';
 
 class DietasScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _DietasScreenState extends State<DietasScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(),
+      bottomNavigationBar: const FooterBottomNavigationBar(initialScreen: ScreenType.dietas,),
     );
   }
 }

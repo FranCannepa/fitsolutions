@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitsolutions/Components/CommonComponents/screen_title.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
@@ -17,6 +18,7 @@ class GimnasioForm extends StatefulWidget {
 class _GimnasioFormState extends State<GimnasioForm> {
   final _gymNameController = TextEditingController();
   final _gymAddressController = TextEditingController();
+  final _gymTelephoneController = TextEditingController();
   final _openingTimeController = TextEditingController();
   final _closingTimeController = TextEditingController();
   late Map<String, dynamic> gymData = {};
@@ -50,6 +52,7 @@ class _GimnasioFormState extends State<GimnasioForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        const ScreenTitle(title: "Nuevo Gimnasio"),
         RoundedInputField(
           labelText: 'Nombre del Gimnasio',
           controller: _gymNameController,
@@ -70,11 +73,25 @@ class _GimnasioFormState extends State<GimnasioForm> {
             return null;
           },
         ),
+        RoundedInputField(
+          labelText: 'Telefono/Celular',
+          controller: _gymTelephoneController,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Ingrese la Telefono/Celular del gimnasio';
+            }
+            return null;
+          },
+        ),
+        const Text("Horario"),
+        const Divider(
+          height: 1.0,
+        ),
         Row(
           children: [
             Expanded(
               child: RoundedInputField(
-                labelText: 'Horario Apertura (24hrs)',
+                labelText: 'Apertura',
                 controller: _openingTimeController,
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -82,10 +99,9 @@ class _GimnasioFormState extends State<GimnasioForm> {
                 },
               ),
             ),
-            const SizedBox(width: 10),
             Expanded(
               child: RoundedInputField(
-                labelText: 'Horario Cierre (24hrs)',
+                labelText: 'Cierre',
                 controller: _closingTimeController,
                 keyboardType: TextInputType.number,
                 validator: (value) {

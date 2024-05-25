@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Utilities/utilities.dart';
-
-//import 'package:fitsolutions/modelo/user_data.dart';
+import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
+import 'package:fitsolutions/Components/CommonComponents/screen_title.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresia_form.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
+import 'package:fitsolutions/Modelo/UserData.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-//import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 
 class MembresiaScreen extends StatefulWidget {
   const MembresiaScreen({super.key});
@@ -16,13 +17,11 @@ class MembresiaScreen extends StatefulWidget {
 
 class _MembresiaScreenState extends State<MembresiaScreen> {
   late Map<String, dynamic>? membershipData;
-
   bool showMembresiaForm = false;
 
   Future<Map<String, dynamic>?> getMembershipInfo() async {
-    //final userProvider = context.read<UserData>();
-    final prefs = SharedPrefsHelper();
-    final gymId = await prefs.getCurrentGymId();
+    final userProvider = context.read<UserData>();
+    final gymId = userProvider.gimnasioId;
     try {
       final collectionRef = FirebaseFirestore.instance
           .collection('membresia')
@@ -36,7 +35,6 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
         return null;
       }
     } catch (e) {
-      //print("Error getting user: $e");
       return null;
     }
   }
@@ -51,14 +49,12 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Membresia'),
-      ),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const ScreenTitle(title: "Membresia"),
             FutureBuilder(
               future: getMembershipInfo(),
               builder: (context, snapshot) {
@@ -70,52 +66,12 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
                 }
                 if (snapshot.hasData) {
                   final membershipData = snapshot.data!;
-                  return Container(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Nombre:',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(membershipData['nombre']),
-                        const SizedBox(height: 10.0),
-                        const Text(
-                          'Gimnasio:',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(membershipData['gimnasio']),
-                        const SizedBox(height: 10.0),
-                        const Text(
-                          'Costo:',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text('${membershipData['costo']} \$'),
-                        const SizedBox(height: 10.0),
-                        const Text(
-                          'Vencimiento:',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          DateFormat('dd/MM/yyyy')
-                              .format(membershipData['vencimiento']),
-                        ),
-                      ],
-                    ),
-                  );
+                  final userProvider = context.read<UserData>();
+                  if (userProvider.esPropietario()) {
+                    return MembresiaInfo(membershipData: membershipData);
+                  } else if (userProvider.esBasico()) {
+                    return const Text("SOY BASICO");
+                  }
                 }
                 return Container();
               },
@@ -124,7 +80,10 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
               Center(
                 child: Column(
                   children: [
-                    const Text('No existe membresia para su gimnasio'),
+                    const Text(
+                      'No existe membresia para su gimnasio',
+                      style: TextStyle(fontSize: 20, color: Colors.grey),
+                    ),
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -140,7 +99,8 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(),
+      bottomNavigationBar:
+          const FooterBottomNavigationBar(initialScreen: ScreenType.membresia),
     );
   }
 }

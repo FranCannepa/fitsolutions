@@ -23,7 +23,7 @@ class RoundedInputField extends StatelessWidget {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: labelText,
-          contentPadding: const EdgeInsets.symmetric(vertical: 15.0),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 15.0),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: const BorderSide(color: Colors.orange, width: 2.0),

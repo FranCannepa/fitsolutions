@@ -1,4 +1,6 @@
-import 'package:fitsolutions/Components/components.dart'; // Assuming ejercicios_card.dart contains EjerciciosCards
+import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigation_bar.dart';
+import 'package:fitsolutions/Components/EjerciciosComponents/ejercicios_card.dart'; // Assuming ejercicios_card.dart contains EjerciciosCards
+import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:flutter/material.dart';
 
 class EjerciciosScreen extends StatelessWidget {
@@ -48,7 +50,7 @@ class EjerciciosScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(),
+      bottomNavigationBar: const FooterBottomNavigationBar(initialScreen: ScreenType.ejercicios,),
     );
   }
 }

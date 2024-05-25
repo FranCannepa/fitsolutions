@@ -49,10 +49,10 @@ class _LoginScreenState extends State<LoginScreen> {
       final Map<String, dynamic>? existingUserData =
           await _checkUserExistence(user);
       if (existingUserData != null) {
-        userProvider.updateUserData(existingUserData);
         prefs.setEmail(existingUserData['email']);
         prefs.setDocId(existingUserData['docId']);
         prefs.setLoggedIn(true);
+        userProvider.updateUserData(existingUserData);
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
