@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
-import 'package:fitsolutions/modelo/models.dart';
+//import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
-import 'package:fitsolutions/screens/Login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Logger logger = Logger();
   Future<Map<String, dynamic>?> getUserData() async {
-    final userProvider = context.read<UserData>();
+    //final userProvider = context.read<UserData>();
     final prefs = SharedPrefsHelper();
 
     try {

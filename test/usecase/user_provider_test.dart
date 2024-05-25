@@ -41,25 +41,6 @@ void main() {
   });
 
   group('UserProvider', () {
-    test('signIn succeeds', () async {
-      when(MockFirebaseAuth().signInWithEmailAndPassword(
-              email: 'test@test.com', password: 'password'))
-          .thenAnswer((_) async => mockUserCredential);
-
-      expect(userProvider.signIn('test@test.com', 'password'), completes);
-    });
-
-    test('signIn fails', () async {
-      when(mockFirebaseAuth.signInWithEmailAndPassword(
-              email: 'test@test.com', password: 'password'))
-          .thenThrow(FirebaseAuthException(code: 'user-not-found'));
-
-      expect(
-        userProvider.signIn('test@test.com', 'password'),
-        throwsA(isA<FirebaseAuthException>()),
-      );
-    });
-
     test('signUp succeeds', () async {
       when(mockFirebaseAuth.createUserWithEmailAndPassword(
               email: 'test@test.com', password: 'password'))
@@ -85,6 +66,24 @@ void main() {
         throwsA(isA<FirebaseAuthException>()),
       );
     });
+    test('signIn succeeds', () async {
+      when(MockFirebaseAuth().signInWithEmailAndPassword(
+              email: 'test@test.com', password: 'password'))
+          .thenAnswer((_) async => mockUserCredential);
+
+      expect(userProvider.signIn('test@test.com', 'password'), completes);
+    });
+
+    test('signIn fails', () async {
+      when(mockFirebaseAuth.signInWithEmailAndPassword(
+              email: 'test@test.com', password: 'password'))
+          .thenThrow(FirebaseAuthException(code: 'user-not-found'));
+
+      expect(
+        userProvider.signIn('test@test.com', 'password'),
+        throwsA(isA<FirebaseAuthException>()),
+      );
+    });
 
     test('resetPassword succeeds', () async {
       const email = 'test@test.com';
@@ -97,6 +96,18 @@ void main() {
       verify(mockFirebaseAuth.sendPasswordResetEmail(email: email)).called(1);
     });
 
-    
+    test('resetPassword throws an exception on failure', () async {
+      // Arrange
+      const email = 'test@example.com';
+      final exception = FirebaseAuthException(code: 'user-not-found');
+
+      when(mockFirebaseAuth.sendPasswordResetEmail(email: email))
+          .thenThrow(exception);
+
+      // Act & Assert
+      expect(() => userProvider.resetPassword(email),
+          throwsA(isA<FirebaseAuthException>()));
+      verify(mockFirebaseAuth.sendPasswordResetEmail(email: email)).called(1);
+    });
   });
 }

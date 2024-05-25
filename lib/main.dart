@@ -5,7 +5,6 @@ import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
-import 'package:fitsolutions/screens/Login/login_screen.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';

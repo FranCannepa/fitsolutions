@@ -193,26 +193,6 @@ class MockUserProvider extends _i1.Mock implements _i5.UserProvider {
       ) as _i6.Future<void>);
 
   @override
-  _i6.Future<void> registerCompleted() => (super.noSuchMethod(
-        Invocation.method(
-          #registerCompleted,
-          [],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
-  _i6.Future<void> firstTimeGoogle() => (super.noSuchMethod(
-        Invocation.method(
-          #firstTimeGoogle,
-          [],
-        ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-
-  @override
   void addListener(_i7.VoidCallback? listener) => super.noSuchMethod(
         Invocation.method(
           #addListener,
