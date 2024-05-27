@@ -53,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
               title: const Text('BIENVENIDO'),
               actions: [
                 IconButton(
+                  key: const Key('sign_out'),
                   onPressed: () async {
                     UserProvider userProvider = context.read<UserProvider>();
                     await userProvider.signOut();

@@ -1,4 +1,5 @@
 //import 'package:fitsolutions/Modelo/user_data.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/components/components.dart';
@@ -133,31 +134,33 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('Requerimientos'),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "⚈  1 Caracter mayuscula",
-                    style: TextStyle(
-                        color: containsUpperCase
-                            ? Colors.green
-                            : Theme.of(context).colorScheme.onSurface),
-                  ),
-                  Text(
-                    "⚈  1 Caracter minuscula",
-                    style: TextStyle(
-                        color: containsLowerCase
-                            ? Colors.green
-                            : Theme.of(context).colorScheme.onSurface),
-                  ),
-                  Text(
-                    "⚈  1 Numero",
-                    style: TextStyle(
-                        color: containsNumber
-                            ? Colors.green
-                            : Theme.of(context).colorScheme.onSurface),
-                  ),
-                ],
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "⚈  1 Caracter mayuscula",
+                      style: TextStyle(
+                          color: containsUpperCase
+                              ? Colors.green
+                              : Theme.of(context).colorScheme.onSurface),
+                    ),
+                    Text(
+                      "⚈  1 Caracter minuscula",
+                      style: TextStyle(
+                          color: containsLowerCase
+                              ? Colors.green
+                              : Theme.of(context).colorScheme.onSurface),
+                    ),
+                    Text(
+                      "⚈  1 Numero",
+                      style: TextStyle(
+                          color: containsNumber
+                              ? Colors.green
+                              : Theme.of(context).colorScheme.onSurface),
+                    ),
+                  ],
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

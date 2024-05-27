@@ -1,4 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/firebase_core_platform_interface.dart';
@@ -6,23 +7,20 @@ import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+
 import 'user_provider_test.mocks.dart';
 
-@GenerateNiceMocks([
-  MockSpec<UserProvider>(),
-  MockSpec<FirebaseAuth>(),
-  MockSpec<FirebaseFirestore>(),
-  MockSpec<User>(),
-  MockSpec<UserCredential>(),
-  MockSpec<DocumentSnapshot>(),
-  MockSpec<CollectionReference>(),
-])
+@GenerateMocks([FirebaseAuth,UserCredential,User])
+
 void main() {
-  late MockFirebaseAuth mockFirebaseAuth;
-  late MockFirebaseFirestore mockFirestore;
-  late MockUser mockUser;
-  late MockUserCredential mockUserCredential;
-  late UserProvider userProvider;
+  MockFirebaseAuth mockAuth = MockFirebaseAuth();
+  FakeFirebaseFirestore mockStore = FakeFirebaseFirestore();
+  StreamController<User?> authStateController = StreamController<User?>();
+
+  when(mockAuth.authStateChanges()).thenAnswer((_) => authStateController.stream);
+  UserProvider userProvider = UserProvider(firebaseAuth: mockAuth,firestore: mockStore);
 
   setUpAll(() async {
     //Initiliaze firebase for test
@@ -31,33 +29,51 @@ void main() {
     await Firebase.initializeApp();
   });
 
-  setUp(() {
-    mockFirebaseAuth = MockFirebaseAuth();
-    mockFirestore = MockFirebaseFirestore();
-    mockUser = MockUser();
-    mockUserCredential = MockUserCredential();
-
-    userProvider = UserProvider(firebaseAuth: mockFirebaseAuth);
-  });
-
   group('UserProvider', () {
-    test('signUp succeeds', () async {
-      when(mockFirebaseAuth.createUserWithEmailAndPassword(
+    test('INICIAR SESION SUCCESS', () async{
+            // Mock FirebaseAuth signInWithEmailAndPassword
+      await mockStore.collection('usuario').add({
+        'email': 'test@test.com',
+      });
+
+      final MockUserCredential mockUser = MockUserCredential();
+      when(mockAuth.signInWithEmailAndPassword(
+              email: 'test@test.com', password: anyNamed('password')))
+          .thenAnswer((_) async => mockUser);
+
+      SharedPreferences.setMockInitialValues({});
+      await userProvider.signIn('test@test.com', 'password123');
+
+      verify(mockAuth.signInWithEmailAndPassword(email: 'test@test.com', password: 'password123')).called(1);
+
+      expect(await userProvider.pref.getEmail(), 'test@test.com');
+    });
+
+    test('INICIAR SESION FAILURE EXCEPTION', () async{
+            await mockStore.collection('usuario').add({
+        'email': 'test@test.com',
+      });
+
+      when(mockAuth.signInWithEmailAndPassword(email: 'test@test.com', password: 'wrong_password')).thenThrow(FirebaseAuthException(code: 'error-password'));
+      SharedPreferences.setMockInitialValues({});
+
+      expect(() async => await userProvider.signIn('test@test.com', 'wrong_password'),throwsA(isA<FirebaseAuthException>()));
+    });
+
+    test('REGISTRO SUCCESS', () async {
+          final MockUserCredential mockCredential = MockUserCredential();
+          when(mockAuth.createUserWithEmailAndPassword(
               email: 'test@test.com', password: 'password'))
-          .thenAnswer((_) async => mockUserCredential);
-      when(mockUserCredential.user).thenReturn(mockUser);
-      when(mockUser.uid).thenReturn('123');
-      when(mockFirestore.collection('users'))
-          .thenReturn(MockCollectionReference());
+          .thenAnswer((_) async => mockCredential);
 
       await userProvider.signUp('test@test.com', 'password');
-      verify(mockFirebaseAuth.createUserWithEmailAndPassword(
+      verify(mockAuth.createUserWithEmailAndPassword(
               email: 'test@test.com', password: 'password'))
           .called(1);
     });
 
-    test('signUp fails', () async {
-      when(mockFirebaseAuth.createUserWithEmailAndPassword(
+    test('REGISTRO FAILURE', () async {
+      when(mockAuth.createUserWithEmailAndPassword(
               email: 'test@test.com', password: 'password'))
           .thenThrow(FirebaseAuthException(code: 'weak-password'));
 
@@ -66,48 +82,39 @@ void main() {
         throwsA(isA<FirebaseAuthException>()),
       );
     });
-    test('signIn succeeds', () async {
-      when(MockFirebaseAuth().signInWithEmailAndPassword(
-              email: 'test@test.com', password: 'password'))
-          .thenAnswer((_) async => mockUserCredential);
 
-      expect(userProvider.signIn('test@test.com', 'password'), completes);
+    test('RESET PASSWORD SUCCESS', () async {
+      const email = 'test@test.com';
+
+      when(mockAuth.sendPasswordResetEmail(email: email))
+          .thenAnswer((_) async {});
+      SharedPreferences.setMockInitialValues({});
+      await userProvider.resetPassword(email);
+
+      verify(mockAuth.sendPasswordResetEmail(email: email)).called(1);
     });
 
-    test('signIn fails', () async {
-      when(mockFirebaseAuth.signInWithEmailAndPassword(
-              email: 'test@test.com', password: 'password'))
-          .thenThrow(FirebaseAuthException(code: 'user-not-found'));
+    test('SIGN OUT SUCCESS', () async{
+      when(mockAuth.signOut()).thenAnswer((_) async {});
+            SharedPreferences.setMockInitialValues({});
+      await userProvider.signOut();
 
+      // Assert: Verify that signOut was called once
+      verify(mockAuth.signOut()).called(1);
+    });
+
+    test('SIGN OUT', () async {
+      // Arrange: Stub the signOut method to throw an exception
+      when(mockAuth.signOut())
+          .thenThrow(FirebaseAuthException(code: 'sign-out-failed'));
+      SharedPreferences.setMockInitialValues({});
+      // Act & Assert: Call the signOut method and expect an exception
       expect(
-        userProvider.signIn('test@test.com', 'password'),
+        userProvider.signOut(),
         throwsA(isA<FirebaseAuthException>()),
       );
     });
 
-    test('resetPassword succeeds', () async {
-      const email = 'test@test.com';
-
-      when(mockFirebaseAuth.sendPasswordResetEmail(email: email))
-          .thenAnswer((_) async {});
-
-      await userProvider.resetPassword(email);
-
-      verify(mockFirebaseAuth.sendPasswordResetEmail(email: email)).called(1);
-    });
-
-    test('resetPassword throws an exception on failure', () async {
-      // Arrange
-      const email = 'test@example.com';
-      final exception = FirebaseAuthException(code: 'user-not-found');
-
-      when(mockFirebaseAuth.sendPasswordResetEmail(email: email))
-          .thenThrow(exception);
-
-      // Act & Assert
-      expect(() => userProvider.resetPassword(email),
-          throwsA(isA<FirebaseAuthException>()));
-      verify(mockFirebaseAuth.sendPasswordResetEmail(email: email)).called(1);
-    });
+    
   });
 }

@@ -178,6 +178,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
             },
           ),
           InkWell(
+            key: const Key('Restablecer'),
             splashColor: Colors.transparent,
             focusColor: Colors.transparent,
             hoverColor: Colors.transparent,
@@ -210,10 +211,15 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               ],
             ),
           ),
-          SignInButton(Buttons.google, text: "Continuar con Google",
-              onPressed: () {
-            _handleGoogleSignIn();
-          }),
+          /*
+          SizedBox(
+            width:
+                MediaQuery.of(context).size.width * 0.8, // 80% of screen width
+            child: SignInButton(Buttons.google, text: "Continuar con Google",
+                onPressed: () {
+              _handleGoogleSignIn();
+            }),
+          ),*/
         ],
       ),
     );
