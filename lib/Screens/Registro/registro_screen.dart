@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
-
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
 
@@ -24,7 +23,11 @@ class _RegistroScreenState extends State<RegistroScreen> {
     final prefs = SharedPrefsHelper();
     Logger log = Logger();
     try {
-      userData['email'] = userProvider.email;
+      if (await prefs.getEmail() != 'email') {
+        userData['email'] = await prefs.getEmail();
+      } else {
+        userData['email'] = userProvider.email;
+      }
       userData['profilePic'] = userProvider.photoUrl;
       userProvider.updateUserData(userData);
       final docRef =

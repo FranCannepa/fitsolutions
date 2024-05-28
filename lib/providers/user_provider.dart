@@ -46,6 +46,11 @@ class UserProvider extends ChangeNotifier {
         await prefs.setDocId(documentSnapshot.id);
         await prefs.setLoggedIn(true);
       }
+      else{
+        _firstLogin = true;
+        await prefs.setEmail(email);
+        await prefs.setLoggedIn(true);
+      }
     } on FirebaseAuthException catch (e) {
       log.e(e);
       rethrow;

@@ -45,9 +45,14 @@ class MyApp extends StatelessWidget {
           }
           if (snapshot.hasData) {
             final isLoggedIn = snapshot.data!;
+            final userProvider = context.read<UserData>();
             if (isLoggedIn) {
-              final userProvider = context.read<UserData>();
               userProvider.initializeData();
+            }
+            final auth = context.read<UserProvider>();
+            if(isLoggedIn && auth.firstLogin){
+            userProvider.firstLogin(auth.user!);   
+            return const RegistroScreen();
             }
             return isLoggedIn ? const HomeScreen() : const WelcomePage();
           }

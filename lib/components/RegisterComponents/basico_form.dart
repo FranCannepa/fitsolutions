@@ -1,4 +1,3 @@
-
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:flutter/material.dart';
@@ -27,24 +26,37 @@ class _BasicoFormState extends State<BasicoForm> {
     _heightController.dispose();
     super.dispose();
   }
+
   Map<String, dynamic> collectUserData() {
-      final pesoString = _weightController.text.replaceAll(",", ".");
-      final nombreCompleto = _fullNameController.text;
-      final fechaNacimiento = _dateOfBirthController.text;
-      final peso = double.tryParse(pesoString);
-      final altura = int.tryParse(_heightController.text);
-      return {
-        'nombreCompleto': nombreCompleto,
-        'fechaNacimiento': fechaNacimiento,
-        'peso': peso,
-        'altura': altura,
-        'tipo': "Basico"
-      };
+    final pesoString = _weightController.text.replaceAll(",", ".");
+    final nombreCompleto = _fullNameController.text;
+    final fechaNacimiento = _dateOfBirthController.text;
+    final peso = double.tryParse(pesoString);
+    final altura = int.tryParse(_heightController.text);
+    return {
+      'nombreCompleto': nombreCompleto,
+      'fechaNacimiento': fechaNacimiento,
+      'peso': peso,
+      'altura': altura,
+      'tipo': "Basico"
+    };
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1940),
+        lastDate: DateTime(2100));
+    if(picked != null){
+      setState(() {
+        _dateOfBirthController.text = picked.toString().split(" ")[0];
+      });
     }
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Form(
         key: _formKey,
         child: Column(children: [
@@ -56,6 +68,24 @@ class _BasicoFormState extends State<BasicoForm> {
                 return 'Ingrese su nombre completo';
               }
               return null;
+            },
+          ),
+          TextField(
+            controller: _dateOfBirthController,
+            decoration: const InputDecoration(
+              labelText: 'Fecha de nacimiento',
+              filled: true,
+              prefixIcon: Icon(Icons.calendar_today),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide.none
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.orange)
+              )
+            ),
+            readOnly: true,
+            onTap: (){
+              _selectDate();
             },
           ),
           RoundedInputField(

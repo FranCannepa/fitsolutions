@@ -85,7 +85,6 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
       } else {
         if (user.email != null) {
           userProvider.firstLogin(user);
-
           // Navigate to registration
           NavigationService.instance.pushNamed("/registro");
         }
@@ -165,7 +164,11 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   _emailController.text,
                   _passwordController.text,
                 );
+                if(widget.userProvider.firstLogin && context.mounted){
+                  NavigationService.instance.pushNamed('/registro');
+                }else{
                 NavigationService.instance.pushNamed("/home");
+                }
               } catch (e) {
                 log.d(e);
                 if (context.mounted) {
@@ -215,12 +218,10 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
           SizedBox(
             width:
                 MediaQuery.of(context).size.width * 0.4, // 40% of screen width
-            child: Expanded(
               child: SignInButton(Buttons.google, text: "Continuar con Google",
                   onPressed: () {
                 _handleGoogleSignIn();
               }),
-            ),
           ),
         ],
       ),
