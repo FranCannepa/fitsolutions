@@ -45,6 +45,7 @@ void main() {
     await mockStore.collection('usuario').add({'email': 'test@test.com'});
     await tester
         .pumpWidget(makeTestable(LoginEmailScreen(userProvider: provider)));
+
     // Verify initial state
     expect(find.text('Email'), findsOneWidget);
     expect(find.text('Contraseña'), findsOneWidget);
@@ -56,6 +57,8 @@ void main() {
     await tester.enterText(find.byType(MyTextField).first, 'test@example.com');
     await tester.enterText(find.byType(MyTextField).last, 'password123');
     await tester.pump();
+    expect(find.text('Please enter a valid email'), findsNothing);
+
 
     // Tap the login button
     await tester.tap(find.text('Iniciar Sesion'));
@@ -71,7 +74,7 @@ void main() {
     //verify(mockNavigationService.pushNamed("/home")).called(1);
 
     // Verify SnackBar is shown on error
-    when(provider.signIn('test@example.com', 'password123')).thenThrow(Exception('Login failed'));
+    when(provider.signIn('test2@example.com', 'password123')).thenThrow(Exception('Login failed'));
     await tester.tap(find.text('Iniciar Sesion'));
     await tester.pump();
 

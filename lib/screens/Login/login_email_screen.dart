@@ -211,15 +211,17 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               ],
             ),
           ),
-          /*
+          
           SizedBox(
             width:
-                MediaQuery.of(context).size.width * 0.8, // 80% of screen width
-            child: SignInButton(Buttons.google, text: "Continuar con Google",
-                onPressed: () {
-              _handleGoogleSignIn();
-            }),
-          ),*/
+                MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+            child: Expanded(
+              child: SignInButton(Buttons.google, text: "Continuar con Google",
+                  onPressed: () {
+                _handleGoogleSignIn();
+              }),
+            ),
+          ),
         ],
       ),
     );

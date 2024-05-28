@@ -31,7 +31,7 @@ void main() {
 
   group('UserProvider', () {
     test('INICIAR SESION SUCCESS', () async{
-            // Mock FirebaseAuth signInWithEmailAndPassword
+      // Mock FirebaseAuth signInWithEmailAndPassword
       await mockStore.collection('usuario').add({
         'email': 'test@test.com',
       });
@@ -63,12 +63,12 @@ void main() {
     test('REGISTRO SUCCESS', () async {
           final MockUserCredential mockCredential = MockUserCredential();
           when(mockAuth.createUserWithEmailAndPassword(
-              email: 'test@test.com', password: 'password'))
+              email: 'test@test.com', password: 'Password123!'))
           .thenAnswer((_) async => mockCredential);
 
-      await userProvider.signUp('test@test.com', 'password');
+      await userProvider.signUp('test@test.com', 'Password123!');
       verify(mockAuth.createUserWithEmailAndPassword(
-              email: 'test@test.com', password: 'password'))
+              email: 'test@test.com', password: 'Password123!'))
           .called(1);
     });
 
