@@ -6,7 +6,7 @@ import 'package:fitsolutions/Screens/Home/home_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Profile/perfil_screen.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
+import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

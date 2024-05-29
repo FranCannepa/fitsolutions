@@ -32,7 +32,7 @@ class RoundedInputField extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
             borderSide: const BorderSide(color: Colors.orange, width: 2.0),
           ),
-          labelStyle: TextStyle(height: 2.0),
+          labelStyle: const TextStyle(height: 2.0),
         ),
         validator: validator,
       ),

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +8,7 @@ class MembresiaDisplayerBasico extends StatefulWidget {
   const MembresiaDisplayerBasico({super.key});
 
   @override
-  _MembresiaDisplayerBasicoState createState() =>
+  State<MembresiaDisplayerBasico> createState() =>
       _MembresiaDisplayerBasicoState();
 }
 
@@ -79,7 +78,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
               child:
                   CircularProgressIndicator()) // Progress indicator while loading
           : membresia.isEmpty
-              ? Center(
+              ? const Center(
                   child: Text(
                     "No tiene membresía disponible",
                     style: TextStyle(fontSize: 16.0),

@@ -13,3 +13,7 @@ export 'CommonComponents/my_textfield.dart';
 export 'CommonComponents/submit_button.dart';
 export 'CalendarComponents/calendario_board.dart';
 export 'CalendarComponents/card_actividad.dart';
+export 'MembresiaComponents/membresia_card.dart';
+export 'MembresiaComponents/membresia_displayer_basico.dart';
+export 'MembresiaComponents/membresia_displayer_propietario.dart';
+export 'CommonComponents/screen_sub_title.dart';
