@@ -18,7 +18,6 @@ class UserData extends ChangeNotifier {
   late String membresiaId = '';
 
   final prefs = SharedPrefsHelper();
-
   void initializeData() async {
     final prefs = SharedPrefsHelper();
     Logger log = Logger();
@@ -120,15 +119,15 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormPropietario(Map<String, dynamic>? userData) {
-    userId = userData?['docId'] ?? prefs.getDocId();
+  void dataFormPropietario(Map<String, dynamic>? userData) async{
+    userId = userData?['docId'] ?? await prefs.getDocId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();
   }
 
-  void dataFormParticular(Map<String, dynamic>? userData) {
-    userId = userData?['docId'] ?? prefs.getDocId();
+  void dataFormParticular(Map<String, dynamic>? userData) async {
+    userId = userData?['docId'] ?? await prefs.getDocId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();

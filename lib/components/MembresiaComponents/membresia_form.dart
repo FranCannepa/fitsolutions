@@ -86,7 +86,7 @@ class _MembresiaFormState extends State<MembresiaForm> {
             membresiaData = collectMembresiaData();
             registrarMembresia();
           },
-        )
+        ),
       ],
     );
   }

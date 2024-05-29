@@ -12,9 +12,6 @@ class UserProvider extends ChangeNotifier {
   final userCollection = FirebaseFirestore.instance.collection('usuario');
   User? _user;
   bool _firstLogin = false;
-
-  //UserProvider({FirebaseAuth? firebaseAuth}) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
-
   UserProvider({FirebaseAuth? firebaseAuth})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance {
     _firebaseAuth.authStateChanges().listen((User? user) {
@@ -32,13 +29,14 @@ class UserProvider extends ChangeNotifier {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-        final prefs = SharedPrefsHelper();
-        QuerySnapshot querySnapshot = await userCollection.where('email', isEqualTo: email).get();
-        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
-        final docData = documentSnapshot.data() as Map<String,dynamic>;
-        prefs.setEmail(docData['email']);
-        prefs.setDocId(documentSnapshot.id);
-        prefs.setLoggedIn(true);
+      final prefs = SharedPrefsHelper();
+      QuerySnapshot querySnapshot =
+          await userCollection.where('email', isEqualTo: email).get();
+      DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+      final docData = documentSnapshot.data() as Map<String, dynamic>;
+      prefs.setEmail(docData['email']);
+      prefs.setDocId(documentSnapshot.id);
+      prefs.setLoggedIn(true);
     } on FirebaseAuthException catch (e) {
       log.e(e);
       rethrow;
@@ -47,9 +45,10 @@ class UserProvider extends ChangeNotifier {
 
   Future<UserCredential> signUp(String email, String password) async {
     try {
-      UserCredential userCred = await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential userCred = await _firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
       _firstLogin = true;
+      
       return userCred;
     } on FirebaseAuthException catch (e) {
       log.e(e);
@@ -59,15 +58,13 @@ class UserProvider extends ChangeNotifier {
 
   Future<void> resetPassword(String email) async {
     try {
-      await _firebaseAuth.sendPasswordResetEmail(
-          email: email);
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
       log.e(e);
       rethrow;
     }
   }
 
-  
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
@@ -79,7 +76,7 @@ class UserProvider extends ChangeNotifier {
       rethrow;
     }
   }
-  
+
   Future<void> registerCompleted() async {
     _firstLogin = false;
     notifyListeners();

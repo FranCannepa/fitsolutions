@@ -29,31 +29,32 @@ class MyGym extends StatelessWidget {
                 Text(myGym['direccion'] as String),
               ],
             ),
-            if (myGym['telefono'] != null &&
-                myGym['telefono'].toString().isNotEmpty)
+            if (myGym['contacto'] != null &&
+                myGym['contacto'].toString().isNotEmpty)
               const SizedBox(height: 8.0),
-            if (myGym['telefono'] != null &&
-                myGym['telefono'].toString().isNotEmpty)
+            if (myGym['contacto'] != null &&
+                myGym['contacto'].toString().isNotEmpty)
               Row(
                 children: [
                   const Icon(Icons.phone, size: 16.0),
                   const SizedBox(width: 8.0),
-                  Text(myGym['telefono'] as String),
+                  Text(myGym['contacto'] as String),
                 ],
               ),
-            if (myGym['horario'] != null &&
-                myGym['horario'].toString().isNotEmpty)
+            if (myGym['apertura'] != null &&
+                myGym['apertura'].toString().isNotEmpty)
               const SizedBox(height: 8.0),
-            if (myGym['horario'] != null &&
-                myGym['horario'].toString().isNotEmpty)
+            if (myGym['clausura'] != null &&
+                myGym['clausura'].toString().isNotEmpty)
               Row(
                 children: [
                   const Icon(Icons.access_time, size: 16.0),
                   const SizedBox(width: 8.0),
-                  Text(myGym['horario'] as String),
+                  Text(myGym['apertura'] as String),
+                  Text(" ---- "),
+                  Text(myGym['clausura'] as String)
                 ],
               ),
-            // Add additional info rows here (e.g., amenities, website)
           ],
         ),
       ),
