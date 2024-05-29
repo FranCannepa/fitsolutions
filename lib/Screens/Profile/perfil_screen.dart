@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Screens/Profile/editar_perfil_screen.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +96,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(),
+      bottomNavigationBar: const FooterBottomNavigationBar(initialScreen: ScreenType.perfil,),
     );
   }
 }

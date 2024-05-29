@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
@@ -20,13 +21,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<Map<String, dynamic>?> getUserData() async {
     final userProvider = context.read<UserData>();
     final prefs = SharedPrefsHelper();
-
     try {
       final docRef = FirebaseFirestore.instance
           .collection('usuario')
-          .doc(await prefs.getDocId());
+          .doc(userProvider.userId);
       final snapshot = await docRef.get();
       if (snapshot.exists) {
+        print(snapshot.data() as Map<String, dynamic>);
         return snapshot.data() as Map<String, dynamic>;
       } else {
         NavigationService.instance.pushNamed("/login");
@@ -41,14 +42,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     Logger log = Logger();
+    final userProvider = context.read<UserData>();
     return FutureBuilder(
       future: getUserData(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final userData = snapshot.data as Map<String, dynamic>;
           final userTipo = userData['tipo'];
-          final tengoSubscripcion =
-              userData['gimnasio'] != null || userData['entrenador'] != null;
+          final anotadoGym = userData['gimnasioId'] != null;
+          //final tengoGym =
           return Scaffold(
             appBar: AppBar(
               title: const Text('BIENVENIDO'),
@@ -57,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () async {
                     UserProvider userProvider = context.read<UserProvider>();
                     await userProvider.signOut();
-                    if(context.mounted){
+                    if (context.mounted) {
                       NavigationService.instance.pushNamed("/login");
                     }
                   },
@@ -69,20 +71,20 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (userTipo == "Basico") const Text("SOY BASICO"),
-                  if (tengoSubscripcion)
-                    const Text("TENGO SUBSCRIPCION")
-                  else
+                  if (userProvider.esBasico() && !anotadoGym)
+                    const Text("SOY BASICO y no tengo sub"),
+                  if (anotadoGym && (userProvider.esPropietario()))
                     const Text("NO TENGO GYM O ENTRENADOR ASOCIADO"),
-                  if (userTipo == "Propietario" || userTipo == "Particular")
-                    const Text("SOY PROPIETARIO O PARTICULAR"),
-                  if (!tengoSubscripcion) const Text("CREAR CALENDARIO"),
+                  if (userTipo == "Propietario")
+                    if (!anotadoGym) const Text("CREAR CALENDARIO"),
                   if (userTipo == null || userTipo.isEmpty)
                     const Text("Please update your user type!"),
                 ],
               ),
             ),
-            bottomNavigationBar: const FooterBottomNavigationBar(),
+            bottomNavigationBar: const FooterBottomNavigationBar(
+              initialScreen: ScreenType.home,
+            ),
           );
         } else if (snapshot.hasError) {
           log.d(snapshot.error);
