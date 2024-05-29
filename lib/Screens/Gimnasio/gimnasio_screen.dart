@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -7,7 +8,6 @@ import 'package:provider/provider.dart';
 
 class GimnasioScreen extends StatefulWidget {
   const GimnasioScreen({super.key});
-
   @override
   State<GimnasioScreen> createState() => _GimnasioScreenState();
 }
@@ -16,7 +16,6 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
   late Map<String, dynamic>? gymData;
   bool showGymForm = false;
   Logger log = Logger();
-  
   Future<Map<String, dynamic>?> getGym() async {
     final userProvider = context.read<UserData>();
     try {
@@ -47,7 +46,6 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const FooterBottomNavigationBar(),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -84,6 +82,9 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
             if (showGymForm) GimnasioForm(refresh: refreshScreen),
           ],
         ),
+      ),
+      bottomNavigationBar: const FooterBottomNavigationBar(
+        initialScreen: ScreenType.gym,
       ),
     );
   }

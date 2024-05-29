@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
+import 'package:fitsolutions/Screens/Ejercicios/ejercicios_screen.dart';
+import 'package:fitsolutions/Screens/Gimnasio/gimnasio_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       home: FutureBuilder<bool>(
         future: isLoggedIn(),
-        builder: (context, snapshot) {
+        builder: (context, snapshot){
           if (snapshot.hasError) {
             return ErrorWidget(snapshot.error as Object);
           }
@@ -64,8 +66,10 @@ class MyApp extends StatelessWidget {
         '/login': (BuildContext context) => const WelcomePage(),
         '/perfil': (BuildContext context) => const PerfilScreen(),
         '/dieta': (BuildContext context) => const DietasScreen(),
+        '/ejercicios': (BuildContext context) => const EjerciciosScreen(),
         '/membresia': (BuildContext context) => const MembresiaScreen(),
         '/registro': (BuildContext context) => const RegistroScreen(),
+        '/gimnasio': (BuildContext context) => const GimnasioScreen(),
       },
     ),
     );

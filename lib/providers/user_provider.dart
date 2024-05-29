@@ -62,6 +62,7 @@ class UserProvider extends ChangeNotifier {
       UserCredential userCred = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
       _firstLogin = true;
+      
       return userCred;
     } on FirebaseAuthException catch (e) {
       log.d('EXCEPTO $e');
