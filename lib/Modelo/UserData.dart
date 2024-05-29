@@ -120,15 +120,15 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormPropietario(Map<String, dynamic>? userData) {
-    userId = userData?['docId'] ?? prefs.getDocId();
+  void dataFormPropietario(Map<String, dynamic>? userData) async{
+    userId = userData?['docId'] ?? await prefs.getDocId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();
   }
 
-  void dataFormParticular(Map<String, dynamic>? userData) {
-    userId = userData?['docId'] ?? prefs.getDocId();
+  void dataFormParticular(Map<String, dynamic>? userData) async{
+    userId = userData?['docId'] ?? await prefs.getDocId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();
@@ -136,8 +136,11 @@ class UserData extends ChangeNotifier {
 
   void firstLogin(User user) {
     if (user.email!.isNotEmpty) {
+      final prefs = SharedPrefsHelper();
       email = user.email as String;
       photoUrl = user.photoURL!= null ? user.photoURL as String : '';
+      prefs.setEmail(email);
+
     }
     notifyListeners();
   }

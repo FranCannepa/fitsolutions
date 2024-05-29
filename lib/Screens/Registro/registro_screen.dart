@@ -80,6 +80,15 @@ class _RegistroScreenState extends State<RegistroScreen> {
               !showForm
                   ? Column(
                       children: [
+                        const Text(
+                          'Tipos de Cuenta disponibles',
+                          style: TextStyle(
+                            fontFamily: 'Sora',
+                            letterSpacing: 0,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 30,
+                          ),
+                        ),
                         ElevatedButton(
                           onPressed: () =>
                               handleOptionSelected('Quiero entrenar'),

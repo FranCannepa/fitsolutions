@@ -40,65 +40,67 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     Logger log = Logger();
-    return FutureBuilder(
-      future: getUserData(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final userData = snapshot.data as Map<String, dynamic>;
-          final userTipo = userData['tipo'];
-          final tengoSubscripcion =
-              userData['gimnasio'] != null || userData['entrenador'] != null;
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('BIENVENIDO'),
-              actions: [
-                IconButton(
-                  key: const Key('sign_out'),
-                  onPressed: () async {
-                    UserProvider userProvider = context.read<UserProvider>();
-                    await userProvider.signOut();
-                    if(context.mounted){
-                      NavigationService.instance.pushNamed("/login");
-                    }
-                  },
-                  icon: const Icon(Icons.logout),
-                ),
-              ],
-            ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (userTipo == "Basico") const Text("SOY BASICO"),
-                  if (tengoSubscripcion)
-                    const Text("TENGO SUBSCRIPCION")
-                  else
-                    const Text("NO TENGO GYM O ENTRENADOR ASOCIADO"),
-                  if (userTipo == "Propietario" || userTipo == "Particular")
-                    const Text("SOY PROPIETARIO O PARTICULAR"),
-                  if (!tengoSubscripcion) const Text("CREAR CALENDARIO"),
-                  if (userTipo == null || userTipo.isEmpty)
-                    const Text("Please update your user type!"),
+    return SafeArea(
+      child: FutureBuilder(
+        future: getUserData(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final userData = snapshot.data as Map<String, dynamic>;
+            final userTipo = userData['tipo'];
+            final tengoSubscripcion =
+                userData['gimnasio'] != null || userData['entrenador'] != null;
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('BIENVENIDO'),
+                actions: [
+                  IconButton(
+                    key: const Key('sign_out'),
+                    onPressed: () async {
+                      UserProvider userProvider = context.read<UserProvider>();
+                      await userProvider.signOut();
+                      if(context.mounted){
+                        NavigationService.instance.pushNamed("/login");
+                      }
+                    },
+                    icon: const Icon(Icons.logout),
+                  ),
                 ],
               ),
-            ),
-            bottomNavigationBar: const FooterBottomNavigationBar(),
-          );
-        } else if (snapshot.hasError) {
-          log.d(snapshot.error);
-          return const Scaffold(
-            body: Center(
-              child: Text("Error fetching user data!"),
-            ),
-          );
-        } else {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(), // Loading indicator
-            ),
-          );
-        }
-      },
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (userTipo == "Basico") const Text("SOY BASICO"),
+                    if (tengoSubscripcion)
+                      const Text("TENGO SUBSCRIPCION")
+                    else
+                      const Text("NO TENGO GYM O ENTRENADOR ASOCIADO"),
+                    if (userTipo == "Propietario" || userTipo == "Particular")
+                      const Text("SOY PROPIETARIO O PARTICULAR"),
+                    if (!tengoSubscripcion) const Text("CREAR CALENDARIO"),
+                    if (userTipo == null || userTipo.isEmpty)
+                      const Text("Please update your user type!"),  
+                  ],
+                ),
+              ),
+              bottomNavigationBar: const FooterBottomNavigationBar(),
+            );
+          } else if (snapshot.hasError) {
+            log.d(snapshot.error);
+            return const Scaffold(
+              body: Center(
+                child: Text("Error fetching user data!"),
+              ),
+            );
+          } else {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(), // Loading indicator
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
