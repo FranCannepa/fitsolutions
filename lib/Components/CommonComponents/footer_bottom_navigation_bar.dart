@@ -33,7 +33,7 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
     if (userProvider.esBasico()) {
       _screens = [
         //PLAN for now
-        const PlanScreen(),
+        const EjerciciosScreen(),
         const PerfilScreen(),
         const HomeScreen(),
         const DietasScreen(),
@@ -42,8 +42,8 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
     } else {
       _screens = [
         //PLAN for now
-        const PlanScreen(),
-        //const GimnasioScreen(),
+        //const PlanScreen(),
+        const GimnasioScreen(),
         const HomeScreen(),
         const DietasScreen(),
         const MembresiaScreen()
