@@ -6,6 +6,7 @@ import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<UserData>(create: (context) => UserData()),
-        ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
+        ChangeNotifierProvider<FitnessProvider>(create: (context) => FitnessProvider())
       ],
       child:MaterialApp(
       navigatorKey: NavigationService.navigatorKey,

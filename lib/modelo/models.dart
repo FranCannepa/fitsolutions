@@ -10,5 +10,6 @@ export 'usuario_basico.dart';
 export 'usuario_particular.dart';
 export 'usuario_propietario.dart';
 export 'usuario.dart';
+export 'week.dart';
 
 

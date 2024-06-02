@@ -5,13 +5,14 @@ class RoundedInputField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
-
+  final int? maxLines;
   const RoundedInputField({
     super.key,
     required this.labelText,
     required this.controller,
     this.keyboardType = TextInputType.text,
     this.validator,
+    this.maxLines,
   });
 
   @override
@@ -20,6 +21,7 @@ class RoundedInputField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
       child: TextFormField(
         controller: controller,
+        maxLines: maxLines,
         keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: labelText,
