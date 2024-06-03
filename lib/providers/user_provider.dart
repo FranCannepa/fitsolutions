@@ -2,21 +2,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../Utilities/utilities.dart';
 
 class UserProvider extends ChangeNotifier {
-  Logger log = Logger();
+  final prefs = SharedPrefsHelper();
   final FirebaseAuth _firebaseAuth;
-  final userCollection = FirebaseFirestore.instance.collection('usuario');
+  final FirebaseFirestore _firestore;
   User? _user;
   bool _firstLogin = false;
-  UserProvider({FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance {
+  Logger log = Logger();
+
+  //UserProvider({FirebaseAuth? firebaseAuth}) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+
+  UserProvider({FirebaseAuth? firebaseAuth,FirebaseFirestore? firestore})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance, _firestore = firestore ?? FirebaseFirestore.instance{
     _firebaseAuth.authStateChanges().listen((User? user) {
       _user = user;
-      log.d('Im here $isAuthenticated');
+      log.d('USUARIO AUTHENTICATED $isAuthenticated');
       notifyListeners();
     });
   }
@@ -24,19 +26,31 @@ class UserProvider extends ChangeNotifier {
   User? get user => _user;
   bool get isAuthenticated => _user != null;
   bool get firstLogin => _firstLogin;
+  SharedPrefsHelper get pref => prefs;
 
   Future<void> signIn(String email, String password) async {
     try {
+      // Sign in with Firebase
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      final prefs = SharedPrefsHelper();
+
+      // Fetch user data from Firestore
       QuerySnapshot querySnapshot =
-          await userCollection.where('email', isEqualTo: email).get();
-      DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
-      final docData = documentSnapshot.data() as Map<String, dynamic>;
-      prefs.setEmail(docData['email']);
-      prefs.setDocId(documentSnapshot.id);
-      prefs.setLoggedIn(true);
+          await _firestore.collection('usuario').where('email', isEqualTo: email).limit(1).get();
+      if(querySnapshot.size > 0){
+        DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+        Map<String, dynamic> docData =
+            documentSnapshot.data() as Map<String, dynamic>;
+        // Store user data in SharedPreferences
+        await prefs.setEmail(docData['email']);
+        await prefs.setDocId(documentSnapshot.id);
+        await prefs.setLoggedIn(true);
+      }
+      else{
+        _firstLogin = true;
+        await prefs.setEmail(email);
+        await prefs.setLoggedIn(true);
+      }
     } on FirebaseAuthException catch (e) {
       log.e(e);
       rethrow;
@@ -51,7 +65,10 @@ class UserProvider extends ChangeNotifier {
       
       return userCred;
     } on FirebaseAuthException catch (e) {
-      log.e(e);
+      log.d('EXCEPTO $e');
+      rethrow;
+    } catch(e){
+      log.d('EXCEPTO $e');
       rethrow;
     }
   }
@@ -68,23 +85,11 @@ class UserProvider extends ChangeNotifier {
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      await preferences.clear();
+      await prefs.clearAll();
       notifyListeners();
     } on FirebaseAuthException catch (e) {
       log.t(e);
       rethrow;
     }
-  }
-
-  Future<void> registerCompleted() async {
-    _firstLogin = false;
-    notifyListeners();
-  }
-
-  //TODO
-  Future<void> firstTimeGoogle() async {
-    _firstLogin = true;
-    notifyListeners();
   }
 }

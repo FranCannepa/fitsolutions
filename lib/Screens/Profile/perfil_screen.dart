@@ -38,65 +38,68 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: FutureBuilder<Map<String, dynamic>?>(
-            future: getUserData(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                userData = snapshot.data!;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 50.0,
-                      backgroundImage: userData['profilePic'] != null &&
-                              userData['profilePic'].isNotEmpty
-                          ? NetworkImage(userData['profilePic'] as String)
-                          : null,
-                      child: userData['profilePic'] == null ||
-                              userData['profilePic'].isEmpty
-                          ? const Icon(Icons.person)
-                          : null,
-                    ),
-                    const SizedBox(height: 24.0),
-                    const Text(
-                      'Nombre Completo',
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(userData['nombreCompleto'] ?? 'Usuario de Ejemplo'),
-                    Text(userData['tipo']),
-                    const SizedBox(height: 16.0),
-                    const SizedBox(height: 16.0),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EditarPerfilScreen()),
-                        );
-                      },
-                      child: const Text('Editar Perfil'),
-                    ),
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return const Center(
-                  child: Text("Error fetching user data!"),
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
+    return SafeArea(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: FutureBuilder<Map<String, dynamic>?>(
+              future: getUserData(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  userData = snapshot.data!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 50.0,
+                        backgroundImage: userData['profilePic'] != null &&
+                                userData['profilePic'].isNotEmpty
+                            ? NetworkImage(userData['profilePic'] as String)
+                            : null,
+                        child: userData['profilePic'] == null ||
+                                userData['profilePic'].isEmpty
+                            ? const Icon(Icons.person)
+                            : null,
+                      ),
+                      const SizedBox(height: 24.0),
+                      const Text(
+                        'Nombre Completo',
+                        style: TextStyle(
+                            fontSize: 24.0, fontWeight: FontWeight.bold),
+                      ),
+                      Text(userData['nombreCompleto'] ?? 'Usuario de Ejemplo'),
+                      Text(userData['tipo']),
+                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 16.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EditarPerfilScreen()),
+                          );
+                        },
+                        child: const Text('Editar Perfil'),
+                      ),
+                    ],
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text("Error fetching user data!"),
+                  );
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            ),
           ),
         ),
-      ),
       bottomNavigationBar: const FooterBottomNavigationBar(initialScreen: ScreenType.perfil,),
+      ),
+
     );
   }
 }

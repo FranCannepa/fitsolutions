@@ -144,8 +144,10 @@ class UserData extends ChangeNotifier {
 
   void firstLogin(User user) {
     if (user.email!.isNotEmpty) {
+      final prefs = SharedPrefsHelper();
       email = user.email as String;
-      photoUrl = user.photoURL != null ? user.photoURL as String : '';
+      photoUrl = user.photoURL!= null ? user.photoURL as String : '';
+      prefs.setEmail(email);
     }
     notifyListeners();
   }

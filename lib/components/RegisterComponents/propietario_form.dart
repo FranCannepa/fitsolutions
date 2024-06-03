@@ -24,7 +24,17 @@ class _PropietarioFormState extends State<PropietarioForm> {
   Widget build(BuildContext context) {
     return Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(children: [
+          const Text(
+            'Formulario de Usuario Propietario',
+            style: TextStyle(
+              fontFamily: 'Sora',
+              letterSpacing: 0,
+              fontWeight: FontWeight.w600,
+              fontSize: 40,
+            ),
+          ),
           RoundedInputField(
             labelText: 'Nombre Completo',
             controller: _fullNameController,
@@ -36,11 +46,17 @@ class _PropietarioFormState extends State<PropietarioForm> {
             },
           ),
           SubmitButton(
-              text: "Continuar",
+              text: "Ingresar",
               onPressed: () {
-                userData = _collectUserData();
-                widget.registerFunction(userData);
-              }),
+                if (_formKey.currentState!.validate()) {
+                  final userData = _collectUserData();
+                  widget.registerFunction(userData);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Errores en el Formulario")),
+                  );
+                }
+              })
         ]));
   }
 }

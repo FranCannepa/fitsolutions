@@ -1,4 +1,3 @@
-
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:flutter/material.dart';
@@ -27,27 +26,50 @@ class _BasicoFormState extends State<BasicoForm> {
     _heightController.dispose();
     super.dispose();
   }
+
   Map<String, dynamic> collectUserData() {
-      final pesoString = _weightController.text.replaceAll(",", ".");
-      final nombreCompleto = _fullNameController.text;
-      final fechaNacimiento = _dateOfBirthController.text;
-      final peso = double.tryParse(pesoString);
-      final altura = int.tryParse(_heightController.text);
-      return {
-        'nombreCompleto': nombreCompleto,
-        'fechaNacimiento': fechaNacimiento,
-        'peso': peso,
-        'altura': altura,
-        'tipo': "Basico"
-      };
+    final pesoString = _weightController.text.replaceAll(",", ".");
+    final nombreCompleto = _fullNameController.text;
+    final fechaNacimiento = _dateOfBirthController.text;
+    final peso = double.tryParse(pesoString);
+    final altura = int.tryParse(_heightController.text);
+    return {
+      'nombreCompleto': nombreCompleto,
+      'fechaNacimiento': fechaNacimiento,
+      'peso': peso,
+      'altura': altura,
+      'tipo': "Basico"
+    };
+  }
+
+  Future<void> _selectDate() async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1940),
+        lastDate: DateTime(2100));
+    if (picked != null) {
+      setState(() {
+        _dateOfBirthController.text = picked.toString().split(" ")[0];
+      });
     }
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(children: [
+          const Text(
+            'Formulario de Usuario Basico',
+            style: TextStyle(
+              fontFamily: 'Sora',
+              letterSpacing: 0,
+              fontWeight: FontWeight.w600,
+              fontSize: 40,
+            ),
+          ),
           RoundedInputField(
             labelText: 'Nombre Completo',
             controller: _fullNameController,
@@ -58,20 +80,33 @@ class _BasicoFormState extends State<BasicoForm> {
               return null;
             },
           ),
-          RoundedInputField(
-            labelText: 'Fecha de Nacimiento (YYYY-MM-DD)',
-            controller: _dateOfBirthController,
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Ingrese su fecha de nacimiento';
-              }
-              RegExp datePattern = RegExp(r'^\d{4}-\d{2}-\d{2}$');
-              if (!datePattern.hasMatch(value)) {
-                return 'Formato de fecha inválido. Debe ser YYYY-MM-DD';
-              }
-              return null;
-            },
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+            child: TextFormField(
+              controller: _dateOfBirthController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Ingrese su fecha de nacimiento';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                  labelText: 'Fecha de nacimiento',
+                  filled: true,
+                  prefixIcon: const Icon(Icons.calendar_today),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide:
+                        const BorderSide(color: Colors.orange, width: 2.0),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.orange))),
+              readOnly: true,
+              onTap: () {
+                _selectDate();
+              },
+            ),
           ),
           RoundedInputField(
             labelText: 'Altura (en cm)',
@@ -79,11 +114,12 @@ class _BasicoFormState extends State<BasicoForm> {
             keyboardType: TextInputType.number,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Ingrese su fecha de nacimiento';
+                return 'Ingrese su altura';
               }
-              RegExp datePattern = RegExp(r'^\d{4}-\d{2}-\d{2}$');
-              if (!datePattern.hasMatch(value)) {
-                return 'Formato de fecha inválido. Debe ser YYYY-MM-DD';
+              try {
+                double.parse(value);
+              } catch (e) {
+                return 'Ingrese una altura válida (solo números)';
               }
               return null;
             },
@@ -107,8 +143,14 @@ class _BasicoFormState extends State<BasicoForm> {
           SubmitButton(
               text: "Ingresar",
               onPressed: () {
-                final userData = collectUserData();
-                widget.registerFunction(userData);
+                if (_formKey.currentState!.validate()) {
+                  final userData = collectUserData();
+                  widget.registerFunction(userData);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Errores en el Formulario")),
+                  );
+                }
               })
         ]));
   }

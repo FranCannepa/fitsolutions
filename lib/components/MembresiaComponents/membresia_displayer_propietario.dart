@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/MembresiaComponents/membresiaCard.dart';
-import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fitsolutions/components/components.dart';
+import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class MembresiaDisplayerPropietario extends StatefulWidget {
@@ -41,6 +40,7 @@ class _MembresiaDisplayerPropietarioState
 
   Future<List<Map<String, dynamic>>> _fetchMembershipData() async {
     final gimnasioId = await getGym();
+    Logger log = Logger();
     try {
       final collectionRef = FirebaseFirestore.instance
           .collection('membresia')
@@ -51,11 +51,11 @@ class _MembresiaDisplayerPropietarioState
             .map((docSnapshot) => docSnapshot.data())
             .toList();
       } else {
-        print('No memberships found for this gym');
+        log.d('No memberships found for this gym');
         return [];
       }
     } catch (e) {
-      print("Error getting memberships: $e");
+      log.d("Error getting memberships: $e");
       return [];
     }
   }
@@ -120,7 +120,7 @@ class _MembresiaDisplayerPropietarioState
                                       child:
                                           MembershipCard(membership: membresia),
                                     ))
-                                .toList(),
+                                ,
                             const SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: () =>

@@ -20,12 +20,13 @@ class LoginEmailScreen extends StatefulWidget {
   State<LoginEmailScreen> createState() => _LoginEmailScreenState();
 }
 
-
 class _LoginEmailScreenState extends State<LoginEmailScreen> {
   final _formKeyLogin = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   late bool passwordVisibility;
+
   IconData iconPassword = CupertinoIcons.eye_fill;
   String? _errorMsg;
   Logger log = Logger();
@@ -35,17 +36,18 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('usuario')
           .where('email', isEqualTo: user.email)
+          .limit(1)
           .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        final doc = querySnapshot.docs.first;
-        final docId = querySnapshot.docs.first.id;
-        final Map<String, dynamic> userData =
-            doc.data();
-        userData['docId'] = docId;
-        return userData;
-      } else {
+
+      if (querySnapshot.docs.isEmpty) {
         return null;
       }
+
+      final doc = querySnapshot.docs.first;
+      final Map<String, dynamic> userData = doc.data();
+      userData['docId'] = doc.id;
+
+      return userData;
     } catch (e) {
       log.d("Error checking user existence: $e");
       return null;
@@ -56,27 +58,41 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     final userProvider = context.read<UserData>();
     final prefs = SharedPrefsHelper();
     Logger log = Logger();
+
     try {
+      // Sign in with Google
       final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
-      final User user = userCredential.user!;
+      final User? user = userCredential.user;
+
+      if (user == null) {
+        log.d("User is null after sign-in with Google.");
+        return;
+      }
+
+      // Check if the user exists
       final Map<String, dynamic>? existingUserData =
           await _checkUserExistence(user);
       if (existingUserData != null) {
+        // Update user data in provider and SharedPreferences
         userProvider.updateUserData(existingUserData);
-        prefs.setEmail(existingUserData['email']);
-        prefs.setDocId(existingUserData['docId']);
-        prefs.setLoggedIn(true);
+        await prefs.setEmail(existingUserData['email']);
+        await prefs.setDocId(existingUserData['docId']);
+        await prefs.setLoggedIn(true);
+
+        // Navigate to home
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
           userProvider.firstLogin(user);
+          // Navigate to registration
           NavigationService.instance.pushNamed("/registro");
         }
       }
     } on FirebaseAuthException catch (err) {
-      log.d(err.code);
-      log.d(err.message);
+      log.d("FirebaseAuthException: ${err.code} - ${err.message}");
+    } catch (err) {
+      log.d("Error during Google sign-in: $err");
     }
   }
 
@@ -85,6 +101,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     passwordVisibility = false;
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -146,9 +163,12 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                 await widget.userProvider.signIn(
                   _emailController.text,
                   _passwordController.text,
-                  
                 );
+                if(widget.userProvider.firstLogin && context.mounted){
+                  NavigationService.instance.pushNamed('/registro');
+                }else{
                 NavigationService.instance.pushNamed("/home");
+                }
               } catch (e) {
                 log.d(e);
                 if (context.mounted) {
@@ -161,6 +181,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
             },
           ),
           InkWell(
+            key: const Key('Restablecer'),
             splashColor: Colors.transparent,
             focusColor: Colors.transparent,
             hoverColor: Colors.transparent,
@@ -193,10 +214,15 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               ],
             ),
           ),
-          SignInButton(Buttons.google, text: "Continuar con Google",
-              onPressed: () {
-            _handleGoogleSignIn();
-          }),
+          
+          SizedBox(
+            width:
+                MediaQuery.of(context).size.width * 0.4, // 40% of screen width
+              child: SignInButton(Buttons.google, text: "Continuar con Google",
+                  onPressed: () {
+                _handleGoogleSignIn();
+              }),
+          ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 //import 'package:fitsolutions/Modelo/user_data.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/components/components.dart';
@@ -36,51 +37,22 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
   bool contains8Length = false;
 
   String? passwordRegisterVerification(String? val) {
-    if (val!.contains(RegExp(r'[A-Z]'))) {
-      setState(() {
-        containsUpperCase = true;
-      });
-    } else {
-      setState(() {
-        containsUpperCase = false;
-      });
-    }
-    if (val.contains(RegExp(r'[a-z]'))) {
-      setState(() {
-        containsLowerCase = true;
-      });
-    } else {
-      setState(() {
-        containsLowerCase = false;
-      });
-    }
-    if (val.contains(RegExp(r'[0-9]'))) {
-      setState(() {
-        containsNumber = true;
-      });
-    } else {
-      setState(() {
-        containsNumber = false;
-      });
-    }
-    if (val.contains(RegExp(r'^(?=.*?[!@#$&*~`)\%\-(_+=;:,.<>/?"[{\]}\|^])'))) {
-      setState(() {
-        containsSpecialChar = true;
-      });
-    } else {
-      setState(() {
-        containsSpecialChar = false;
-      });
-    }
-    if (val.length >= 8) {
-      setState(() {
-        contains8Length = true;
-      });
-    } else {
-      setState(() {
-        contains8Length = false;
-      });
-    }
+   if (val == null) return null;
+
+    bool hasUpperCase = val.contains(RegExp(r'[A-Z]'));
+    bool hasLowerCase = val.contains(RegExp(r'[a-z]'));
+    bool hasNumber = val.contains(RegExp(r'[0-9]'));
+    bool hasSpecialChar = val.contains(RegExp(r'[!@#$&*~`)\%\-(_+=;:,.<>/?"[{\]}\|^]'));
+    bool isLengthValid = val.length >= 8;
+
+    setState(() {
+      containsUpperCase = hasUpperCase;
+      containsLowerCase = hasLowerCase;
+      containsNumber = hasNumber;
+      containsSpecialChar = hasSpecialChar;
+      contains8Length = isLengthValid;
+    });
+
     return null;
   }
 
@@ -91,12 +63,14 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
       );
     }
   }
+
   @override
   void initState() {
     passwordVisibility = false;
     confirmPasswordVisibility = false;
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -160,31 +134,33 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('Requerimientos'),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "⚈  1 Caracter mayusucla",
-                    style: TextStyle(
-                        color: containsUpperCase
-                            ? Colors.green
-                            : Theme.of(context).colorScheme.onSurface),
-                  ),
-                  Text(
-                    "⚈  1 Caracter minuscula",
-                    style: TextStyle(
-                        color: containsLowerCase
-                            ? Colors.green
-                            : Theme.of(context).colorScheme.onSurface),
-                  ),
-                  Text(
-                    "⚈  1 Numero",
-                    style: TextStyle(
-                        color: containsNumber
-                            ? Colors.green
-                            : Theme.of(context).colorScheme.onSurface),
-                  ),
-                ],
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "⚈  1 Caracter mayuscula",
+                      style: TextStyle(
+                          color: containsUpperCase
+                              ? Colors.green
+                              : Theme.of(context).colorScheme.onSurface),
+                    ),
+                    Text(
+                      "⚈  1 Caracter minuscula",
+                      style: TextStyle(
+                          color: containsLowerCase
+                              ? Colors.green
+                              : Theme.of(context).colorScheme.onSurface),
+                    ),
+                    Text(
+                      "⚈  1 Numero",
+                      style: TextStyle(
+                          color: containsNumber
+                              ? Colors.green
+                              : Theme.of(context).colorScheme.onSurface),
+                    ),
+                  ],
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,13 +226,11 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                     _emailController.text,
                     _passwordController.text,
                   );
-
                   if(context.mounted){
                     final userDataProvider = context.read<UserData>();
                     userDataProvider.firstLogin(userCred.user!);
                     NavigationService.instance.pushNamed("/registro");
                   }
-
                 } else if(!valid) {
                   snackBarMessage(context, "El formulario tiene errores");
                 } else{

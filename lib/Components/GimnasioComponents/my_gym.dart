@@ -51,7 +51,7 @@ class MyGym extends StatelessWidget {
                   const Icon(Icons.access_time, size: 16.0),
                   const SizedBox(width: 8.0),
                   Text(myGym['apertura'] as String),
-                  Text(" ---- "),
+                  const Text(" ---- "),
                   Text(myGym['clausura'] as String)
                 ],
               ),

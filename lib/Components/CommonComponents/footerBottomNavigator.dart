@@ -6,7 +6,8 @@ import 'package:fitsolutions/Screens/Home/home_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Profile/perfil_screen.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
+import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,7 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
 
     if (userProvider.esBasico()) {
       _screens = [
+        //PLAN for now
         const EjerciciosScreen(),
         const PerfilScreen(),
         const HomeScreen(),
@@ -39,6 +41,8 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
       ];
     } else {
       _screens = [
+        //PLAN for now
+        //const PlanScreen(),
         const GimnasioScreen(),
         const HomeScreen(),
         const DietasScreen(),
