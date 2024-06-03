@@ -7,7 +7,6 @@ import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
-import 'package:fitsolutions/screens/Login/login_screen.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
@@ -18,43 +17,26 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  Future<bool>? isLoggedIn() async {
-    return await SharedPrefsHelper().getLoggedIn();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<UserData>(create: (context) => UserData()),
-        ChangeNotifierProvider(create: (context) => UserProvider()),
-      ],
-      child:MaterialApp(
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  UserData().initializeData();
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<UserData>(create: (context) => UserData()),
+      ChangeNotifierProvider(create: (context) => UserProvider()),
+    ],
+    child: MaterialApp(
       navigatorKey: NavigationService.navigatorKey,
       theme: lightTheme,
       home: FutureBuilder<bool>(
-        future: isLoggedIn(),
-        builder: (context, snapshot){
-          if (snapshot.hasError) {
-            return ErrorWidget(snapshot.error as Object);
+        future: SharedPrefsHelper().getLoggedIn(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data == true) {
+            context.read<UserData>().initializeData();
+            return const HomeScreen();
           }
-          if (snapshot.hasData) {
-            final isLoggedIn = snapshot.data!;
-            if (isLoggedIn) {
-              final userProvider = context.read<UserData>();
-              userProvider.initializeData();
-            }
-            return isLoggedIn ? const HomeScreen() : const WelcomePage();
-          }
-          return const Center(child: CircularProgressIndicator());
+          return const WelcomePage();
         },
       ),
       routes: <String, WidgetBuilder>{
@@ -66,8 +48,8 @@ class MyApp extends StatelessWidget {
         '/membresia': (BuildContext context) => const MembresiaScreen(),
         '/registro': (BuildContext context) => const RegistroScreen(),
         '/gimnasio': (BuildContext context) => const GimnasioScreen(),
+        '/welcome': (BuildContext context) => const WelcomePage()
       },
     ),
-    );
-  }
+  ));
 }

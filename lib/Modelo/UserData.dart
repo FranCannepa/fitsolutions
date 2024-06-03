@@ -16,6 +16,7 @@ class UserData extends ChangeNotifier {
   late String gimnasioId = '';
   late String calendarioId = '';
   late String membresiaId = '';
+  String? gimnasioIdPropietario = '';
 
   final prefs = SharedPrefsHelper();
   void initializeData() async {
@@ -35,6 +36,7 @@ class UserData extends ChangeNotifier {
     } else {
       log.d("EMPTY EMAIL!");
     }
+    notifyListeners();
   }
 
   Future<Map<String, dynamic>?> getUserData(String email) async {
@@ -49,6 +51,10 @@ class UserData extends ChangeNotifier {
     } else {
       return {};
     }
+  }
+
+  bool esPropietarioGym() {
+    return gimnasioIdPropietario != '';
   }
 
   bool esBasico() {
@@ -67,6 +73,8 @@ class UserData extends ChangeNotifier {
     gimnasioId = gymId;
     notifyListeners();
   }
+
+  void updateGymPropietario(String gymId) {}
 
   void updateNombreCompleto(String newNombreCompleto) {
     nombreCompleto = newNombreCompleto;
@@ -119,10 +127,11 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormPropietario(Map<String, dynamic>? userData) async{
+  void dataFormPropietario(Map<String, dynamic>? userData) async {
     userId = userData?['docId'] ?? await prefs.getDocId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
+    gimnasioIdPropietario = await getGimnasioPropietario(userId);
     notifyListeners();
   }
 
@@ -136,7 +145,7 @@ class UserData extends ChangeNotifier {
   void firstLogin(User user) {
     if (user.email!.isNotEmpty) {
       email = user.email as String;
-      photoUrl = user.photoURL!= null ? user.photoURL as String : '';
+      photoUrl = user.photoURL != null ? user.photoURL as String : '';
     }
     notifyListeners();
   }
@@ -147,4 +156,72 @@ class UserData extends ChangeNotifier {
     tipo = userData?['tipo'] ?? '';
     notifyListeners();
   }
+
+  Future<String?> getGimnasioPropietario(String propietarioId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('gimnasio')
+          .where('propietarioId', isEqualTo: propietarioId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final docSnapshot = querySnapshot.docs.first;
+        return docSnapshot.id;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActividades(DateTime fecha) async {
+    try {
+      final todayStart = DateTime(fecha.year, fecha.month, fecha.day, 0, 0);
+      final todayEnd = todayStart.add(const Duration(days: 1));
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('actividad')
+          .where('gimnasioId', isEqualTo: gimnasioIdPropietario)
+          .where('inicio', isGreaterThanOrEqualTo: todayStart)
+          .where('fin', isLessThanOrEqualTo: todayEnd)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final fetchedActividades = querySnapshot.docs.map((doc) {
+          final actividadData = doc.data();
+          return actividadData;
+        }).toList();
+        return fetchedActividades;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching actividades: $e');
+      return [];
+    }
+  }
+
+//   Future<List<Map<String, dynamic>>> getActividadesSuigienteD(int page, int pageSize) async {
+//   try {
+//     final now = DateTime.now();
+//     final startDate = now.subtract(Duration(days: (page - 1) * pageSize));
+//     final endDate = startDate.add(Duration(days: pageSize));
+//     final querySnapshot = await FirebaseFirestore.instance
+//         .collection('actividad')
+//         .where('gimnasioId', isEqualTo: gimnasioIdPropietario)
+//         .where('inicio', isGreaterThanOrEqualTo: startDate)
+//         .where('fin', isLessThanOrEqualTo: endDate)
+//         .get();
+//     if (querySnapshot.docs.isNotEmpty) {
+//       final fetchedActividades = querySnapshot.docs.map((doc) {
+//         // ... existing logic to convert doc data to Map
+//       }).toList();
+//       return fetchedActividades;
+//     } else {
+//       return [];
+//     }
+//   } catch (e) {
+//     print('Error fetching actividades: $e');
+//     return [];
+//   }
+// }
 }
