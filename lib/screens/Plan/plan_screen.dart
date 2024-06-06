@@ -2,6 +2,8 @@ import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/screens/Plan/plan_create_dialogue.dart';
 import 'package:fitsolutions/screens/Plan/plan_info_screen.dart';
+import 'package:fitsolutions/screens/Plan/user_list_rutina.dart';
+import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -87,6 +89,16 @@ class _PlanScreenState extends State<PlanScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
+                                  onPressed: () => showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (_) => UserListRutina(
+                                        fitnessProvider: fitnessProvider,
+                                        planId: plan.planId),
+                                  ),
+                                  icon: const Icon(Icons.person_add),
+                                ),
+                                IconButton(
                                     onPressed: () => {
                                           nameController.text = plan.name,
                                           descController.text =
@@ -112,8 +124,22 @@ class _PlanScreenState extends State<PlanScreen> {
                                         },
                                     icon: const Icon(Icons.settings)),
                                 IconButton(
-                                    onPressed: () =>
-                                        fitnessProvider.deletePlan(plan.planId),
+                                    onPressed: () => {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return ConfirmDialog(
+                                                    title: 'Borrar Rutina',
+                                                    content:
+                                                        'Desea borrar la Rutina?',
+                                                    onConfirm: () async {
+                                                      fitnessProvider
+                                                          .deletePlan(
+                                                              plan.planId);
+                                                    },
+                                                    parentKey: null);
+                                              })
+                                        },
                                     icon: const Icon(Icons.delete)),
                               ],
                             ),

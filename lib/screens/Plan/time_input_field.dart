@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class TimeInputField extends StatefulWidget {
   final TextEditingController controller;
@@ -16,6 +17,7 @@ class _TimeInputFieldState extends State<TimeInputField> {
   @override
   void initState() {
     super.initState();
+    _updateTime();
     widget.controller.addListener(_updateTime);
   }
 
@@ -36,6 +38,10 @@ class _TimeInputFieldState extends State<TimeInputField> {
     }
   }
 
+  void _updateControllerText() {
+    widget.controller.text = '${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -48,32 +54,40 @@ class _TimeInputFieldState extends State<TimeInputField> {
         Row(
           children: [
             Expanded(
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Minutos',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (value) => setState(() {
-                  _minutes = int.tryParse(value) ?? 0;
-                  widget.controller.text =
-                      '${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}';
-                }),
+              child: Column(
+                children: [
+                  const Text('Minutos'),
+                  NumberPicker(
+                    value: _minutes,
+                    minValue: 0,
+                    maxValue: 60,
+                    onChanged: (value) {
+                      setState(() {
+                        _minutes = value;
+                        _updateControllerText();
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Segundos',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (value) => setState(() {
-                  _seconds = int.tryParse(value) ?? 0;
-                  widget.controller.text =
-                      '${_minutes.toString().padLeft(2, '0')}:${_seconds.toString().padLeft(2, '0')}';
-                }),
+              child: Column(
+                children: [
+                  const Text('Segundos'),
+                  NumberPicker(
+                    value: _seconds,
+                    minValue: 0,
+                    maxValue: 60,
+                    onChanged: (value) {
+                      setState(() {
+                        _seconds = value;
+                        _updateControllerText();
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
           ],

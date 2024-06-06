@@ -83,53 +83,8 @@ class _AgregarEjercicioScreenState extends State<AgregarEjercicioScreen> {
                                       openNoteBox(ejercicio.id, fitnessProvider)
                                     },
                                 icon: const Icon(Icons.settings)),
-                            IconButton(
-                                onPressed: () =>
-                                    //add a do you wish to delete
-                                    fitnessProvider.deleteEjercicio(widget.plan,ejercicio.id),
-                                icon: const Icon(Icons.delete)),
                           ],
                         ),
-                        onTap: () => {
-                          showModalBottomSheet<void>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.75,
-                                color: Colors.amber,
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('Nombre del Plan: ${ejercicio.nombre}'),
-                                      Text(
-                                        'Descripcion: ${ejercicio.nombre}',
-                                      ),
-                                      Text(
-                                        'Peso minimo: ${ejercicio.nombre} kilogramos',
-                                      ),
-                                      Text(
-                                        'Peso maxima: ${ejercicio.nombre} kilogramos',
-                                      ),
-                                      Text(
-                                        'Altura minima: ${ejercicio.nombre} metros',
-                                      ),
-                                      Text(
-                                        'Altura maxima: ${ejercicio.nombre} metros',
-                                      ),
-                                      ElevatedButton(
-                                        child: const Text('Cerrar'),
-                                        onPressed: () => Navigator.pop(context),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        },
                       );
                     });
               }
