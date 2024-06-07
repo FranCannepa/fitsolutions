@@ -1,23 +1,22 @@
 import 'package:fitsolutions/providers/fitness_provider.dart';
-import 'package:fitsolutions/screens/rutina_basico/workout_schedule.dart';
 import 'package:flutter/material.dart';
 
 import '../../modelo/models.dart';
-
-class PlanInfoScreen extends StatefulWidget {
-  final Plan plan;
+//Nota seguramente no se necesite
+class EjercicioInfoScreen extends StatefulWidget {
+  final Ejercicio ejercicio;
   final FitnessProvider fitnessProvider;
-  const PlanInfoScreen(
-      {super.key, required this.plan, required this.fitnessProvider});
+  const EjercicioInfoScreen(
+      {super.key, required this.ejercicio, required this.fitnessProvider});
 
   @override
-  State<PlanInfoScreen> createState() => _PlanInfoScreenState();
+  State<EjercicioInfoScreen> createState() => _EjercicioInfoScreenState();
 }
 
-class _PlanInfoScreenState extends State<PlanInfoScreen> {
+class _EjercicioInfoScreenState extends State<EjercicioInfoScreen> {
   @override
   Widget build(BuildContext context) {
-    Plan plan = widget.plan;
+    Ejercicio ejercicio = widget.ejercicio;
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.50,
@@ -32,7 +31,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'Plan: ${plan.name}',
+                  'Ejercicio: ${ejercicio.nombre}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -44,7 +43,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'Descripcion: ${plan.description}',
+                  'Descripcion: ${ejercicio.descripcion}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -57,7 +56,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Peso mínimo: ${plan.weight.entries.elementAt(0).value} kilogramos',
+                      'Series: ${ejercicio.series}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -69,7 +68,17 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                       width: 20), // Add some space between the fields
                   Expanded(
                     child: Text(
-                      'Peso máximo: ${plan.weight.entries.elementAt(1).value} kilogramos',
+                      'Repeticiones: ${ejercicio.repeticiones}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'Carga: ${ejercicio.carga} kg',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -84,7 +93,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Altura mínima: ${plan.height.entries.elementAt(0).value} cm',
+                      'Ejecuccion: ${ejercicio.duracion}',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -96,7 +105,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                       width: 20), // Add some space between the fields
                   Expanded(
                     child: Text(
-                      'Altura máxima: ${plan.height.entries.elementAt(1).value} cm',
+                      'Pausa: ${ejercicio.pausas} ',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -107,14 +116,6 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                child: const Text('Gestionar rutina semanal'),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => WorkoutSchedule(plan: plan)),
-                ),
-              ),
               ElevatedButton(
                 child: const Text('Cerrar'),
                 onPressed: () => Navigator.pop(context),

@@ -1,6 +1,7 @@
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/screens/Plan/time_input_field.dart';
+import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/components.dart';
@@ -41,6 +42,7 @@ class EjercicioCreateDialogue extends StatefulWidget {
 
 class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<State> _parentKey = GlobalKey<State>();
 
   void _clearFields() {
     widget.nameController.clear();
@@ -55,6 +57,7 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      key: _parentKey,
       title: const Text('Datos del Ejercicio'),
       insetPadding: EdgeInsets.zero,
       content: SingleChildScrollView(
@@ -85,36 +88,66 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
                   return null;
                 },
               ),
-              Row(
-                children: [
-              Expanded(
-                child: RoundedInputField(
-                  controller: widget.serieController,
-                  labelText: 'Series',
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'El campo no puede ser vacio';
-                    }
-                    return null;
-                  },
+              Row(children: [
+                Expanded(
+                  child: RoundedInputField(
+                    controller: widget.serieController,
+                    labelText: 'Series',
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'El campo no puede ser vacio';
+                      }
+                      if (double.tryParse(value) == null) {
+                        return 'Debe ser un número válido';
+                      }
+                      if (double.parse(value) < 0) {
+                        return 'El número no puede ser negativo';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-              Expanded(
-                child: RoundedInputField(
-                  controller: widget.repeticionController,
-                  labelText: 'Repeticiones',
-                  keyboardType: TextInputType.number,
+                Expanded(
+                  child: RoundedInputField(
+                    controller: widget.repeticionController,
+                    labelText: 'Repeticiones',
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'El campo no puede ser vacio';
+                      }
+                      if (double.tryParse(value) == null) {
+                        return 'Debe ser un número válido';
+                      }
+                      if (double.parse(value) < 0) {
+                        return 'El número no puede ser negativo';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-              ),
               ]),
               RoundedInputField(
                 controller: widget.cargaController,
                 labelText: 'Carga (KG)',
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'El campo no puede ser vacio';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Debe ser un número válido';
+                  }
+                  if (double.parse(value) < 0) {
+                    return 'El número no puede ser negativo';
+                  }
+                  return null;
+                },
               ),
-              TimeInputField(text:'Ejecucion',controller: widget.durationController),
-              TimeInputField(text:'Pausa',controller: widget.pausaController),
+              TimeInputField(
+                  text: 'Ejecucion', controller: widget.durationController),
+              TimeInputField(text: 'Pausa', controller: widget.pausaController),
             ]),
           ),
         ),
@@ -123,28 +156,62 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
         ElevatedButton(
             onPressed: () async {
               if (_formKey.currentState!.validate() && widget.docId == null) {
-                await widget.fitnessProvider.addEjercicioASemana(
-                    widget.plan!,
-                    widget.week!,
-                    widget.nameController.text,
-                    widget.descController.text,
-                    int.parse(widget.serieController.text),
-                    widget.repeticionController.text != ''
-                        ? int.parse(widget.repeticionController.text)
-                        : null,
-                    widget.cargaController.text != ''
-                        ? int.parse(widget.cargaController.text)
-                        : null,
-                    int.parse(widget.durationController.text),
-                    widget.pausaController.text != ''
-                        ? int.parse(widget.pausaController.text)
-                        : null,
-                    widget.dia);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ConfirmDialog(
+                          title: 'Crear Ejercicio',
+                          content: 'Desea crear el Ejercicio?',
+                          onConfirm: () async {
+                            await widget.fitnessProvider.addEjercicioASemana(
+                                widget.plan!,
+                                widget.week!,
+                                widget.nameController.text,
+                                widget.descController.text,
+                                int.parse(widget.serieController.text),
+                                widget.repeticionController.text != ''
+                                    ? int.parse(
+                                        widget.repeticionController.text)
+                                    : null,
+                                widget.cargaController.text != ''
+                                    ? int.parse(widget.cargaController.text)
+                                    : null,
+                                widget.durationController.text,
+                                widget.pausaController.text,
+                                widget.dia);
+                            _clearFields();
+                          },
+                          parentKey: _parentKey);
+                    });
               } else if (_formKey.currentState!.validate() &&
-                  widget.docId != null) {}
-              if (context.mounted) {
-                Navigator.pop(context);
-                _clearFields();
+                  widget.docId != null) {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ConfirmDialog(
+                          title: 'Modificar Ejercicio',
+                          content: 'Desea editar el Ejercicio?',
+                          onConfirm: () async {
+                            await widget.fitnessProvider.updateEjercicio(
+                                widget.plan!,
+                                widget.docId!,
+                                widget.week!,
+                                widget.nameController.text,
+                                widget.descController.text,
+                                int.parse(widget.serieController.text),
+                                widget.repeticionController.text != ''
+                                    ? int.parse(
+                                        widget.repeticionController.text)
+                                    : null,
+                                widget.cargaController.text != ''
+                                    ? int.parse(widget.cargaController.text)
+                                    : null,
+                                widget.durationController.text,
+                                widget.pausaController.text);
+                            _clearFields();
+                          },
+                          parentKey: _parentKey);
+                    });
               }
             },
             child: widget.docId == null
