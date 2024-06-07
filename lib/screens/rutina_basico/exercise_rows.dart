@@ -3,6 +3,7 @@ import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/screens/Plan/ejercicio_create_dialogue.dart';
 import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ExerciseRows extends StatefulWidget {
   final Plan plan;
@@ -49,7 +50,7 @@ class _ExerciseRowsState extends State<ExerciseRows> {
   }
 
   Future<List<Widget>> buildEjercicioCards(
-      Plan plan, String week, String dia) async {
+      Plan plan, String week, String dia, UserData userData) async {
     final ejercicios =
         await widget.fitnessProvider.getEjerciciosDelDiaList(plan, week, dia);
     return ejercicios.map((ejercicio) {
@@ -75,6 +76,7 @@ class _ExerciseRowsState extends State<ExerciseRows> {
               const SizedBox(width: 20),
               Expanded(
                   child: Text(ejercicio.pausas!, textAlign: TextAlign.center)),
+              if(!userData.esBasico())...[
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: () => {
@@ -107,6 +109,7 @@ class _ExerciseRowsState extends State<ExerciseRows> {
                     })
                 },
               ),
+              ],
             ],
           ),
         ),
@@ -116,8 +119,9 @@ class _ExerciseRowsState extends State<ExerciseRows> {
 
   @override
   Widget build(BuildContext context) {
+    final userData = context.read<UserData>();
     return FutureBuilder<List<Widget>>(
-      future: buildEjercicioCards(widget.plan, widget.week, widget.day),
+      future: buildEjercicioCards(widget.plan, widget.week, widget.day,userData),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();

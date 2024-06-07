@@ -70,6 +70,7 @@ class _WeekSelectorState extends State<WeekSelector> {
   Widget build(BuildContext context) {
     Logger log = Logger();
     final provider = context.watch<FitnessProvider>();
+    final userData = context.read<UserData>();
     return Scaffold(
       appBar:
           AppBar(title: const Text('Rutina'), backgroundColor: Colors.amber),
@@ -87,6 +88,7 @@ class _WeekSelectorState extends State<WeekSelector> {
                     const Text('Semana:',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 32)),
+                    if(!userData.esBasico()) ...[
                     InkWell(
                       onTap: () => {_removeWeek(provider)},
                       child: Container(
@@ -115,6 +117,7 @@ class _WeekSelectorState extends State<WeekSelector> {
                         ),
                       ),
                     )
+                    ]
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -203,10 +206,10 @@ class _WeekSelectorState extends State<WeekSelector> {
           ),
         ],
       ),
-      floatingActionButton: ElevatedButton(
+      floatingActionButton: !userData.esBasico() ? ElevatedButton(
         onPressed: () => openNoteBox(null, provider), //placeholder
         child: const Icon(Icons.add),
-      ),
+      ) : null,
     );
   }
 }
