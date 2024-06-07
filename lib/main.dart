@@ -35,45 +35,49 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<UserData>(create: (context) => UserData()),
-        ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
-        ChangeNotifierProvider<FitnessProvider>(create: (context) => FitnessProvider())
+        ChangeNotifierProvider<UserProvider>(
+            create: (context) => UserProvider()),
+        ChangeNotifierProvider<FitnessProvider>(
+            create: (context) => FitnessProvider())
       ],
-      child:MaterialApp(
-      navigatorKey: NavigationService.navigatorKey,
-      theme: lightTheme,
-      home: FutureBuilder<bool>(
-        future: isLoggedIn(),
-        builder: (context, snapshot){
-          if (snapshot.hasError) {
-            return ErrorWidget(snapshot.error as Object);
-          }
-          if (snapshot.hasData) {
-            final isLoggedIn = snapshot.data!;
-            final userProvider = context.read<UserData>();
-            if (isLoggedIn) {
-              userProvider.initializeData();
+      child: MaterialApp(
+        navigatorKey: NavigationService.navigatorKey,
+        theme: lightTheme,
+        home: FutureBuilder<bool>(
+          future: SharedPrefsHelper().getLoggedIn(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data == true) {
+              context.read<UserData>().initializeData();
+              return const HomeScreen();
             }
-            final auth = context.read<UserProvider>();
-            if(isLoggedIn && auth.firstLogin){
-            userProvider.firstLogin(auth.user!);   
-            return const RegistroScreen();
+            if (snapshot.hasData) {
+              final isLoggedIn = snapshot.data!;
+              final userProvider = context.read<UserData>();
+              if (isLoggedIn) {
+                userProvider.initializeData();
+              }
+              final auth = context.read<UserProvider>();
+              if (isLoggedIn && auth.firstLogin) {
+                userProvider.firstLogin(auth.user!);
+                return const RegistroScreen();
+              }
+              return isLoggedIn ? const HomeScreen() : const WelcomePage();
             }
-            return isLoggedIn ? const HomeScreen() : const WelcomePage();
-          }
-          return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+        routes: <String, WidgetBuilder>{
+          '/home': (BuildContext context) => const HomeScreen(),
+          '/login': (BuildContext context) => const WelcomePage(),
+          '/perfil': (BuildContext context) => const PerfilScreen(),
+          '/dieta': (BuildContext context) => const DietasScreen(),
+          '/ejercicios': (BuildContext context) => const EjerciciosScreen(),
+          '/membresia': (BuildContext context) => const MembresiaScreen(),
+          '/registro': (BuildContext context) => const RegistroScreen(),
+          '/gimnasio': (BuildContext context) => const GimnasioScreen(),
+          '/welcome': (BuildContext context) => const WelcomePage()
         },
       ),
-      routes: <String, WidgetBuilder>{
-        '/home': (BuildContext context) => const HomeScreen(),
-        '/login': (BuildContext context) => const WelcomePage(),
-        '/perfil': (BuildContext context) => const PerfilScreen(),
-        '/dieta': (BuildContext context) => const DietasScreen(),
-        '/ejercicios': (BuildContext context) => const EjerciciosScreen(),
-        '/membresia': (BuildContext context) => const MembresiaScreen(),
-        '/registro': (BuildContext context) => const RegistroScreen(),
-        '/gimnasio': (BuildContext context) => const GimnasioScreen(),
-      },
-    ),
     );
   }
 }
