@@ -6,8 +6,9 @@ class HeaderRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      color: Colors.grey[300],
+      margin: const EdgeInsets.only(top: 16), // Add top margin here
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+      color: Theme.of(context).colorScheme.primary,
       child: const Row(
         children: [
           SizedBox(width: 10), // For the checkbox

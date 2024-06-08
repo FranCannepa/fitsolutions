@@ -1,3 +1,4 @@
+import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:flutter/material.dart';
 
 class MyGym extends StatelessWidget {
@@ -55,6 +56,26 @@ class MyGym extends StatelessWidget {
                   Text(myGym['clausura'] as String)
                 ],
               ),
+            ElevatedButton(
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    transitionDuration: const Duration(
+                        milliseconds: 500), // Adjust the duration as needed
+                    pageBuilder: (_, __, ___) => const PlanScreen(),
+                    transitionsBuilder:
+                        (_, Animation<double> animation, __, Widget child) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
+                  ),
+                )
+              },
+              child: const Text('Gestion de Rutinas'),
+            ),
           ],
         ),
       ),

@@ -3,11 +3,12 @@ import 'package:fitsolutions/Components/CalendarComponents/calendarioAgregarActi
 import 'package:fitsolutions/Components/CalendarComponents/calendarioDiaActual.dart';
 import 'package:fitsolutions/Components/CommonComponents/noDataError.dart';
 import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Utilities/formaters.dart';
-import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+//import 'package:fitsolutions/Utilities/formaters.dart';
+//import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+//import 'dart:developer';
 
 class CalendarioDisplayer extends StatefulWidget {
   const CalendarioDisplayer({super.key});
@@ -34,7 +35,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
 
   @override
   Widget build(BuildContext context) {
-    final prefs = SharedPrefsHelper();
+    //final prefs = SharedPrefsHelper();
     final userProvider = context.read<UserData>();
     final fetchAction = userProvider.gimnasioId != '' ||
             userProvider.gimnasioIdPropietario != ''

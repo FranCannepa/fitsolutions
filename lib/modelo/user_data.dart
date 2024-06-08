@@ -116,7 +116,7 @@ class UserData extends ChangeNotifier {
     if (docId != null) {
       userId = docId;
     } else {
-      userId = await prefs.getDocId() as String;
+      userId = await prefs.getUserId() as String;
     }
     nombreCompleto = userData?['nombreCompleto'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
@@ -128,7 +128,7 @@ class UserData extends ChangeNotifier {
   }
 
   void dataFormPropietario(Map<String, dynamic>? userData) async {
-    userId = userData?['docId'] ?? await prefs.getDocId();
+    userId = userData?['docId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     gimnasioIdPropietario = await getGimnasioPropietario(userId);
@@ -136,7 +136,7 @@ class UserData extends ChangeNotifier {
   }
 
   void dataFormParticular(Map<String, dynamic>? userData) async {
-    userId = userData?['docId'] ?? await prefs.getDocId();
+    userId = userData?['docId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();
@@ -172,7 +172,7 @@ class UserData extends ChangeNotifier {
         return null;
       }
     } catch (e) {
-      print(e);
+      //print(e);
       return null;
     }
   }
@@ -197,10 +197,14 @@ class UserData extends ChangeNotifier {
         return [];
       }
     } catch (e) {
-      print('Error fetching actividades: $e');
+      //print('Error fetching actividades: $e');
       return [];
     }
   }
+
+  fetchActividadesEntrenador(DateTime fechaSeleccionada) {}
+
+  fetchActividadesGimnasio(DateTime fechaSeleccionada) {}
 
 //   Future<List<Map<String, dynamic>>> getActividadesSuigienteD(int page, int pageSize) async {
 //   try {

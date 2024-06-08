@@ -73,12 +73,12 @@ class _WeekSelectorState extends State<WeekSelector> {
     final userData = context.read<UserData>();
     return Scaffold(
       appBar:
-          AppBar(title: const Text('Rutina'), backgroundColor: Colors.amber),
+          AppBar(title: const Text('Rutina'), backgroundColor: Theme.of(context).colorScheme.primary),
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(8.0),
-            color: Colors.grey[200],
+            color: Theme.of(context).colorScheme.surface,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -94,7 +94,7 @@ class _WeekSelectorState extends State<WeekSelector> {
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 4.0),
                         decoration: BoxDecoration(
-                          color: Colors.redAccent,
+                          color:Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: const Padding(
@@ -108,7 +108,7 @@ class _WeekSelectorState extends State<WeekSelector> {
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 4.0),
                         decoration: BoxDecoration(
-                          color: Colors.greenAccent,
+                          color: Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: const Padding(
@@ -139,16 +139,16 @@ class _WeekSelectorState extends State<WeekSelector> {
                           padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
                             color: index == _selectedWeekIndex
-                                ? Colors.black
-                                : Colors.white,
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
                             borderRadius: BorderRadius.circular(4.0),
                           ),
                           child: Text(
                             (index + 1).toString(),
                             style: TextStyle(
                               color: index == _selectedWeekIndex
-                                  ? Colors.white
-                                  : Colors.black,
+                                  ? Theme.of(context).colorScheme.secondary
+                                  : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -177,16 +177,16 @@ class _WeekSelectorState extends State<WeekSelector> {
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               color: index == _selectedDayIndex
-                                  ? Colors.black
-                                  : Colors.white,
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.secondary,
                               borderRadius: BorderRadius.circular(4.0),
                             ),
                             child: Text(
                               days[index],
                               style: TextStyle(
                                 color: index == _selectedDayIndex
-                                    ? Colors.white
-                                    : Colors.black,
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Theme.of(context).colorScheme.primary,
                               ),
                             ),
                           ),
@@ -207,9 +207,17 @@ class _WeekSelectorState extends State<WeekSelector> {
         ],
       ),
       floatingActionButton: !userData.esBasico() ? ElevatedButton(
-        onPressed: () => openNoteBox(null, provider), //placeholder
-        child: const Icon(Icons.add),
-      ) : null,
+            onPressed: () => openNoteBox(null, provider),
+            style: ElevatedButton.styleFrom(
+              shape: const CircleBorder(),
+              padding: const EdgeInsets.all(20), // Adjust padding as needed
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              elevation: 8, // Add shadow by setting elevation
+              shadowColor: Colors.black.withOpacity(0.8),
+            ), //placeholder
+            child:  Icon(Icons.add, color: Theme.of(context).colorScheme.secondary),
+          )
+       : null,
     );
   }
 }

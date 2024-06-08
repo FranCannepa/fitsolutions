@@ -36,7 +36,7 @@ class DiaActual extends StatelessWidget {
           children: [
             Text(
               day,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 36.0,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -44,7 +44,7 @@ class DiaActual extends StatelessWidget {
             ),
             Text(
               month!, // Use null-safe access after map lookup
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16.0,
                 color: Colors.white,
               ),

@@ -60,9 +60,7 @@ class _InputDropdownState extends State<InputDropdown> {
         onChanged: (String? newValue) {
           setState(() {
             selectedOption = newValue!; 
-            if (widget.controller != null) {
-              widget.controller.text = newValue;
-            }
+            widget.controller.text = newValue;
           });
         },
       ),
