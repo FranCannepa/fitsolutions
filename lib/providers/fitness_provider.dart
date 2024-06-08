@@ -341,6 +341,7 @@ class FitnessProvider extends ChangeNotifier {
         .doc(plan.planId)
         .collection('week')
         .doc(weekId)
+
         .collection('ejercicio')
         .doc(docId)
         .delete();

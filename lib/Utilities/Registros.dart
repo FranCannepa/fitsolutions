@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 
 class Registro {
   Logger log = Logger();
-  
+
   Future<void> registrarGimnasio(Map<String, dynamic> gymData) async {
     log.d(gymData);
     final prefs = SharedPrefsHelper();
@@ -12,7 +12,7 @@ class Registro {
       final docRef =
           await FirebaseFirestore.instance.collection('gimnasio').add(gymData);
       prefs.setLoggedIn(true);
-      prefs.setDocId(docRef.id);
+      prefs.setUserId(docRef.id);
     } on FirebaseException catch (e) {
       log.d(e.code);
       log.d(e.message);

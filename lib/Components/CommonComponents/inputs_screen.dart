@@ -7,7 +7,7 @@ class ScreenTitle extends StatelessWidget {
   const ScreenTitle({
     super.key,
     required this.title,
-    this.fontSize = 20.0,
+    this.fontSize = 40.0,
     this.fontWeight = FontWeight.bold,
   });
 
@@ -16,9 +16,7 @@ class ScreenTitle extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: fontWeight,
-      ),
+          fontSize: fontSize, fontWeight: fontWeight, fontFamily: 'Roboto'),
     );
   }
 }

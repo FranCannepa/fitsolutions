@@ -28,11 +28,13 @@ class RoundedInputField extends StatelessWidget {
           contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: const BorderSide(color: Colors.orange, width: 2.0),
+            borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary, width: 2.0),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: const BorderSide(color: Colors.orange, width: 2.0),
+            borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary, width: 2.0),
           ),
           labelStyle: const TextStyle(height: 2.0),
         ),

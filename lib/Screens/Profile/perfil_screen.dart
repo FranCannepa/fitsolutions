@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:fitsolutions/Components/components.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Screens/Profile/editar_perfil_screen.dart';
+import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -39,66 +40,152 @@ class _PerfilScreenState extends State<PerfilScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: FutureBuilder<Map<String, dynamic>?>(
-              future: getUserData(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  userData = snapshot.data!;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        radius: 50.0,
-                        backgroundImage: userData['profilePic'] != null &&
-                                userData['profilePic'].isNotEmpty
-                            ? NetworkImage(userData['profilePic'] as String)
-                            : null,
-                        child: userData['profilePic'] == null ||
-                                userData['profilePic'].isEmpty
-                            ? const Icon(Icons.person)
-                            : null,
-                      ),
-                      const SizedBox(height: 24.0),
-                      const Text(
-                        'Nombre Completo',
-                        style: TextStyle(
-                            fontSize: 24.0, fontWeight: FontWeight.bold),
-                      ),
-                      Text(userData['nombreCompleto'] ?? 'Usuario de Ejemplo'),
-                      Text(userData['tipo']),
-                      const SizedBox(height: 16.0),
-                      const SizedBox(height: 16.0),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const EditarPerfilScreen()),
-                          );
-                        },
-                        child: const Text('Editar Perfil'),
-                      ),
-                    ],
-                  );
-                } else if (snapshot.hasError) {
-                  return const Center(
-                    child: Text("Error fetching user data!"),
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-          ),
+        child: Scaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder<Map<String, dynamic>?>(
+          future: getUserData(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final userData = snapshot.data!;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 50.0,
+                                backgroundImage:
+                                    userData['profilePic'] != null &&
+                                            userData['profilePic'].isNotEmpty
+                                        ? NetworkImage(
+                                            userData['profilePic'] as String)
+                                        : null,
+                                child: userData['profilePic'] == null ||
+                                        userData['profilePic'].isEmpty
+                                    ? const Icon(Icons.person)
+                                    : null,
+                              ),
+                              const SizedBox(width: 20.0),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    userData['nombreCompleto'] ??
+                                        'Usuario de Ejemplo',
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ),
+                                  Text(
+                                    userData['tipo'],
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Altura: ${userData['altura'] ?? 'No informada'}',
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.secondary),
+                        ),
+                        Text(
+                          'Peso: ${userData['peso'] ?? 'No informado'}',
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.secondary),
+                        ),
+                        Text(
+                          'Fecha Nacimiento: ${userData['fechaNacimiento'] ?? 'No informada'}',
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).colorScheme.secondary),
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              'Edad: ',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                            Text(
+                              Formatters()
+                                  .calculateAge(userData['fechaNacimiento'])
+                                  .toString(),
+                              style: TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w500,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EditarPerfilScreen(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(),
+                    child: const Text('Editar Perfil'),
+                  ),
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return const Center(
+                child: Text("Error fetching user data!"),
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
       ),
-
-    );
+      bottomNavigationBar: const FooterBottomNavigationBar(
+        initialScreen: ScreenType.perfil,
+      ),
+    ));
   }
 }
