@@ -3,15 +3,16 @@ class Ejercicio {
   String nombre;
   String descripcion;
   String tipo; // "Cardio", "Fuerza", "Flexibilidad"
-  int duracion; // ejecucion en minutos
+  String duracion; // ejecucion en minutos
   int series;
   int? repeticiones;
-  int? pausas;
+  String? pausas;
   int? carga;
   String? dia;
 
   Ejercicio(
-      {required this.id,
+      {
+      required this.id,
       required this.nombre,
       required this.descripcion,
       required this.tipo,
@@ -20,7 +21,8 @@ class Ejercicio {
       this.repeticiones,
       this.pausas,
       this.carga,
-      this.dia});
+      this.dia
+      });
 
   static Ejercicio fromDocument(String id, Map<String, dynamic> doc) {
     return Ejercicio(

@@ -14,6 +14,25 @@ class FitnessProvider extends ChangeNotifier {
     });
   }
 
+
+
+  Future<List<UsuarioBasico>> getUsuariosInscriptos(String rutinaId) async {
+    //This filter should be different.
+    //Here we should filter by users that are members of the gym.
+    //Y que este habiles.
+    CollectionReference userStore =
+        FirebaseFirestore.instance.collection('usuario');
+    QuerySnapshot userSnapshot =
+        await userStore.where('tipo', isEqualTo: 'Basico').get();
+
+    List<UsuarioBasico> users = userSnapshot.docs.map((userDoc) {
+      return UsuarioBasico.fromDocument(
+          userDoc.id, userDoc.data() as Map<String, dynamic>);
+    }).toList();
+    return users;
+  }
+
+
   Future<List<Plan>> getPlanesList() async {
     final querySnapshot = await planCollection.get();
     List<Plan> planes = [];
@@ -55,6 +74,26 @@ class FitnessProvider extends ChangeNotifier {
     return querySnapshot.docs.map((doc) {
       return Ejercicio.fromDocument(doc.id, doc.data());
     }).toList();
+  }
+
+  Future<void> addUsuarioARutina(String planId, List<UsuarioBasico> usuarios) async{
+    for(final user in usuarios){
+      await planCollection.doc(planId).collection('subscripto').doc(user.docId).set(UsuarioBasico.toDocument(user));
+      await copyRutinaToUser(user.docId, planId);
+    }
+    notifyListeners();
+  }
+
+  Future<List<UsuarioBasico>> getUsuariosEnRutina(String planId) async{
+    final usersFromStore = await planCollection.doc(planId).collection('subscripto').get();
+    return usersFromStore.docs.map((doc){
+      return UsuarioBasico.fromDocument(doc.id, doc.data());
+    }).toList();
+  }
+
+  Future<void> removeUsuarioDeRutina(String planId, String userId) async{
+    await planCollection.doc(planId).collection('subscripto').doc(userId).delete();
+    notifyListeners();
   }
 
   Future<void> addWeek(int number, Plan plan) async {
@@ -120,8 +159,8 @@ class FitnessProvider extends ChangeNotifier {
       int serie,
       int? repeticion,
       int? carga,
-      int ejecucion,
-      int? pausa,
+      String? ejecucion,
+      String? pausa,
       String? dia) async {
     CollectionReference subcollectionReference = planCollection
         .doc(plan.planId)
@@ -141,6 +180,31 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> copyRutinaToUser(String userId, String planId) async{
+    //copy workout
+    final rutinaRef =  planCollection.doc(planId);
+    DocumentSnapshot rutina = await planCollection.doc(planId).get();
+
+    final rutinaData = rutina.data() as Map<String,dynamic>;
+
+    final rutinaUserRef =  FirebaseFirestore.instance.collection('usuario').doc(userId).collection('rutinaUsuario').doc(planId);
+    rutinaUserRef.set(rutinaData);
+    //copy the week
+    final weekSnapshot = await rutinaRef.collection('week').get();
+    for(final week in weekSnapshot.docs){
+      final weekData = week.data();
+      rutinaUserRef.collection('week').doc(week.id).set(weekData); 
+      final exerciseSnapshot = await rutinaRef.collection('week').doc(week.id).collection('ejercicio').get();
+      
+      for(final exercise in exerciseSnapshot.docs){
+        final exerciseData = exercise.data();
+        rutinaUserRef.collection('week').doc(week.id).collection('ejercicio').doc(exercise.id).set(exerciseData);
+      }
+    }
+  }
+
+
+
   Future<void> updatePlan(String docId, String newName, String description,
       Map<String, dynamic> weight, Map<String, dynamic> height) async {
     planCollection.doc(docId).update({
@@ -154,23 +218,73 @@ class FitnessProvider extends ChangeNotifier {
 
   Future<void> updateEjercicio(
     Plan plan,
-    String docId,
-    String newName,
-    String description,
+    String ejercicioId,
+    String weekNumber,
+    String name,
+    String descripcion,
+    int serie,
+    int? repeticion,
+    int? carga,
+    String? ejecucion,
+    String? pausa,
   ) async {
-    planCollection.doc(plan.planId).collection('ejercicio').doc(docId).update({
-      'nombre': newName,
+    planCollection
+        .doc(plan.planId)
+        .collection('week')
+        .doc(weekNumber)
+        .collection('ejercicio')
+        .doc(ejercicioId)
+        .update({
+      'nombre': name,
+      'descripcion': descripcion,
+      'serie': serie,
+      'repeticion': repeticion,
+      'carga': carga,
+      'ejecucion': ejecucion,
+      'pausa': pausa
     });
-  }
-
-  Future<void> deletePlan(String docId) async {
-    await planCollection.doc(docId).delete();
     notifyListeners();
   }
 
-  Future<void> deleteEjercicio(Plan plan, String docId) async {
+  Future<void> deleteExercisesfromWeek(String plan, String weekId) async {
+    final subCollection = await FirebaseFirestore.instance
+        .collection('plan')
+        .doc(plan)
+        .collection('week')
+        .doc((weekId))
+        .collection('ejercicio')
+        .get();
+
+    for (var document in subCollection.docs) {
+      await document.reference.delete();
+    }
+  }
+
+  Future<void> deleteWeeksFromPlan(String plan) async {
+    final subCollection = await FirebaseFirestore.instance
+        .collection('plan')
+        .doc(plan)
+        .collection('week')
+        .get();
+    for (var document in subCollection.docs) {
+      await deleteExercisesfromWeek(plan, document.id);
+      await document.reference.delete();
+    }
+  }
+
+  Future<void> deletePlan(String docId) async {
+    final docRef = planCollection.doc(docId);
+    await deleteWeeksFromPlan(docRef.id);
+    docRef.delete();
+    notifyListeners();
+  }
+
+  Future<void> deleteEjercicio(Plan plan, String weekId, String docId) async {
     await planCollection
         .doc(plan.planId)
+        .collection('week')
+        .doc(weekId)
+
         .collection('ejercicio')
         .doc(docId)
         .delete();
@@ -178,11 +292,7 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<void> deleteWeek(Plan plan) async {
-    await planCollection
-        .doc(plan.planId)
-        .collection('week')
-        .doc(plan.lastWeek())
-        .delete();
+    await deleteExercisesfromWeek(plan.planId, plan.lastWeek());
     plan.removeWeek();
     notifyListeners();
   }

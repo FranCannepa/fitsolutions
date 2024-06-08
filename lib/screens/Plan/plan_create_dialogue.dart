@@ -1,4 +1,5 @@
 import 'package:fitsolutions/providers/fitness_provider.dart';
+import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../../components/components.dart';
@@ -30,6 +31,7 @@ class PlanCreateDialogue extends StatefulWidget {
 
 class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
   final _formKey = GlobalKey<FormState>();
+  final GlobalKey<State> _parentKey = GlobalKey<State>();
 
   void _clearFields() {
     widget.nameController.clear();
@@ -63,6 +65,7 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      key: _parentKey,
       title: const Text('Datos del Plan'),
       insetPadding: EdgeInsets.zero,
       content: SingleChildScrollView(
@@ -191,20 +194,40 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
               final height = createRangeMap(
                   widget.minHeightController, widget.maxHeightController);
               if (_formKey.currentState!.validate() && widget.docId == null) {
-                await widget.fitnessProvider.addPlan(widget.nameController.text,
-                    widget.descController.text, weight, height);
-                _clearFields();
-                Navigator.pop(context);
-                //Navigator.push(context,  MaterialPageRoute(builder: (context) =>  AgregarEjercicioScreen(plan: nuevoPlan)));
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ConfirmDialog(
+                          title: 'Crear Rutina',
+                          content: 'Desea crear la Rutina?',
+                          onConfirm: () async {
+                            await widget.fitnessProvider.addPlan(
+                                widget.nameController.text,
+                                widget.descController.text,
+                                weight,
+                                height);
+                            _clearFields();
+                          },
+                          parentKey: _parentKey);
+                    });
               } else if (_formKey.currentState!.validate()) {
-                widget.fitnessProvider.updatePlan(
-                    widget.docId!,
-                    widget.nameController.text,
-                    widget.descController.text,
-                    weight,
-                    height);
-                _clearFields();
-                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ConfirmDialog(
+                          title: 'Modificar Rutina',
+                          content: 'Desea modificar la Rutina?',
+                          onConfirm: () async {
+                            await widget.fitnessProvider.updatePlan(
+                                widget.docId!,
+                                widget.nameController.text,
+                                widget.descController.text,
+                                weight,
+                                height);
+                            _clearFields();
+                          },
+                          parentKey: _parentKey);
+                    });
               }
             },
             child: widget.docId == null
