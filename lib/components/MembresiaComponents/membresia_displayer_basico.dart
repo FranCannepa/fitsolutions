@@ -14,7 +14,7 @@ class MembresiaDisplayerBasico extends StatefulWidget {
 
 class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
   late Map<String, dynamic> membresia = {};
-  bool _isLoading = true; // Flag to track loading state
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -59,12 +59,12 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
         }
       } catch (e) {
         setState(() {
-          _isLoading = false; // Set loading to false on error
+          _isLoading = false;
         });
       }
     } else {
       setState(() {
-        _isLoading = false; // Set loading to false if no membership ID found
+        _isLoading = false;
       });
     }
   }
@@ -74,16 +74,14 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     return Container(
       padding: const EdgeInsets.all(20.0),
       child: _isLoading
-          ? const Center(
-              child:
-                  CircularProgressIndicator()) // Progress indicator while loading
+          ? const Center(child: CircularProgressIndicator())
           : membresia.isEmpty
               ? const Center(
                   child: Text(
                     "No tiene membresía disponible",
                     style: TextStyle(fontSize: 16.0),
                   ),
-                ) // Text for no membership
+                )
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

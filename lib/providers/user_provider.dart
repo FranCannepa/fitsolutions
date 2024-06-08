@@ -43,7 +43,7 @@ class UserProvider extends ChangeNotifier {
             documentSnapshot.data() as Map<String, dynamic>;
         // Store user data in SharedPreferences
         await prefs.setEmail(docData['email']);
-        await prefs.setDocId(documentSnapshot.id);
+        await prefs.setUserId(documentSnapshot.id);
         await prefs.setLoggedIn(true);
       }
       else{

@@ -15,6 +15,7 @@ class FitnessProvider extends ChangeNotifier {
   }
 
 
+
   Future<List<UsuarioBasico>> getUsuariosInscriptos(String rutinaId) async {
     //This filter should be different.
     //Here we should filter by users that are members of the gym.
@@ -30,6 +31,7 @@ class FitnessProvider extends ChangeNotifier {
     }).toList();
     return users;
   }
+
 
   Future<List<Plan>> getPlanesList() async {
     final querySnapshot = await planCollection.get();
@@ -282,6 +284,7 @@ class FitnessProvider extends ChangeNotifier {
         .doc(plan.planId)
         .collection('week')
         .doc(weekId)
+
         .collection('ejercicio')
         .doc(docId)
         .delete();
