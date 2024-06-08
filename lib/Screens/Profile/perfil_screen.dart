@@ -183,9 +183,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
           },
         ),
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.perfil,
-      ),
     ));
   }
 }

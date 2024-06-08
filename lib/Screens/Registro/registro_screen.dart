@@ -34,7 +34,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
           await FirebaseFirestore.instance.collection('usuario').add(userData);
       prefs.setEmail(userProvider.email);
       prefs.setLoggedIn(true);
-      prefs.setDocId(docRef.id);
+      prefs.setUserId(docRef.id);
       NavigationService.instance.pushNamed("/home");
     } on FirebaseException catch (e) {
       log.d(e.code);

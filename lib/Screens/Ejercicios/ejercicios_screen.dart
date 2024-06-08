@@ -12,7 +12,7 @@ class EjerciciosScreen extends StatelessWidget {
 
   Future<Plan> getPlanFromUser(FitnessProvider provider) async {
     final prefs = SharedPrefsHelper();
-    String? docId = await prefs.getDocId();
+    String? docId = await prefs.getUserId();
     return await provider.getRutinaDeUsuario(docId!);
   }
 

@@ -69,7 +69,9 @@ class _CalendarioAgregarActividadDialogState
       } else {
         _showSuccessModal("Error al crear", ResultType.error);
       }
-    } on FirebaseException catch (e) {}
+    } on FirebaseException catch (e) {
+      
+    }
   }
 
   void _showSuccessModal(String mensaje, ResultType resultado) {

@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final docRef = FirebaseFirestore.instance
           .collection('usuario')
-          .doc(await prefs.getDocId());
+          .doc(await prefs.getUserId());
       final snapshot = await docRef.get();
       if (snapshot.exists) {
         return snapshot.data() as Map<String, dynamic>;
