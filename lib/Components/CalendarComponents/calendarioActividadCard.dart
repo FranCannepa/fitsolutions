@@ -1,7 +1,7 @@
 import 'package:fitsolutions/Utilities/formaters.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 
 class CartaActividad extends StatelessWidget {
   late Map<String, dynamic> actividad;
@@ -10,7 +10,7 @@ class CartaActividad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserData>();
+    //final userProvider = context.read<UserData>();
     return Card(
       child: InkWell(
         onTap: () {

@@ -49,11 +49,11 @@ class _PlanScreenState extends State<PlanScreen> {
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(20), // Adjust padding as needed
-              backgroundColor: Colors.orange,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               elevation: 8, // Add shadow by setting elevation
               shadowColor: Colors.black.withOpacity(0.8),
             ), //placeholder
-            child: const Icon(Icons.add, color: Colors.white),
+            child:  Icon(Icons.add, color: Theme.of(context).colorScheme.secondary),
           ),
           body: FutureBuilder<List<Plan>>(
               future: fitnessProvider.getPlanesList(),

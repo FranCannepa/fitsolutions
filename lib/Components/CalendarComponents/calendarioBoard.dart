@@ -29,7 +29,7 @@ class _CalendarioBoardState extends State<CalendarioBoard> {
         return [];
       }
     } catch (e) {
-      print('Error fetching actividades: $e');
+      //print('Error fetching actividades: $e');
       rethrow;
     }
   }

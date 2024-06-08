@@ -1,13 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/CalendarComponents/calendarioDisplayer.dart';
-import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Modelo/Screens.dart';
+//import 'package:fitsolutions/Components/CalendarComponents/calendarioDisplayer.dart';
+//import 'package:fitsolutions/Components/components.dart';
+//import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
-import 'package:fitsolutions/providers/user_provider.dart';
+//import 'package:fitsolutions/providers/user_provider.dart';
+import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
+import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';
+import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen.dart';
+import 'package:fitsolutions/screens/Home/home_screen_content.dart';
+//import 'package:fitsolutions/screens/Login/welcome_screen.dart';
+import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
+import 'package:fitsolutions/screens/Plan/plan_screen.dart';
+import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../modelo/models.dart';
+
+//import '../../modelo/models.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +28,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  Future<void> _initializeScreenIndex() async {
+    final userProvider = context.read<UserData>();
+    _selectedIndex =
+        userProvider.esBasico() ? 2 : 1; // Set index based on user's status
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeScreenIndex();
+  }
+
   Future<Map<String, dynamic>?> getUserData() async {
     final prefs = SharedPrefsHelper();
     try {
@@ -37,33 +62,105 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getUserData(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return const Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [CalendarioDisplayer()],
+    return SafeArea(
+      child: FutureBuilder(
+        future: getUserData(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final userProvider = context.read<UserData>();
+            
+            List<Widget> screens = userProvider.esBasico()
+                ? [
+                    const EjerciciosScreen(),
+                    const PerfilScreen(),
+                    const HomeScreenContent(), // Separate widget for home screen content
+                    const DietasScreen(),
+                    const MembresiaScreen(),
+                  ]
+                : [
+                    const GimnasioScreen(),
+                    const HomeScreenContent(), // Separate widget for home screen content
+                    const DietasScreen(),
+                    const MembresiaScreen(),
+                    const PlanScreen(),
+                  ];
+
+            List<BottomNavigationBarItem> getBotones() {
+              return userProvider.esBasico()
+                  ? [
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/dumbell_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/profile_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/home_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/diet_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/membership_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                    ]
+                  : [
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/dumbell_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/home_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/diet_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Image.asset('assets/icons/membership_icon.png'),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                      ),
+                    ];
+            }
+
+            return Scaffold(
+              body: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: IndexedStack(
+                  index: _selectedIndex,
+                  children: screens,
+                ),
               ),
-            ),
-            bottomNavigationBar: FooterBottomNavigationBar(
-              initialScreen: ScreenType.home,
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return const Scaffold(
-            body: Center(
-              child: Text("Error fetching user data!"),
-            ),
-          );
-        } else {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-      },
+              bottomNavigationBar: CupertinoTabBar(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                items: getBotones(),
+                onTap: (index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                currentIndex: _selectedIndex,
+              ),
+            );
+          } else if (snapshot.hasError) {
+            return const Scaffold(
+              body: Center(
+                child: Text("Error fetching user data!"),
+              ),
+            );
+          } else {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
     );
   }
 }

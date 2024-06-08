@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Modelo/Screens.dart';
+//import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/modelo/models.dart';
-import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -81,20 +80,8 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
               },
             ),
             if (showGymForm) GimnasioForm(refresh: refreshScreen),
-            ElevatedButton(
-              onPressed: () => {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PlanScreen()),
-                )
-              },
-              child: const Text('Gestion de Rutinas'),
-            ),
           ],
         ),
-      ),
-      bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.gym,
       ),
     );
   }

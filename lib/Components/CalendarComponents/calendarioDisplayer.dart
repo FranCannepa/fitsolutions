@@ -1,8 +1,10 @@
 import 'package:fitsolutions/Components/CommonComponents/noDataError.dart';
 import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
+import 'package:fitsolutions/components/CalendarComponents/calendarioActividadCard.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer';
 
 class CalendarioDisplayer extends StatefulWidget {
   const CalendarioDisplayer({super.key});
@@ -36,6 +38,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
             future:
                 context.read<UserData>().fetchActividades(fechaSeleccionada),
             builder: (context, snapshot) {
+              debugger();
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               }

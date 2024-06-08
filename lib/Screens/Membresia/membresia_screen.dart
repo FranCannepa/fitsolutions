@@ -1,4 +1,3 @@
-import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +26,6 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
       body: userProvider.esBasico()
           ? const MembresiaDisplayerBasico()
           : const MembresiaDisplayerPropietario(),
-      bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.membresia,
-      ),
     );
   }
 }

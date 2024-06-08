@@ -31,7 +31,6 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
 
     if (userProvider.esBasico()) {
       _screens = [
-        //PLAN for now
         const EjerciciosScreen(),
         const PerfilScreen(),
         const HomeScreen(),
@@ -40,8 +39,6 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
       ];
     } else {
       _screens = [
-        //PLAN for now
-        //const PlanScreen(),
         const GimnasioScreen(),
         const HomeScreen(),
         const DietasScreen(),
@@ -102,7 +99,7 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
               onTap: (index) {
                 setState(() {
                   _selectedIndex = index;
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => _screens[index]),
                   );

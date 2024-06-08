@@ -197,7 +197,7 @@ class UserData extends ChangeNotifier {
         return [];
       }
     } catch (e) {
-      print('Error fetching actividades: $e');
+      //print('Error fetching actividades: $e');
       return [];
     }
   }
