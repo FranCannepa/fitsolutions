@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -16,22 +15,23 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<List<Plan>> getPlanesList() async {
-
     final querySnapshot = await planCollection.get();
     List<Plan> planes = [];
 
-    for( var doc in querySnapshot.docs){
-      CollectionReference weeksCollectionRef = planCollection.doc(doc.id).collection('week');
+    for (var doc in querySnapshot.docs) {
+      CollectionReference weeksCollectionRef =
+          planCollection.doc(doc.id).collection('week');
       QuerySnapshot weeksSnapshot = await weeksCollectionRef.get();
 
-      List<Week> weeks = weeksSnapshot.docs.map((weekDoc){
-        return Week.fromDocument(weekDoc.id, weekDoc.data() as Map<String,dynamic>);
+      List<Week> weeks = weeksSnapshot.docs.map((weekDoc) {
+        return Week.fromDocument(
+            weekDoc.id, weekDoc.data() as Map<String, dynamic>);
       }).toList();
 
       Plan plan = Plan.fromDocument(doc.id, doc.data(), weeks);
       planes.add(plan);
-
-    };
+    }
+    ;
     return planes;
   }
 
@@ -43,19 +43,28 @@ class FitnessProvider extends ChangeNotifier {
     }).toList();
   }
 
-  Future<List<Ejercicio>> getEjerciciosDelDiaList(Plan plan, String week, String dia) async{
-    final querySnapshot = await planCollection.doc(plan.planId).collection('week').doc(week).collection('ejercicio').where('dia',isEqualTo: dia).get();
-    return querySnapshot.docs.map((doc){
+  Future<List<Ejercicio>> getEjerciciosDelDiaList(
+      Plan plan, String week, String dia) async {
+    final querySnapshot = await planCollection
+        .doc(plan.planId)
+        .collection('week')
+        .doc(week)
+        .collection('ejercicio')
+        .where('dia', isEqualTo: dia)
+        .get();
+    return querySnapshot.docs.map((doc) {
       return Ejercicio.fromDocument(doc.id, doc.data());
     }).toList();
   }
 
-  Future<void> addWeek(int number, Plan plan) async{
-    DocumentReference doc = await planCollection.doc(plan.planId).collection('week').add({
-      'number':number
-    });
+  Future<void> addWeek(int number, Plan plan) async {
+    DocumentReference doc = await planCollection
+        .doc(plan.planId)
+        .collection('week')
+        .add({'number': number});
     DocumentSnapshot docSnap = await doc.get();
-    Week newWeek = Week.fromDocument(doc.id, docSnap.data() as Map<String,dynamic>);
+    Week newWeek =
+        Week.fromDocument(doc.id, docSnap.data() as Map<String, dynamic>);
     plan.addWeek(newWeek);
     notifyListeners();
   }
@@ -74,19 +83,28 @@ class FitnessProvider extends ChangeNotifier {
 
     notifyListeners();
     return Plan.fromDocument(
-        doc.id, docSnapshot.data() as Map<String, dynamic>,[]);
+        doc.id, docSnapshot.data() as Map<String, dynamic>, []);
   }
 
   //Add exercise to Plan
-  Future<void> addEjercicio(Plan plan, String name,String descripcion, int serie, int? repeticion, int? carga, int ejecucion, int? pausa,String? dia) async {
+  Future<void> addEjercicio(
+      Plan plan,
+      String name,
+      String descripcion,
+      int serie,
+      int? repeticion,
+      int? carga,
+      int ejecucion,
+      int? pausa,
+      String? dia) async {
     CollectionReference subcollectionReference =
         planCollection.doc(plan.planId).collection('ejercicio');
     subcollectionReference.add({
       'nombre': name,
       'descripcion': descripcion,
-      'serie' : serie,
+      'serie': serie,
       'repeticion': repeticion,
-      'carga' : carga,
+      'carga': carga,
       'ejecucion': ejecucion,
       'pausa': pausa,
       'dia': dia
@@ -94,15 +112,28 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addEjercicioASemana(Plan plan, String weekNumber, String name,String descripcion, int serie, int? repeticion, int? carga, int ejecucion, int? pausa,String? dia) async {
-    CollectionReference subcollectionReference =
-        planCollection.doc(plan.planId).collection('week').doc(weekNumber).collection('ejercicio');
+  Future<void> addEjercicioASemana(
+      Plan plan,
+      String weekNumber,
+      String name,
+      String descripcion,
+      int serie,
+      int? repeticion,
+      int? carga,
+      int ejecucion,
+      int? pausa,
+      String? dia) async {
+    CollectionReference subcollectionReference = planCollection
+        .doc(plan.planId)
+        .collection('week')
+        .doc(weekNumber)
+        .collection('ejercicio');
     subcollectionReference.add({
       'nombre': name,
       'descripcion': descripcion,
-      'serie' : serie,
+      'serie': serie,
       'repeticion': repeticion,
-      'carga' : carga,
+      'carga': carga,
       'ejecucion': ejecucion,
       'pausa': pausa,
       'dia': dia
@@ -121,8 +152,12 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateEjercicio(Plan plan, String docId, String newName, String description,
-  ) async{
+  Future<void> updateEjercicio(
+    Plan plan,
+    String docId,
+    String newName,
+    String description,
+  ) async {
     planCollection.doc(plan.planId).collection('ejercicio').doc(docId).update({
       'nombre': newName,
     });
@@ -133,13 +168,21 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteEjercicio(Plan plan, String docId) async{
-    await planCollection.doc(plan.planId).collection('ejercicio').doc(docId).delete();
+  Future<void> deleteEjercicio(Plan plan, String docId) async {
+    await planCollection
+        .doc(plan.planId)
+        .collection('ejercicio')
+        .doc(docId)
+        .delete();
     notifyListeners();
-  } 
+  }
 
-  Future<void> deleteWeek(Plan plan) async{
-    await planCollection.doc(plan.planId).collection('week').doc(plan.lastWeek()).delete();
+  Future<void> deleteWeek(Plan plan) async {
+    await planCollection
+        .doc(plan.planId)
+        .collection('week')
+        .doc(plan.lastWeek())
+        .delete();
     plan.removeWeek();
     notifyListeners();
   }

@@ -36,7 +36,7 @@ class _GimnasioFormState extends State<GimnasioForm> {
     final prefs = SharedPrefsHelper();
     Logger log = Logger();
     try {
-      gymData['propietarioId'] = await prefs.getDocId();
+      gymData['propietarioId'] = await prefs.getUserId();
       final docRef =
           await FirebaseFirestore.instance.collection('gimnasio').add(gymData);
       userProvider.updateCurrentGym(docRef.id);

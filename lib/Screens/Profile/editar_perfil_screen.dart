@@ -16,7 +16,6 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _weightController = TextEditingController();
-  //final _heigthController = TextEditingController();
   final _birthdayController = TextEditingController();
   late Map<String, dynamic> userData = {};
   Future<void> submitPropietarioInfo() async {}
