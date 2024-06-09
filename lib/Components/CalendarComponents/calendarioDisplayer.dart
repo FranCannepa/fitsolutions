@@ -1,8 +1,10 @@
 import 'package:fitsolutions/Components/CommonComponents/noDataError.dart';
 import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/modelo/UserData.dart';
+import 'package:fitsolutions/modelo/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fitsolutions/Components/CalendarComponents/calendarioActividadCard.dart';
+
 
 class CalendarioDisplayer extends StatefulWidget {
   const CalendarioDisplayer({super.key});

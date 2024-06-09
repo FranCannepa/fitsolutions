@@ -22,6 +22,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     getMembresia();
   }
 
+
   Future<String?> getMembresiaId() async {
     final userProvider = context.read<UserData>();
     try {

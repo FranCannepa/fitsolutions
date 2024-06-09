@@ -1,8 +1,19 @@
-import 'package:fitsolutions/Modelo/Screens.dart';
-import 'package:fitsolutions/components/components.dart';
-import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
+
+class Membresia {
+  final String nombre;
+  final double precio;
+
+  Membresia({required this.nombre, required this.precio});
+}
+
+final List<Membresia> membresias = [
+  Membresia(nombre: 'Membresía Básica', precio: 50.0),
+  Membresia(nombre: 'Membresía Estándar', precio: 100.0),
+  Membresia(nombre: 'Membresía Premium', precio: 150.0),
+];
 
 class MembresiaScreen extends StatefulWidget {
   const MembresiaScreen({super.key});
@@ -12,23 +23,33 @@ class MembresiaScreen extends StatefulWidget {
 }
 
 class _MembresiaScreenState extends State<MembresiaScreen> {
-  bool showMembresiaForm = false;
-  void refreshScreen() async {
-    setState(() {
-      showMembresiaForm = false;
-    });
+  final PaymentService _paymentService = PaymentService(); // Instancia del servicio de pago
+
+  void handlePayment(double amount) {
+    _paymentService.createPayment(context, amount, 'cliente1@correo.com');
   }
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserData>();
-
     return Scaffold(
-      body: userProvider.esBasico()
-          ? const MembresiaDisplayerBasico()
-          : const MembresiaDisplayerPropietario(),
-      bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.membresia,
+      appBar: AppBar(
+        title: Text('Membresías'),
+      ),
+      body: ListView.builder(
+        itemCount: membresias.length,
+        itemBuilder: (context, index) {
+          final membresia = membresias[index];
+          return ListTile(
+            title: Text(membresia.nombre),
+            subtitle: Text('\$${membresia.precio.toStringAsFixed(2)}'),
+            trailing: ElevatedButton(
+              onPressed: () {
+                handlePayment(membresia.precio);
+              },
+              child: Text('Pagar'),
+            ),
+          );
+        },
       ),
     );
   }
