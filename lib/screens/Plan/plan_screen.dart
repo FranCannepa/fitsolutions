@@ -43,7 +43,7 @@ class _PlanScreenState extends State<PlanScreen> {
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
-              title: const Text('Planes'), backgroundColor: Colors.amber),
+              title: const Text('Rutinas'), backgroundColor: Theme.of(context).colorScheme.primary),
           floatingActionButton: ElevatedButton(
             onPressed: () => openNoteBox(null, fitnessProvider),
             style: ElevatedButton.styleFrom(

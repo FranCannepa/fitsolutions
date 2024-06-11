@@ -7,7 +7,7 @@ class ResultDialog extends StatelessWidget {
   final ResultType type;
 
 
-  const ResultDialog({required this.text, required this.type});
+  const ResultDialog({super.key, required this.text, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class ResultDialog extends StatelessWidget {
     return AlertDialog(
       title: Text(
         text,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
       content: SizedBox(
         height: 30,
@@ -34,7 +34,7 @@ class ResultDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(
+          child: const Text(
             'OK',
             style: TextStyle(color: Colors.black),
           ),

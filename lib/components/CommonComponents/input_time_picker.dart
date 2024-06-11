@@ -1,13 +1,13 @@
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
 class InputTimePicker extends StatefulWidget {
   final String labelText;
-  TimeOfDay? horaSeleccionada;
+  final TimeOfDay? horaSeleccionada;
   final Function(TimeOfDay) onTimeSelected;
 
-  InputTimePicker(
+  const InputTimePicker(
       {super.key,
       required this.labelText,
       required this.horaSeleccionada,

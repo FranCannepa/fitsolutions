@@ -1,4 +1,4 @@
-import 'package:fitsolutions/components/CalendarComponents/calendarioDisplayer.dart';
+import 'package:fitsolutions/components/CalendarComponents/calendario_displayer.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
