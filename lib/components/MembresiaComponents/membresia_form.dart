@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';

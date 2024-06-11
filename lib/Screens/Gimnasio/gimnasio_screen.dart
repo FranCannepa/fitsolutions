@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';

@@ -1,13 +1,7 @@
+import 'dart:developer';
+
 import 'package:fitsolutions/Modelo/Screens.dart';
-import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
-import 'package:fitsolutions/Screens/Ejercicios/ejercicios_screen.dart';
-import 'package:fitsolutions/Screens/Gimnasio/gimnasio_screen.dart';
-import 'package:fitsolutions/Screens/Home/home_screen.dart';
-import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
-import 'package:fitsolutions/Screens/Profile/perfil_screen.dart';
-import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
-import 'package:fitsolutions/modelo/models.dart';
-import 'package:fitsolutions/screens/Plan/plan_screen.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,30 +17,26 @@ class FooterBottomNavigationBar extends StatefulWidget {
 
 class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
   int _selectedIndex = 0;
-  List<Widget> _screens = [];
+  List<String> _screens = [];
 
-  final prefs = SharedPrefsHelper();
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserData>();
-
+    final UserData userProvider = context.read<UserData>();
     if (userProvider.esBasico()) {
       _screens = [
-        //PLAN for now
-        const EjerciciosScreen(),
-        const PerfilScreen(),
-        const HomeScreen(),
-        const DietasScreen(),
-        const MembresiaScreen()
+        '/ejercicios',
+        '/perfil',
+        '/home',
+        '/dieta',
+        '/membresia',
       ];
     } else {
       _screens = [
-        //PLAN for now
-        //const PlanScreen(),
-        const GimnasioScreen(),
-        const HomeScreen(),
-        const DietasScreen(),
-        const MembresiaScreen()
+        //'/plan',
+        '/gimnasio',
+        '/home',
+        '/dieta',
+        '/membresia',
       ];
     }
 
@@ -97,15 +87,15 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
     }
 
     return Consumer<UserData>(
-        builder: (context, value, child) => CupertinoTabBar(
+        builder: (context, userData, child) => CupertinoTabBar(
               backgroundColor: Theme.of(context).colorScheme.primary,
               items: getBotones(),
               onTap: (index) {
                 setState(() {
                   _selectedIndex = index;
-                  Navigator.push(
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(builder: (context) => _screens[index]),
+                    _screens[_selectedIndex],
                   );
                 });
               },

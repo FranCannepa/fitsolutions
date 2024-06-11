@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/components/components.dart';
-import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -113,14 +115,12 @@ class _MembresiaDisplayerPropietarioState
                         ),
                       if (membershipData.isNotEmpty)
                         Column(
-                          // Wrap membership cards and button in another Column
                           children: [
                             ...membershipData // Display membership cards
                                 .map((membresia) => Center(
                                       child:
                                           MembershipCard(membership: membresia),
-                                    ))
-                                ,
+                                    )),
                             const SizedBox(height: 10),
                             ElevatedButton(
                               onPressed: () =>

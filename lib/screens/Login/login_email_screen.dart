@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/forgot_password_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -77,7 +78,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
         // Update user data in provider and SharedPreferences
         userProvider.updateUserData(existingUserData);
         await prefs.setEmail(existingUserData['email']);
-        await prefs.setDocId(existingUserData['docId']);
+        await prefs.setUserId(existingUserData['docId']);
         await prefs.setLoggedIn(true);
 
         // Navigate to home

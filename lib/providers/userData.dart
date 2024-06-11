@@ -22,14 +22,14 @@ class UserData extends ChangeNotifier {
   String? gimnasioIdPropietario = '';
 
   final prefs = SharedPrefsHelper();
+  Logger log = Logger();
+
   void initializeData() async {
     final prefs = SharedPrefsHelper();
     Logger log = Logger();
     String? userEmail = await prefs.getEmail();
     if (userEmail != null) {
       final userData = await getUserData(userEmail);
-
-      // prefs.setuserId(userData[])
       final userTipo = userData?['tipo'];
       if (userTipo == "Basico") {
         dataFormBasic(userData);
@@ -44,6 +44,11 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String?> getUserId() async {
+    final String? userId = await SharedPrefsHelper().getUserId();
+    return userId;
+  }
+
   Future<Map<String, dynamic>?> getUserData(String email) async {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('usuario')
@@ -56,6 +61,52 @@ class UserData extends ChangeNotifier {
       return data;
     } else {
       return {};
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserProfile() async {
+    final String? userId = await SharedPrefsHelper().getUserId();
+    try {
+      final docRef =
+          FirebaseFirestore.instance.collection('usuario').doc(userId);
+      final snapshot = await docRef.get();
+      if (snapshot.exists) {
+        return snapshot.data() as Map<String, dynamic>;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log.d("Error getting user: $e");
+      return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getMembresias(
+      String origenMembresia) async {
+    final collection = FirebaseFirestore.instance.collection('membresia');
+    final querySnapshot = await collection
+        .where('origenMembresia', isEqualTo: origenMembresia)
+        .get();
+    final membersias = querySnapshot.docs.map((doc) {
+      final data = doc.data();
+      data['id'] = doc.id;
+      return data;
+    }).toList();
+
+    return membersias;
+  }
+
+  Future<Map<String, dynamic>?> getMembresia() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('membresia')
+        .doc(membresiaId)
+        .get();
+
+    if (querySnapshot.exists) {
+      final data = querySnapshot.data();
+      return data;
+    } else {
+      return null;
     }
   }
 
@@ -85,6 +136,15 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool?> tieneSub() async {
+    final bool? sub = await prefs.tieneSub();
+    return sub;
+  }
+
+  bool tieneMembresia() {
+    return membresiaId != '';
+  }
+
   void updateFechaNacimiento(String newFechaNacimiento) {
     fechaNacimiento = newFechaNacimiento;
     notifyListeners();
@@ -101,6 +161,7 @@ class UserData extends ChangeNotifier {
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
     gimnasioId = userData?['gimnasioSub'] ?? '';
     entrenadorId = userData?['entrenadorSub'] ?? '';
+    membresiaId = userData?['membresiaId'] ?? '';
     tipo = "Basico";
     altura = userData?['altura'] ?? 0;
     peso = userData?['peso'] ?? 0;

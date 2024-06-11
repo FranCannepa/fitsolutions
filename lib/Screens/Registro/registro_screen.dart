@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/userData.dart';
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -34,7 +35,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
           await FirebaseFirestore.instance.collection('usuario').add(userData);
       prefs.setEmail(userProvider.email);
       prefs.setLoggedIn(true);
-      prefs.setDocId(docRef.id);
+      prefs.setUserId(docRef.id);
       NavigationService.instance.pushNamed("/home");
     } on FirebaseException catch (e) {
       log.d(e.code);
