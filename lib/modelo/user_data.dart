@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
@@ -13,9 +15,10 @@ class UserData extends ChangeNotifier {
   double peso = 0;
   String email = '';
   String photoUrl = '';
-  late String gimnasioId = '';
+  String gimnasioId = '';
   late String calendarioId = '';
   late String membresiaId = '';
+  late String entrenadorId = '';
   String? gimnasioIdPropietario = '';
 
   final prefs = SharedPrefsHelper();
@@ -25,6 +28,8 @@ class UserData extends ChangeNotifier {
     String? userEmail = await prefs.getEmail();
     if (userEmail != null) {
       final userData = await getUserData(userEmail);
+
+      // prefs.setuserId(userData[])
       final userTipo = userData?['tipo'];
       if (userTipo == "Basico") {
         dataFormBasic(userData);
@@ -47,6 +52,7 @@ class UserData extends ChangeNotifier {
     if (querySnapshot.docs.isNotEmpty) {
       final docSnapshot = querySnapshot.docs.first;
       final data = docSnapshot.data();
+      data['userId'] = docSnapshot.id;
       return data;
     } else {
       return {};
@@ -74,20 +80,8 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateGymPropietario(String gymId) {}
-
-  void updateNombreCompleto(String newNombreCompleto) {
-    nombreCompleto = newNombreCompleto;
-    notifyListeners();
-  }
-
-  void updateTipo(String newTipo) {
-    tipo = newTipo;
-    notifyListeners();
-  }
-
-  void updateDocId(String newDocId) {
-    userId = newDocId;
+  void updateuserId(String newuserId) {
+    userId = newuserId;
     notifyListeners();
   }
 
@@ -96,31 +90,17 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateAltura(int newAltura) {
-    altura = newAltura;
-    notifyListeners();
-  }
-
-  void updatePeso(double newPeso) {
-    peso = newPeso;
-    notifyListeners();
-  }
-
-  void updateEmail(String newEmail) {
-    email = newEmail;
-    notifyListeners();
-  }
-
   void dataFormBasic(Map<String, dynamic>? userData) async {
-    String? docId = userData?['docId'];
-    if (docId != null) {
-      userId = docId;
+    String? userId = userData?['userId'];
+    if (userId != null) {
+      userId = userId;
     } else {
-      userId = await prefs.getDocId() as String;
+      userId = await prefs.getUserId() as String;
     }
     nombreCompleto = userData?['nombreCompleto'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    gimnasioId = userData?['gimnasioId'] ?? '';
+    gimnasioId = userData?['gimnasioSub'] ?? '';
+    entrenadorId = userData?['entrenadorSub'] ?? '';
     tipo = "Basico";
     altura = userData?['altura'] ?? 0;
     peso = userData?['peso'] ?? 0;
@@ -128,7 +108,7 @@ class UserData extends ChangeNotifier {
   }
 
   void dataFormPropietario(Map<String, dynamic>? userData) async {
-    userId = userData?['docId'] ?? await prefs.getDocId();
+    userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     gimnasioIdPropietario = await getGimnasioPropietario(userId);
@@ -136,7 +116,7 @@ class UserData extends ChangeNotifier {
   }
 
   void dataFormParticular(Map<String, dynamic>? userData) async {
-    userId = userData?['docId'] ?? await prefs.getDocId();
+    userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
     notifyListeners();
@@ -146,14 +126,14 @@ class UserData extends ChangeNotifier {
     if (user.email!.isNotEmpty) {
       final prefs = SharedPrefsHelper();
       email = user.email as String;
-      photoUrl = user.photoURL!= null ? user.photoURL as String : '';
+      photoUrl = user.photoURL != null ? user.photoURL as String : '';
       prefs.setEmail(email);
     }
     notifyListeners();
   }
 
   void updateUserData(Map<String, dynamic>? userData) {
-    userId = userData?['docId'] ?? '';
+    userId = userData?['userId'] ?? '';
     nombreCompleto = userData?['nombre_completo'] ?? '';
     tipo = userData?['tipo'] ?? '';
     notifyListeners();
@@ -177,13 +157,43 @@ class UserData extends ChangeNotifier {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchActividades(DateTime fecha) async {
+  Future<List<Map<String, dynamic>>> fetchActividadesGimnasio(
+      DateTime fecha) async {
+    final gymId = esBasico() ? gimnasioId : gimnasioIdPropietario;
+    final todayStart = DateTime(fecha.year, fecha.month, fecha.day, 0, 0);
+    final todayEnd = todayStart.add(const Duration(days: 1));
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('actividad')
+          .where('propietarioActividadId', isEqualTo: gymId)
+          .where('inicio',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
+          .where('fin', isLessThanOrEqualTo: Timestamp.fromDate(todayEnd))
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final fetchedActividades = querySnapshot.docs.map((doc) {
+          final actividadData = doc.data();
+          return actividadData;
+        }).toList();
+        return fetchedActividades;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Error fetching actividades: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchActividadesEntrenador(
+      DateTime fecha, String ownerActividades) async {
     try {
       final todayStart = DateTime(fecha.year, fecha.month, fecha.day, 0, 0);
       final todayEnd = todayStart.add(const Duration(days: 1));
       final querySnapshot = await FirebaseFirestore.instance
           .collection('actividad')
-          .where('gimnasioId', isEqualTo: gimnasioIdPropietario)
+          .where('propietarioActividadId', isEqualTo: ownerActividades)
           .where('inicio', isGreaterThanOrEqualTo: todayStart)
           .where('fin', isLessThanOrEqualTo: todayEnd)
           .get();
@@ -201,29 +211,4 @@ class UserData extends ChangeNotifier {
       return [];
     }
   }
-
-//   Future<List<Map<String, dynamic>>> getActividadesSuigienteD(int page, int pageSize) async {
-//   try {
-//     final now = DateTime.now();
-//     final startDate = now.subtract(Duration(days: (page - 1) * pageSize));
-//     final endDate = startDate.add(Duration(days: pageSize));
-//     final querySnapshot = await FirebaseFirestore.instance
-//         .collection('actividad')
-//         .where('gimnasioId', isEqualTo: gimnasioIdPropietario)
-//         .where('inicio', isGreaterThanOrEqualTo: startDate)
-//         .where('fin', isLessThanOrEqualTo: endDate)
-//         .get();
-//     if (querySnapshot.docs.isNotEmpty) {
-//       final fetchedActividades = querySnapshot.docs.map((doc) {
-//         // ... existing logic to convert doc data to Map
-//       }).toList();
-//       return fetchedActividades;
-//     } else {
-//       return [];
-//     }
-//   } catch (e) {
-//     print('Error fetching actividades: $e');
-//     return [];
-//   }
-// }
 }

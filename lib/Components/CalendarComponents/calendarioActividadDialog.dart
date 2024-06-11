@@ -1,4 +1,6 @@
+
 import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
+import 'package:fitsolutions/Screens/Plan/misPlanesActividad.dart';
 import 'package:flutter/material.dart';
 
 class ActividadDialog extends StatelessWidget {
@@ -34,29 +36,43 @@ class ActividadDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ScreenSubTitle(text: actividad['nombreActividad']),
-            Text(
-              'Cupos: ${actividad['cupos']}',
-              style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.secondary),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      'Cupos: ${actividad['cupos']}',
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    Text(
+                      'Participantes: ${actividad['participantes']}',
+                      style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                  ],
+                )
+              ],
             ),
-            Text(
-              'Participantes: ${actividad['participantes']}',
-              style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.secondary),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MisPlanesActividad(actividadId: actividad['id'],)),
+                    );
+                  },
+                  child: const Text("Ver mis planes"),
+                ),
+              ],
             ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) => MisPlanesScreen()),
-            //     );
-            //   },
-            //   child: const Text("Ver mis planes"),
-            // ),
             const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/CommonComponents/inputDatePicker.dart';
@@ -69,7 +68,7 @@ class _CalendarioAgregarActividadDialogState
       } else {
         _showSuccessModal("Error al crear", ResultType.error);
       }
-    } on FirebaseException catch (e) {}
+    } on FirebaseException {}
   }
 
   void _showSuccessModal(String mensaje, ResultType resultado) {
