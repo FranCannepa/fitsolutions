@@ -87,19 +87,18 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
     }
 
     return Consumer<UserData>(
-        builder: (context, userData, child) => CupertinoTabBar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              items: getBotones(),
-              onTap: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                  Navigator.pushNamed(
-                    context,
-                    _screens[_selectedIndex],
-                  );
-                });
-              },
-              currentIndex: _selectedIndex,
-            ));
+      builder: (context, userData, child) => CupertinoTabBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        items: getBotones(),
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+            Navigator.pushNamed(context, _screens[_selectedIndex]);
+          });
+        },
+        currentIndex: _selectedIndex,
+        activeColor: Theme.of(context).colorScheme.onPrimary,
+      ),
+    );
   }
 }

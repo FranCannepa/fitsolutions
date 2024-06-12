@@ -1,5 +1,6 @@
+import 'dart:developer';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
-import 'package:fitsolutions/Components/MembresiaComponents/membresia_card.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresiaSeleccionador.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,18 +26,19 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
           if (snapshot.hasData) {
             final membresia = snapshot.data!;
             return Visibility(
-              visible: true,
-              child: MembresiaInfo(membresiaData: membresia),
-            );
-          } else {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+                visible: snapshot.hasData,
+                child: MembresiaInfo(membresiaData: membresia));
+          } else if (!snapshot.hasData) {
+            return Stack(
               children: [
-                ...widget.membresias.map((membresia) => Center(
-                      child: MembershipCard(membership: membresia),
-                    )),
+                Visibility(
+                  visible: !snapshot.hasData,
+                  child: SeleccionarMembresia(membresias: widget.membresias),
+                ),
               ],
             );
+          } else {
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),

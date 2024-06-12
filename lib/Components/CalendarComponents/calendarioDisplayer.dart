@@ -43,6 +43,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
   @override
   Widget build(BuildContext context) {
     final actividadesProvider = context.read<ActividadProvider>();
+    final UserData userProvider = context.read<UserData>();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -57,19 +58,20 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                     child: Column(
                   children: [
                     const NoDataError(message: "No quedan actividades por hoy"),
-                    ElevatedButton(
-                      onPressed: () => {
-                        showDialog(
-                          context: context,
-                          builder: (context) =>
-                              CalendarioAgregarActividadDialog(
-                            propietarioActividadId: origenActividades,
-                            onClose: () => Navigator.pop(context),
-                          ),
-                        )
-                      },
-                      child: const Text("Nueva Actividad"),
-                    ),
+                    if (!userProvider.esBasico())
+                      ElevatedButton(
+                        onPressed: () => {
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                CalendarioAgregarActividadDialog(
+                              propietarioActividadId: origenActividades,
+                              onClose: () => Navigator.pop(context),
+                            ),
+                          )
+                        },
+                        child: const Text("Nueva Actividad"),
+                      ),
                   ],
                 ));
               } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
