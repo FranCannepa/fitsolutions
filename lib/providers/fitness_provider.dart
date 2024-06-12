@@ -376,7 +376,7 @@ class FitnessProvider extends ChangeNotifier {
   //This returns todas las actividades que involucran a un plan
   //planId esta asociado a un usuario en su Document
   //Entonces como resultado estamos mostrando todas las actividades que un usuario puede realizar con su 
-  //rutina asignada.
+  //rutina asi  gnada.
   
   //Future<List<Actividad>> getActividadesDeRutina(String planId) async{
     /*

@@ -68,6 +68,7 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                 }
                 return !showGymForm
                     ? Column(
+                        
                         children: [
                           const ScreenTitle(
                             title: "No tienes ningun gimnasio asociado!",
