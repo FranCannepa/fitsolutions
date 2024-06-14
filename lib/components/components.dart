@@ -5,7 +5,7 @@ export 'RegisterComponents/gimnasio_form.dart';
 export 'MembresiaComponents/membresia_form.dart';
 export 'GimnasioComponents/my_gym.dart';
 export 'EjerciciosComponents/ejercicios_card.dart';
-export 'CommonComponents/footerBottomNavigator.dart';
+export 'CommonComponents/footer_bottom_navigator.dart';
 export 'CommonComponents/input_round_fields.dart';
 export 'CommonComponents/inputs_screen.dart';
 export 'CommonComponents/my_textfield.dart';

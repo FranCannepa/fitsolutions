@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/Screens/Ejercicios/ejercicios_screen.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<UserProvider>(
             create: (context) => UserProvider()),
         ChangeNotifierProvider<FitnessProvider>(
-            create: (context) => FitnessProvider())
+            create: (context) => FitnessProvider(FirebaseFirestore.instance))
       ],
       child: MaterialApp(
         navigatorKey: NavigationService.navigatorKey,

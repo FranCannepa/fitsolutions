@@ -1,12 +1,16 @@
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/CommonComponents/inputDatePicker.dart';
-import 'package:fitsolutions/Components/CommonComponents/inputDropDown.dart';
-import 'package:fitsolutions/Components/CommonComponents/inputTimePicker.dart';
-import 'package:fitsolutions/Components/CommonComponents/resultDialog.dart';
+//import 'package:fitsolutions/Components/CommonComponents/inputDatePicker.dart';
+//import 'package:fitsolutions/Components/CommonComponents/inputDropDown.dart';
+//import 'package:fitsolutions/Components/CommonComponents/inputTimePicker.dart';
+//import 'package:fitsolutions/Components/CommonComponents/resultDialog.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
+import 'package:fitsolutions/components/CommonComponents/input_date_picker.dart';
+import 'package:fitsolutions/components/CommonComponents/input_dropdown.dart';
+import 'package:fitsolutions/components/CommonComponents/input_time_picker.dart';
+import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:flutter/material.dart';
 
 class CalendarioAgregarActividadDialog extends StatefulWidget {
@@ -48,14 +52,14 @@ class _CalendarioAgregarActividadDialogState
       actividadData['cupos'] = int.tryParse(cuposActividadController.text) ?? 0;
       actividadData['participantes'] = 0;
     } else {
-      print('Form is invalid.');
+      //print('Form is invalid.');
     }
   }
 
   Future<void> registrarActividad() async {
     summarizeData();
     actividadData['propietarioActividadId'] = widget.propietarioActividadId;
-    print(actividadData);
+    //print(actividadData);
 
     try {
       final docRef = await FirebaseFirestore.instance
@@ -70,7 +74,7 @@ class _CalendarioAgregarActividadDialogState
         _showSuccessModal("Error al crear", ResultType.error);
       }
     } on FirebaseException catch (e) {
-      
+      rethrow;
     }
   }
 

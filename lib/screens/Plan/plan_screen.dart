@@ -1,5 +1,6 @@
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
+import 'package:fitsolutions/screens/Plan/actividad_list_rutina.dart';
 import 'package:fitsolutions/screens/Plan/plan_create_dialogue.dart';
 import 'package:fitsolutions/screens/Plan/plan_info_screen.dart';
 import 'package:fitsolutions/screens/Plan/user_list_rutina.dart';
@@ -43,7 +44,8 @@ class _PlanScreenState extends State<PlanScreen> {
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
-              title: const Text('Planes'), backgroundColor: Colors.amber),
+              title: const Text('Rutinas'),
+              backgroundColor: Theme.of(context).colorScheme.primary),
           floatingActionButton: ElevatedButton(
             onPressed: () => openNoteBox(null, fitnessProvider),
             style: ElevatedButton.styleFrom(
@@ -53,7 +55,8 @@ class _PlanScreenState extends State<PlanScreen> {
               elevation: 8, // Add shadow by setting elevation
               shadowColor: Colors.black.withOpacity(0.8),
             ), //placeholder
-            child:  Icon(Icons.add, color: Theme.of(context).colorScheme.secondary),
+            child:
+                Icon(Icons.add, color: Theme.of(context).colorScheme.secondary),
           ),
           body: FutureBuilder<List<Plan>>(
               future: fitnessProvider.getPlanesList(),
@@ -88,6 +91,16 @@ class _PlanScreenState extends State<PlanScreen> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                IconButton(
+                                  onPressed: () => showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (_) => ActividadListRutina(
+                                        fitnessProvider: fitnessProvider,
+                                        planId: plan.planId),
+                                  ),
+                                  icon: const Icon(Icons.local_activity),
+                                ),
                                 IconButton(
                                   onPressed: () => showModalBottomSheet(
                                     context: context,

@@ -61,4 +61,9 @@ class Plan{
     return weeks.elementAt(number).id!;
   }
 
+  List<Ejercicio> ejerciciosDelDia(String weekId, String diaId){
+    Week week = weeks.firstWhere((week) => week.id == weekId);
+    return week.getExercisesByDay(diaId);
+  }
+
 }

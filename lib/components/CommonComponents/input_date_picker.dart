@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class InputDatePicker extends StatefulWidget {
   final String labelText;
-  DateTime? fechaSeleccionada;
+  final DateTime? fechaSeleccionada;
   final Function(DateTime) onDateSelected;
 
-  InputDatePicker({
+  const InputDatePicker({
     super.key,
     required this.labelText,
     required this.fechaSeleccionada,

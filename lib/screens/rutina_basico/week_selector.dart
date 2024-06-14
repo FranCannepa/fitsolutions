@@ -10,7 +10,8 @@ import '../../modelo/models.dart';
 
 class WeekSelector extends StatefulWidget {
   final Plan plan;
-  const WeekSelector({super.key, required this.plan});
+  final bool leading;
+  const WeekSelector({super.key, required this.plan, required this.leading});
 
   @override
   State<WeekSelector> createState() => _WeekSelectorState();
@@ -72,8 +73,10 @@ class _WeekSelectorState extends State<WeekSelector> {
     final provider = context.watch<FitnessProvider>();
     final userData = context.read<UserData>();
     return Scaffold(
-      appBar:
-          AppBar(title: const Text('Rutina'), backgroundColor: Theme.of(context).colorScheme.primary),
+      appBar: AppBar(
+          title: const Text('Rutina'),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          automaticallyImplyLeading: widget.leading),
       body: Column(
         children: [
           Container(
@@ -88,35 +91,35 @@ class _WeekSelectorState extends State<WeekSelector> {
                     const Text('Semana:',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 32)),
-                    if(!userData.esBasico()) ...[
-                    InkWell(
-                      onTap: () => {_removeWeek(provider)},
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        decoration: BoxDecoration(
-                          color:Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(Icons.remove),
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => {_addWeek(provider)},
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(Icons.add),
+                    if (!userData.esBasico()) ...[
+                      InkWell(
+                        onTap: () => {_removeWeek(provider)},
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(Icons.remove),
+                          ),
                         ),
                       ),
-                    )
+                      InkWell(
+                        onTap: () => {_addWeek(provider)},
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(Icons.add),
+                          ),
+                        ),
+                      )
                     ]
                   ],
                 ),
@@ -206,18 +209,20 @@ class _WeekSelectorState extends State<WeekSelector> {
           ),
         ],
       ),
-      floatingActionButton: !userData.esBasico() ? ElevatedButton(
-            onPressed: () => openNoteBox(null, provider),
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(20), // Adjust padding as needed
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              elevation: 8, // Add shadow by setting elevation
-              shadowColor: Colors.black.withOpacity(0.8),
-            ), //placeholder
-            child:  Icon(Icons.add, color: Theme.of(context).colorScheme.secondary),
-          )
-       : null,
+      floatingActionButton: !userData.esBasico()
+          ? ElevatedButton(
+              onPressed: () => openNoteBox(null, provider),
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(20), // Adjust padding as needed
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                elevation: 8, // Add shadow by setting elevation
+                shadowColor: Colors.black.withOpacity(0.8),
+              ), //placeholder
+              child: Icon(Icons.add,
+                  color: Theme.of(context).colorScheme.secondary),
+            )
+          : null,
     );
   }
 }

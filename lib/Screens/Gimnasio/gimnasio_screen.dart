@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
-import 'package:fitsolutions/modelo/models.dart';
+//import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 
 class GimnasioScreen extends StatefulWidget {
   const GimnasioScreen({super.key});
@@ -16,12 +17,13 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
   late Map<String, dynamic>? gymData;
   bool showGymForm = false;
   Logger log = Logger();
+  SharedPrefsHelper prefs = SharedPrefsHelper();
   Future<Map<String, dynamic>?> getGym() async {
-    final userProvider = context.read<UserData>();
+    //final userProvider = context.read<UserData>();
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('gimnasio')
-          .where('propietarioId', isEqualTo: userProvider.userId)
+          .where('propietarioId', isEqualTo: await prefs.getUserId())
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         final docSnapshot = querySnapshot.docs.first;
@@ -66,6 +68,7 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                 }
                 return !showGymForm
                     ? Column(
+                        
                         children: [
                           const ScreenTitle(
                             title: "No tienes ningun gimnasio asociado!",

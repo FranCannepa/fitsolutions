@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 class EjerciciosScreen extends StatelessWidget {
   const EjerciciosScreen({super.key});
 
-  Future<Plan> getPlanFromUser(FitnessProvider provider) async {
+  Future<Plan?> getPlanFromUser(FitnessProvider provider) async {
     final prefs = SharedPrefsHelper();
     String? docId = await prefs.getUserId();
     return await provider.getRutinaDeUsuario(docId!);
@@ -18,7 +18,7 @@ class EjerciciosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<FitnessProvider>();
+    final provider = context.watch<FitnessProvider>();
     return FutureBuilder(
       future: getPlanFromUser(provider),
       builder: (context, snapshot) {
@@ -36,7 +36,7 @@ class EjerciciosScreen extends StatelessWidget {
           );
         } else {
           // Render your UI based on the result of the asynchronous operation
-          return WorkoutSchedule(plan: snapshot.data!);
+          return WorkoutSchedule(plan: snapshot.data!,leading: false);
         }
       },
     );
