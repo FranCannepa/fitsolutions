@@ -1,4 +1,4 @@
-import 'package:fitsolutions/Components/CommonComponents/footerBottomNavigator.dart';
+import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigator.dart';
 import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:flutter/material.dart';
