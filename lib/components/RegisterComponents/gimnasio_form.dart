@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/components.dart';
-import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';

@@ -1,6 +1,11 @@
+import 'package:fitsolutions/Components/DietasComponents/dietaAdministrador.dart';
+import 'package:fitsolutions/Components/DietasComponents/dietaAgregarDialog.dart';
+import 'package:fitsolutions/Components/DietasComponents/dietaDisplayer.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Modelo/Screens.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DietasScreen extends StatefulWidget {
   const DietasScreen({super.key});
@@ -10,42 +15,35 @@ class DietasScreen extends StatefulWidget {
 }
 
 class _DietasScreenState extends State<DietasScreen> {
-
-
-  final double targetCalories = 2000;
-  final List<String> foodItems = ['Chicken Breast', 'Broccoli', 'Brown Rice'];
-
   @override
   Widget build(BuildContext context) {
+    context.read<UserData>().initializeData();
+    final UserData userData = context.read<UserData>();
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Objetivo diario de calorías: $targetCalories',
-                style: const TextStyle(
-                    fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              const Divider(height: 16.0),
-              const Text(
-                'Alimentos del día:',
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: foodItems.length,
-                itemBuilder: (context, index) {
-                  return Text(foodItems[index]);
-                },
-              ),
-            ],
-          ),
-        ),
+      body: Column(
+        children: [
+          userData.esBasico()
+              ? const DietaDisplayer()
+              : const DietaAdministrador(),
+        ],
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(initialScreen: ScreenType.dietas,),
+      bottomNavigationBar: const FooterBottomNavigationBar(
+        initialScreen: ScreenType.dietas,
+      ),
+      floatingActionButton: userData.esBasico()
+          ? null
+          : FloatingActionButton(
+              onPressed: () => {
+                showDialog(
+                  context: context,
+                  builder: (context) => DietaAgregarDialog(
+                    origenDieta: userData.origenAdministrador,
+                    onClose: () => Navigator.pop(context),
+                  ),
+                )
+              },
+              child: const Icon(Icons.add),
+            ),
     );
   }
 }

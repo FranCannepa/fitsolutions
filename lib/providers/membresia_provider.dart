@@ -30,7 +30,9 @@ class MembresiaProvider extends ChangeNotifier {
     }
   }
 
-  // Future<void> crearMembresia(Map<String,dynamic> membresiaData){
-
-  // }
+  Future<void> registrarMembresia(Map<String, dynamic> membresiaData) async {
+    final db = FirebaseFirestore.instance;
+    final docRef = db.collection('membresia').doc();
+    await docRef.set(membresiaData);
+  }
 }

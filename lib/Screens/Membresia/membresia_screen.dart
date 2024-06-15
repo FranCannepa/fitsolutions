@@ -1,11 +1,25 @@
 import 'dart:developer';
-
 import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
+
+class Membresia {
+  final String nombre;
+  final double precio;
+
+  Membresia({required this.nombre, required this.precio});
+}
+
+final List<Membresia> membresias = [
+  Membresia(nombre: 'Membresía Básica', precio: 50.0),
+  Membresia(nombre: 'Membresía Estándar', precio: 100.0),
+  Membresia(nombre: 'Membresía Premium', precio: 150.0),
+];
 
 class MembresiaScreen extends StatefulWidget {
   final UserData provider;
@@ -16,15 +30,9 @@ class MembresiaScreen extends StatefulWidget {
 }
 
 class _MembresiaScreenState extends State<MembresiaScreen> {
-  bool showMembresiaForm = false;
-  void refreshScreen() async {
-    setState(() {
-      showMembresiaForm = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    context.read<UserData>().initializeData();
     final MembresiaProvider provider = context.read<MembresiaProvider>();
     final UserData userData = context.read<UserData>();
 

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaSeleccionador.dart';
 import 'package:fitsolutions/providers/userData.dart';

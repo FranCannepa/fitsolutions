@@ -1,4 +1,5 @@
 import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
 import 'package:flutter/material.dart';
 
 class MembresiaInfo extends StatelessWidget {
@@ -8,10 +9,14 @@ class MembresiaInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final PaymentService _paymentService = PaymentService();
     final nombreMembresia = membresiaData['nombreMembresia'] as String;
     final descripcion = membresiaData['descripcion'] as String;
     final costo = membresiaData['costo'];
-    //final Map<String,dynamic> origeMembresia = membresiaData['origenMembresia'];
+    
+    void handlePayment(double costo) {
+      _paymentService.createPayment(context, costo, 'cliente1@correo.com');
+    }
 
     return Container(
       color: Theme.of(context).colorScheme.tertiary,
@@ -36,6 +41,9 @@ class MembresiaInfo extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
+          ElevatedButton(
+              onPressed: () => {print("Pagar")},
+              child: const Text('Pagar Membresia'))
         ],
       ),
     );

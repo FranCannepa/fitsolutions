@@ -1,11 +1,9 @@
 import 'dart:developer';
-
 import 'package:fitsolutions/Components/CalendarComponents/calendarioActividadCard.dart';
 import 'package:fitsolutions/Components/CalendarComponents/calendarioAgregarActividadDialog.dart';
 import 'package:fitsolutions/Components/CalendarComponents/calendarioDiaActual.dart';
 import 'package:fitsolutions/Components/CommonComponents/noDataError.dart';
 import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +42,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
   Widget build(BuildContext context) {
     final actividadesProvider = context.read<ActividadProvider>();
     final UserData userProvider = context.read<UserData>();
+    userProvider.initializeData();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

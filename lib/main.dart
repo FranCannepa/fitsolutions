@@ -7,6 +7,7 @@ import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/dietas_provider.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
@@ -46,7 +47,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ActividadProvider>(
             create: (context) => ActividadProvider()),
         ChangeNotifierProvider<MembresiaProvider>(
-            create: (context) => MembresiaProvider())
+            create: (context) => MembresiaProvider()),
+        ChangeNotifierProvider<DietaProvider>(create: (context) => DietaProvider()),
       ],
       child: MaterialApp(
         navigatorKey: NavigationService.navigatorKey,

@@ -20,9 +20,12 @@ class UserData extends ChangeNotifier {
   late String membresiaId = '';
   late String entrenadorId = '';
   String? gimnasioIdPropietario = '';
+  late String origenAdministrador;
 
   final prefs = SharedPrefsHelper();
   Logger log = Logger();
+
+  get context => null;
 
   void initializeData() async {
     final prefs = SharedPrefsHelper();
@@ -172,7 +175,7 @@ class UserData extends ChangeNotifier {
     userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
-    gimnasioIdPropietario = await getGimnasioPropietario(userId);
+    origenAdministrador = (await getGimnasioPropietario(userId))!;
     notifyListeners();
   }
 
@@ -180,6 +183,7 @@ class UserData extends ChangeNotifier {
     userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
+    origenAdministrador = userData?['userId'] ?? await prefs.getUserId();
     notifyListeners();
   }
 

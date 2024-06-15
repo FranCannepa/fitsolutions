@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/cupertino.dart';
