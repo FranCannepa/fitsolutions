@@ -1,9 +1,9 @@
-import 'dart:developer';
-import 'package:fitsolutions/Components/CalendarComponents/calendarioActividadCard.dart';
-import 'package:fitsolutions/Components/CalendarComponents/calendarioAgregarActividadDialog.dart';
-import 'package:fitsolutions/Components/CalendarComponents/calendarioDiaActual.dart';
-import 'package:fitsolutions/Components/CommonComponents/noDataError.dart';
-import 'package:fitsolutions/Components/components.dart';
+
+import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_card.dart';
+import 'package:fitsolutions/components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
+import 'package:fitsolutions/components/CalendarComponents/calendario_dia_actual.dart';
+import 'package:fitsolutions/components/CommonComponents/inputs_screen.dart';
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';

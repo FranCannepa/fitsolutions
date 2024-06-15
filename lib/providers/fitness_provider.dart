@@ -6,22 +6,21 @@ import '../modelo/models.dart';
 
 class FitnessProvider extends ChangeNotifier {
   Logger log = Logger();
-  final planCollection = FirebaseFirestore.instance.collection('plan');
+  final FirebaseFirestore _firebase; 
 
-  FitnessProvider() {
-    planCollection.snapshots().listen((snapshot) {
+
+  FitnessProvider(FirebaseFirestore? firestore) : _firebase = firestore ?? FirebaseFirestore.instance{
+    _firebase.collection('plan').snapshots().listen((snapshot) {
       notifyListeners();
     });
   }
-
-
 
   Future<List<UsuarioBasico>> getUsuariosInscriptos(String rutinaId) async {
     //This filter should be different.
     //Here we should filter by users that are members of the gym.
     //Y que este habiles.
     CollectionReference userStore =
-        FirebaseFirestore.instance.collection('usuario');
+        _firebase.collection('usuario');
     QuerySnapshot userSnapshot =
         await userStore.where('tipo', isEqualTo: 'Basico').get();
 
@@ -32,39 +31,103 @@ class FitnessProvider extends ChangeNotifier {
     return users;
   }
 
+  Future<Plan?> getRutinaDeUsuario(String docId) async {
+    CollectionReference collectionRef =
+        _firebase.collection('usuario');
+    DocumentReference documentRef = collectionRef.doc(docId);
 
+    final dataUser = await documentRef.get();
+    Map<String, dynamic> data = dataUser.data() as Map<String,dynamic>;
+    Plan? plan = await getPlanById(data['rutina']);
+    return plan ;
+  }
+
+  //tested
+  Future<Plan?> getPlanById(String planId) async {
+    Logger log = Logger();
+    try {
+      // Retrieve the document with the specified planId
+      DocumentSnapshot planDoc = await _firebase
+          .collection('plan')
+          .doc(planId)
+          .get();
+
+      // Check if the document exists
+      if (planDoc.exists) {
+        // Retrieve weeks for the plan
+        QuerySnapshot weeksSnapshot = await _firebase
+            .collection('plan')
+            .doc(planId)
+            .collection('week')
+            .get();
+        List<Week> weeks =
+            await Future.wait(weeksSnapshot.docs.map((weekDoc) async {
+          // Retrieve exercises for each week
+          QuerySnapshot exerciseSnapshot = await _firebase
+              .collection('plan')
+              .doc(planId)
+              .collection('week')
+              .doc(weekDoc.id)
+              .collection('ejercicio')
+              .get();
+          List<Ejercicio> ejercicios = exerciseSnapshot.docs.map((exeDoc) {
+            return Ejercicio.fromDocument(
+                exeDoc.id, exeDoc.data() as Map<String, dynamic>);
+          }).toList();
+
+          return Week.fromDocument(
+              weekDoc.id, weekDoc.data() as Map<String, dynamic>, ejercicios);
+        }).toList());
+
+        // Create and return the Plan object
+        return Plan.fromDocument(
+            planDoc.id, planDoc.data() as Map<String, dynamic>, weeks);
+      } else {
+        // Document not found
+        log.d('Plan with ID $planId does not exist');
+        return null;
+      }
+    } catch (e) {
+      // Handle any errors
+      log.e('Error retrieving plan: $e');
+      return null;
+    }
+  }
+
+  //tested
   Future<List<Plan>> getPlanesList() async {
-    final querySnapshot = await planCollection.get();
+    final querySnapshot = await _firebase.collection('plan').get();
     List<Plan> planes = [];
 
     for (var doc in querySnapshot.docs) {
       CollectionReference weeksCollectionRef =
-          planCollection.doc(doc.id).collection('week');
+          _firebase.collection('plan').doc(doc.id).collection('week');
       QuerySnapshot weeksSnapshot = await weeksCollectionRef.get();
 
-      List<Week> weeks = weeksSnapshot.docs.map((weekDoc) {
+      List<Week> weeks =
+          await Future.wait(weeksSnapshot.docs.map((weekDoc) async {
+        CollectionReference exerciseCollectionRef =
+            weeksCollectionRef.doc(weekDoc.id).collection('ejercicio');
+        QuerySnapshot exerciseSnapshot = await exerciseCollectionRef.get();
+
+        List<Ejercicio> ejercicios = exerciseSnapshot.docs.map((exeDoc) {
+          return Ejercicio.fromDocument(
+              exeDoc.id, exeDoc.data() as Map<String, dynamic>);
+        }).toList();
+
         return Week.fromDocument(
-            weekDoc.id, weekDoc.data() as Map<String, dynamic>);
-      }).toList();
+            weekDoc.id, weekDoc.data() as Map<String, dynamic>, ejercicios);
+      }).toList());
 
       Plan plan = Plan.fromDocument(doc.id, doc.data(), weeks);
       planes.add(plan);
     }
-    ;
     return planes;
   }
-
-  Future<List<Ejercicio>> getEjerciciosList(Plan plan) async {
-    final querySnapshot =
-        await planCollection.doc(plan.planId).collection('ejercicio').get();
-    return querySnapshot.docs.map((doc) {
-      return Ejercicio.fromDocument(doc.id, doc.data());
-    }).toList();
-  }
-
+  //tested
   Future<List<Ejercicio>> getEjerciciosDelDiaList(
       Plan plan, String week, String dia) async {
-    final querySnapshot = await planCollection
+    final querySnapshot = await _firebase.collection('plan')
         .doc(plan.planId)
         .collection('week')
         .doc(week)
@@ -76,34 +139,61 @@ class FitnessProvider extends ChangeNotifier {
     }).toList();
   }
 
-  Future<void> addUsuarioARutina(String planId, List<UsuarioBasico> usuarios) async{
-    for(final user in usuarios){
-      await planCollection.doc(planId).collection('subscripto').doc(user.docId).set(UsuarioBasico.toDocument(user));
-      await copyRutinaToUser(user.docId, planId);
+  //tested
+  Future<void> addUsuarioARutina(
+      String planId, List<UsuarioBasico> usuarios) async {
+    for (final user in usuarios) {
+      await _firebase.collection('plan')
+          .doc(planId)
+          .collection('subscripto')
+          .doc(user.docId)
+          .set(UsuarioBasico.toDocument(user));
+      await asigarRutinaToUser(user.docId, planId);
     }
     notifyListeners();
   }
 
-  Future<List<UsuarioBasico>> getUsuariosEnRutina(String planId) async{
-    final usersFromStore = await planCollection.doc(planId).collection('subscripto').get();
-    return usersFromStore.docs.map((doc){
+  Future<List<UsuarioBasico>> getUsuariosEnRutina(String planId) async {
+    final usersFromStore =
+        await _firebase.collection('plan').doc(planId).collection('subscripto').get();
+    return usersFromStore.docs.map((doc) {
       return UsuarioBasico.fromDocument(doc.id, doc.data());
     }).toList();
   }
 
-  Future<void> removeUsuarioDeRutina(String planId, String userId) async{
-    await planCollection.doc(planId).collection('subscripto').doc(userId).delete();
+  Future<void> removeUsuarioDeRutina(String planId, String userId) async {
+    await _firebase.collection('plan')
+        .doc(planId)
+        .collection('subscripto')
+        .doc(userId)
+        .delete();
+    await deleteFieldFromDocument('usuario', userId, 'rutina');
     notifyListeners();
   }
 
+  Future<void> deleteFieldFromDocument(
+      String collectionName, String documentId, String fieldName) async {
+    Logger log = Logger();
+    CollectionReference collectionRef =
+        _firebase.collection(collectionName);
+    DocumentReference documentRef = collectionRef.doc(documentId);
+
+    try {
+      await documentRef.update({fieldName: FieldValue.delete()});
+      log.d("Field '$fieldName' deleted successfully");
+    } catch (e) {
+      log.e("Error deleting field '$fieldName': $e");
+    }
+  }
+
   Future<void> addWeek(int number, Plan plan) async {
-    DocumentReference doc = await planCollection
+    DocumentReference doc = await _firebase.collection('plan')
         .doc(plan.planId)
         .collection('week')
         .add({'number': number});
     DocumentSnapshot docSnap = await doc.get();
     Week newWeek =
-        Week.fromDocument(doc.id, docSnap.data() as Map<String, dynamic>);
+        Week.fromDocument(doc.id, docSnap.data() as Map<String, dynamic>, []);
     plan.addWeek(newWeek);
     notifyListeners();
   }
@@ -111,7 +201,7 @@ class FitnessProvider extends ChangeNotifier {
   //Add Plan
   Future<Plan> addPlan(String name, String description,
       Map<String, dynamic> weight, Map<String, dynamic> height) async {
-    DocumentReference doc = await planCollection.add({
+    DocumentReference doc = await _firebase.collection('plan').add({
       'name': name,
       'description': description,
       'weight': weight,
@@ -123,33 +213,7 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
     return Plan.fromDocument(
         doc.id, docSnapshot.data() as Map<String, dynamic>, []);
-  }
-
-  //Add exercise to Plan
-  Future<void> addEjercicio(
-      Plan plan,
-      String name,
-      String descripcion,
-      int serie,
-      int? repeticion,
-      int? carga,
-      int ejecucion,
-      int? pausa,
-      String? dia) async {
-    CollectionReference subcollectionReference =
-        planCollection.doc(plan.planId).collection('ejercicio');
-    subcollectionReference.add({
-      'nombre': name,
-      'descripcion': descripcion,
-      'serie': serie,
-      'repeticion': repeticion,
-      'carga': carga,
-      'ejecucion': ejecucion,
-      'pausa': pausa,
-      'dia': dia
-    });
-    notifyListeners();
-  }
+  } 
 
   Future<void> addEjercicioASemana(
       Plan plan,
@@ -162,7 +226,7 @@ class FitnessProvider extends ChangeNotifier {
       String? ejecucion,
       String? pausa,
       String? dia) async {
-    CollectionReference subcollectionReference = planCollection
+    CollectionReference subcollectionReference = _firebase.collection('plan')
         .doc(plan.planId)
         .collection('week')
         .doc(weekNumber)
@@ -180,34 +244,22 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> copyRutinaToUser(String userId, String planId) async{
-    //copy workout
-    final rutinaRef =  planCollection.doc(planId);
-    DocumentSnapshot rutina = await planCollection.doc(planId).get();
-
-    final rutinaData = rutina.data() as Map<String,dynamic>;
-
-    final rutinaUserRef =  FirebaseFirestore.instance.collection('usuario').doc(userId).collection('rutinaUsuario').doc(planId);
-    rutinaUserRef.set(rutinaData);
-    //copy the week
-    final weekSnapshot = await rutinaRef.collection('week').get();
-    for(final week in weekSnapshot.docs){
-      final weekData = week.data();
-      rutinaUserRef.collection('week').doc(week.id).set(weekData); 
-      final exerciseSnapshot = await rutinaRef.collection('week').doc(week.id).collection('ejercicio').get();
-      
-      for(final exercise in exerciseSnapshot.docs){
-        final exerciseData = exercise.data();
-        rutinaUserRef.collection('week').doc(week.id).collection('ejercicio').doc(exercise.id).set(exerciseData);
-      }
+  Future<void> asigarRutinaToUser(String userId, String planId) async {
+    Logger log = Logger();
+    try {
+      await _firebase
+          .collection('usuario')
+          .doc(userId)
+          .update({'rutina': planId});
+      log.d('Document updated successfully');
+    } catch (e) {
+      log.e('Error updating document: $e');
     }
   }
 
-
-
   Future<void> updatePlan(String docId, String newName, String description,
       Map<String, dynamic> weight, Map<String, dynamic> height) async {
-    planCollection.doc(docId).update({
+    _firebase.collection('plan').doc(docId).update({
       'name': newName,
       'description': description,
       'weight': weight,
@@ -228,7 +280,7 @@ class FitnessProvider extends ChangeNotifier {
     String? ejecucion,
     String? pausa,
   ) async {
-    planCollection
+    _firebase.collection('plan')
         .doc(plan.planId)
         .collection('week')
         .doc(weekNumber)
@@ -247,7 +299,7 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<void> deleteExercisesfromWeek(String plan, String weekId) async {
-    final subCollection = await FirebaseFirestore.instance
+    final subCollection = await _firebase
         .collection('plan')
         .doc(plan)
         .collection('week')
@@ -255,36 +307,43 @@ class FitnessProvider extends ChangeNotifier {
         .collection('ejercicio')
         .get();
 
+    final batch = _firebase.batch();
     for (var document in subCollection.docs) {
-      await document.reference.delete();
+      batch.delete(document.reference);
     }
+    await batch.commit();
   }
 
   Future<void> deleteWeeksFromPlan(String plan) async {
-    final subCollection = await FirebaseFirestore.instance
+    final subCollection = await _firebase
         .collection('plan')
         .doc(plan)
         .collection('week')
         .get();
+    final batch = _firebase.batch();
     for (var document in subCollection.docs) {
-      await deleteExercisesfromWeek(plan, document.id);
-      await document.reference.delete();
+      batch.delete(document.reference);
     }
+    await batch.commit();
   }
 
   Future<void> deletePlan(String docId) async {
-    final docRef = planCollection.doc(docId);
-    await deleteWeeksFromPlan(docRef.id);
-    docRef.delete();
-    notifyListeners();
+    try {
+      final docRef = _firebase.collection('plan').doc(docId);
+      await deleteWeeksFromPlan(docRef.id);
+      await docRef.delete();
+      log.d('Plan with ID $docId has been deleted');
+       notifyListeners(); // Uncomment this line if you're using a state management solution
+    } catch (e) {
+      log.e('Error deleting plan: $e');
+    }
   }
 
   Future<void> deleteEjercicio(Plan plan, String weekId, String docId) async {
-    await planCollection
+    await _firebase.collection('plan')
         .doc(plan.planId)
         .collection('week')
         .doc(weekId)
-
         .collection('ejercicio')
         .doc(docId)
         .delete();
@@ -292,12 +351,63 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<void> deleteWeek(Plan plan) async {
+    String idLastWeek = plan.lastWeek();
     await deleteExercisesfromWeek(plan.planId, plan.lastWeek());
+    _firebase.collection('plan').doc(plan.planId).collection('week').doc(idLastWeek).delete();
     plan.removeWeek();
     notifyListeners();
   }
 
-  bool planTieneEjercicios(Plan plan) {
-    return plan.ejercicios.isNotEmpty;
+  //Actividad
+
+  Future<void> agregarRutinaActividad(Plan plan, String actividadId) async{
+    try {
+      // Create a new document in the rutinaActividad collection
+      await _firebase.collection('rutinaActividad').add({
+        'rutinaId': plan.planId,
+        'actividadId': actividadId,
+      });
+      log.d('New rutinaActividad document added successfully');
+    } catch (e) {
+      log.e('Error adding rutinaActividad document: $e');
+    }
   }
+  
+  //This returns todas las actividades que involucran a un plan
+  //planId esta asociado a un usuario en su Document
+  //Entonces como resultado estamos mostrando todas las actividades que un usuario puede realizar con su 
+  //rutina asi  gnada.
+  
+  //Future<List<Actividad>> getActividadesDeRutina(String planId) async{
+    /*
+      // Step 1: Get actividadIds from rutinaActividad collection where planId matches
+      QuerySnapshot rutinaActividadSnapshot = await _firebase
+          .collection('rutinaActividad')
+          .where('planId', isEqualTo: planId)
+          .get();
+
+      // Extract the actividadIds
+      List<String> actividadIds = rutinaActividadSnapshot.docs.map((doc) {
+        return doc['actividadId'] as String;
+      }).toList();*/
+
+      /*
+      // Step 2: Get the corresponding Actividad documents
+      List<Actividad> actividades = [];
+      for (String actividadId in actividadIds) {
+        DocumentSnapshot actividadDoc = await _firebase
+            .collection('actividad')
+            .doc(actividadId)
+            .get();
+        if (actividadDoc.exists) {
+          actividades.add(Actividad.fromDocument(actividadDoc.id, actividadDoc.data() as Map<String, dynamic>));
+        }
+      }
+      return actividades;
+    } catch (e) {
+      log.d('Error getting actividades de rutina: $e');
+      return [];
+    }
+    */
+  //}
 }

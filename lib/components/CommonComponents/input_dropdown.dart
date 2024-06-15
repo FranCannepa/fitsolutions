@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 class InputDropdown extends StatefulWidget {
   final String labelText;
-  final List<String> options; 
-  final TextEditingController
-      controller; 
+  final List<String> options;
+  final TextEditingController controller;
 
   const InputDropdown({
     super.key,
@@ -59,9 +58,9 @@ class _InputDropdownState extends State<InputDropdown> {
             .toList(),
         onChanged: (String? newValue) {
           setState(() {
-            selectedOption = newValue!; 
+            selectedOption = newValue!;
             widget.controller.text = newValue;
-                    });
+          });
         },
       ),
     );

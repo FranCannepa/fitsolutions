@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CalendarioActividadDetalles extends StatefulWidget {
-  const CalendarioActividadDetalles({ Key? key }) : super(key: key);
+  const CalendarioActividadDetalles({ super.key });
 
   @override
-  _CalendarioActividadDetallesState createState() => _CalendarioActividadDetallesState();
+  State<CalendarioActividadDetalles> createState() => _CalendarioActividadDetallesState();
 }
 
 class _CalendarioActividadDetallesState extends State<CalendarioActividadDetalles> {

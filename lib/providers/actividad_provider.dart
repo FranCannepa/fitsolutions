@@ -31,7 +31,6 @@ class ActividadProvider extends ChangeNotifier {
       return [];
     }
   }
-
   // Future<List<Map<String, dynamic>>> fetchPlanes(String idActividad) async {
   //   final String? usuarioId = await prefs.getUserId();
   //   try {

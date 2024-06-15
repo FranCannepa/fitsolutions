@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/Screens/Ejercicios/ejercicios_screen.dart';
@@ -6,7 +5,6 @@ import 'package:fitsolutions/Screens/Gimnasio/gimnasio_screen.dart';
 import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
-import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/dietas_provider.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';

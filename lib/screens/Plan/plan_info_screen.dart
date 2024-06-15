@@ -112,7 +112,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => WorkoutSchedule(plan: plan)),
+                      builder: (context) => WorkoutSchedule(plan: plan,leading: true)),
                 ),
               ),
               ElevatedButton(

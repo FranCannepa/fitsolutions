@@ -33,7 +33,7 @@ class ResultDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(
+          child: const Text(
             'OK',
             style: TextStyle(color: Colors.black),
           ),

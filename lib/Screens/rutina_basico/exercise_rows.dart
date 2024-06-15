@@ -77,39 +77,40 @@ class _ExerciseRowsState extends State<ExerciseRows> {
               const SizedBox(width: 20),
               Expanded(
                   child: Text(ejercicio.pausas!, textAlign: TextAlign.center)),
-              if(!userData.esBasico())...[
-              IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () => {
-                  {
-                    nameController.text = ejercicio.nombre,
-                    descController.text = ejercicio.descripcion,
-                    serieController.text = ejercicio.series.toString(),
-                    repeticionController.text =
-                        ejercicio.repeticiones.toString(),
-                    cargaController.text = ejercicio.carga.toString(),
-                    durationController.text = ejercicio.duracion.toString(),
-                    pausaController.text = ejercicio.pausas.toString(),
-                    openNoteBox(ejercicio.id, widget.fitnessProvider)
-                  }
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () => {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return ConfirmDialog(
-                          title: 'Eliminar Ejercicio',
-                          content: 'Desea eliminar el Ejercicio?',
-                          onConfirm: () async {
-                            await widget.fitnessProvider.deleteEjercicio(plan, widget.week, ejercicio.id);
-                          },
-                          parentKey: null);
-                    })
-                },
-              ),
+              if (!userData.esBasico()) ...[
+                IconButton(
+                  icon: const Icon(Icons.settings),
+                  onPressed: () => {
+                    {
+                      nameController.text = ejercicio.nombre,
+                      descController.text = ejercicio.descripcion,
+                      serieController.text = ejercicio.series.toString(),
+                      repeticionController.text =
+                          ejercicio.repeticiones.toString(),
+                      cargaController.text = ejercicio.carga.toString(),
+                      durationController.text = ejercicio.duracion.toString(),
+                      pausaController.text = ejercicio.pausas.toString(),
+                      openNoteBox(ejercicio.id, widget.fitnessProvider)
+                    }
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ConfirmDialog(
+                              title: 'Eliminar Ejercicio',
+                              content: 'Desea eliminar el Ejercicio?',
+                              onConfirm: () async {
+                                await widget.fitnessProvider.deleteEjercicio(
+                                    plan, widget.week, ejercicio.id);
+                              },
+                              parentKey: null);
+                        })
+                  },
+                ),
               ],
             ],
           ),
@@ -122,7 +123,8 @@ class _ExerciseRowsState extends State<ExerciseRows> {
   Widget build(BuildContext context) {
     final userData = context.read<UserData>();
     return FutureBuilder<List<Widget>>(
-      future: buildEjercicioCards(widget.plan, widget.week, widget.day,userData),
+      future:
+          buildEjercicioCards(widget.plan, widget.week, widget.day, userData),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();

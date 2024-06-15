@@ -217,63 +217,8 @@ class UserData extends ChangeNotifier {
         return null;
       }
     } catch (e) {
-      print(e);
+      //print(e);
       return null;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchActividadesGimnasio(
-      DateTime fecha) async {
-    final gymId = esBasico() ? gimnasioId : gimnasioIdPropietario;
-    final todayStart = DateTime(fecha.year, fecha.month, fecha.day, 0, 0);
-    final todayEnd = todayStart.add(const Duration(days: 1));
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('actividad')
-          .where('propietarioActividadId', isEqualTo: gymId)
-          .where('inicio',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(todayStart))
-          .where('fin', isLessThanOrEqualTo: Timestamp.fromDate(todayEnd))
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        final fetchedActividades = querySnapshot.docs.map((doc) {
-          final actividadData = doc.data();
-          return actividadData;
-        }).toList();
-        return fetchedActividades;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print('Error fetching actividades: $e');
-      return [];
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> fetchActividadesEntrenador(
-      DateTime fecha, String ownerActividades) async {
-    try {
-      final todayStart = DateTime(fecha.year, fecha.month, fecha.day, 0, 0);
-      final todayEnd = todayStart.add(const Duration(days: 1));
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('actividad')
-          .where('propietarioActividadId', isEqualTo: ownerActividades)
-          .where('inicio', isGreaterThanOrEqualTo: todayStart)
-          .where('fin', isLessThanOrEqualTo: todayEnd)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        final fetchedActividades = querySnapshot.docs.map((doc) {
-          final actividadData = doc.data();
-          return actividadData;
-        }).toList();
-        return fetchedActividades;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      print('Error fetching actividades: $e');
-      return [];
     }
   }
 }

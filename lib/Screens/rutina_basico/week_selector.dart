@@ -11,7 +11,8 @@ import '../../modelo/models.dart';
 
 class WeekSelector extends StatefulWidget {
   final Plan plan;
-  const WeekSelector({super.key, required this.plan});
+  final bool leading;
+  const WeekSelector({super.key, required this.plan, required this.leading});
 
   @override
   State<WeekSelector> createState() => _WeekSelectorState();
@@ -73,13 +74,15 @@ class _WeekSelectorState extends State<WeekSelector> {
     final provider = context.watch<FitnessProvider>();
     final userData = context.read<UserData>();
     return Scaffold(
-      appBar:
-          AppBar(title: const Text('Rutina'), backgroundColor: Colors.amber),
+      appBar: AppBar(
+          title: const Text('Rutina'),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          automaticallyImplyLeading: widget.leading),
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(8.0),
-            color: Colors.grey[200],
+            color: Theme.of(context).colorScheme.surface,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -89,35 +92,35 @@ class _WeekSelectorState extends State<WeekSelector> {
                     const Text('Semana:',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 32)),
-                    if(!userData.esBasico()) ...[
-                    InkWell(
-                      onTap: () => {_removeWeek(provider)},
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(Icons.remove),
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () => {_addWeek(provider)},
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        decoration: BoxDecoration(
-                          color: Colors.greenAccent,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(Icons.add),
+                    if (!userData.esBasico()) ...[
+                      InkWell(
+                        onTap: () => {_removeWeek(provider)},
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(Icons.remove),
+                          ),
                         ),
                       ),
-                    )
+                      InkWell(
+                        onTap: () => {_addWeek(provider)},
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(Icons.add),
+                          ),
+                        ),
+                      )
                     ]
                   ],
                 ),
@@ -140,16 +143,16 @@ class _WeekSelectorState extends State<WeekSelector> {
                           padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(
                             color: index == _selectedWeekIndex
-                                ? Colors.black
-                                : Colors.white,
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.secondary,
                             borderRadius: BorderRadius.circular(4.0),
                           ),
                           child: Text(
                             (index + 1).toString(),
                             style: TextStyle(
                               color: index == _selectedWeekIndex
-                                  ? Colors.white
-                                  : Colors.black,
+                                  ? Theme.of(context).colorScheme.secondary
+                                  : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -178,16 +181,16 @@ class _WeekSelectorState extends State<WeekSelector> {
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
                               color: index == _selectedDayIndex
-                                  ? Colors.black
-                                  : Colors.white,
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.secondary,
                               borderRadius: BorderRadius.circular(4.0),
                             ),
                             child: Text(
                               days[index],
                               style: TextStyle(
                                 color: index == _selectedDayIndex
-                                    ? Colors.white
-                                    : Colors.black,
+                                    ? Theme.of(context).colorScheme.secondary
+                                    : Theme.of(context).colorScheme.primary,
                               ),
                             ),
                           ),
@@ -207,10 +210,20 @@ class _WeekSelectorState extends State<WeekSelector> {
           ),
         ],
       ),
-      floatingActionButton: !userData.esBasico() ? ElevatedButton(
-        onPressed: () => openNoteBox(null, provider), //placeholder
-        child: const Icon(Icons.add),
-      ) : null,
+      floatingActionButton: !userData.esBasico()
+          ? ElevatedButton(
+              onPressed: () => openNoteBox(null, provider),
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(20), // Adjust padding as needed
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                elevation: 8, // Add shadow by setting elevation
+                shadowColor: Colors.black.withOpacity(0.8),
+              ), //placeholder
+              child: Icon(Icons.add,
+                  color: Theme.of(context).colorScheme.secondary),
+            )
+          : null,
     );
   }
 }

@@ -1,13 +1,13 @@
 import 'package:fitsolutions/Components/components.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+//import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
 class AgregarActividadScreen extends StatefulWidget {
   final String dia;
   const AgregarActividadScreen({super.key, required this.dia});
 
   @override
-  _AgregarActividadScrenState createState() => _AgregarActividadScrenState();
+  State<AgregarActividadScreen> createState() => _AgregarActividadScrenState();
 }
 
 class _AgregarActividadScrenState extends State<AgregarActividadScreen> {
@@ -17,9 +17,9 @@ class _AgregarActividadScrenState extends State<AgregarActividadScreen> {
   late TimeOfDay horaFinActividad;
   final nombreProfActividad = TextEditingController();
 
-  Future<void> _registerActivity(String actividad) async {
-    final collectionRef = FirebaseFirestore.instance.collection('actividades');
-  }
+  /*Future<void> _registerActivity(String actividad) async {
+   //final collectionRef = FirebaseFirestore.instance.collection('actividades');
+  }*/
 
   Map<String, dynamic> getDatosActividad() {
     return {
@@ -41,7 +41,7 @@ class _AgregarActividadScrenState extends State<AgregarActividadScreen> {
       });
     });
   }
-
+/*
   void _pickHoraFin() {
     showTimePicker(context: context, initialTime: TimeOfDay.now())
         .then((value) {
@@ -49,7 +49,7 @@ class _AgregarActividadScrenState extends State<AgregarActividadScreen> {
         horaFinActividad = value!;
       });
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -85,8 +85,8 @@ class _AgregarActividadScrenState extends State<AgregarActividadScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      final actividad = getDatosActividad();
-                      print(actividad);
+                      // final actividad = getDatosActividad();
+                      //print(actividad);
                       //_registerActivity(actividad);
                       // Handle successful registration (optional)
                     }

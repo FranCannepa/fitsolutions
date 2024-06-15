@@ -1,12 +1,10 @@
-import 'dart:developer';
+
 import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
 
 class Membresia {
   final String nombre;

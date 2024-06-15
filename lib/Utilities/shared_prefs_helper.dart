@@ -1,4 +1,4 @@
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -153,7 +153,7 @@ class SharedPrefsHelper {
         return null;
       }
     } catch (e) {
-      print(e);
+      //print(e);
       return null;
     }
   }
