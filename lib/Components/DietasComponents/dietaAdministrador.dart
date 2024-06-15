@@ -1,6 +1,5 @@
 import 'dart:developer';
-
-import 'package:fitsolutions/Components/CommonComponents/noDataError.dart';
+import 'package:fitsolutions/Components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/Components/DietasComponents/dietaGestor.dart';
 import 'package:fitsolutions/Components/DietasComponents/dieta_card.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';

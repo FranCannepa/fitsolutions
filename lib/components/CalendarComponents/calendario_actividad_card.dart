@@ -1,4 +1,4 @@
-import 'package:fitsolutions/Components/CalendarComponents/calendarioActividadDialog.dart';
+import 'package:fitsolutions/Components/CalendarComponents/calendario_actividad_dialog.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:flutter/material.dart';
 

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -64,7 +65,6 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                 }
                 return !showGymForm
                     ? Column(
-                        
                         children: [
                           const ScreenTitle(
                             title: "No tienes ningun gimnasio asociado!",
@@ -81,6 +81,9 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
             if (showGymForm) GimnasioForm(refresh: refreshScreen),
           ],
         ),
+      ),
+      bottomNavigationBar: const FooterBottomNavigationBar(
+        initialScreen: ScreenType.gym,
       ),
     );
   }
