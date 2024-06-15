@@ -1,13 +1,11 @@
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioActividadDialog.dart';
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioDiaActual.dart';
+import 'package:fitsolutions/Components/CalendarComponents/calendarioActividadDialog.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
-import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_dialog.dart';
 import 'package:flutter/material.dart';
 
 class CartaActividad extends StatelessWidget {
-  final Map<String, dynamic> actividad;
+  late Map<String, dynamic> actividad;
 
-  const CartaActividad({super.key, required this.actividad});
+  CartaActividad({super.key, required this.actividad});
 
   @override
   Widget build(BuildContext context) {
