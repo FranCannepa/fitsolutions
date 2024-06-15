@@ -1,5 +1,3 @@
-//import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:fitsolutions/Components/CommonComponents/inputDatePicker.dart';
 //import 'package:fitsolutions/Components/CommonComponents/inputDropDown.dart';
@@ -82,7 +80,7 @@ class _CalendarioAgregarActividadDialogState
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return ResultDialog(text: mensaje, type: resultado);
+        return ResultDialog(text: mensaje, resultType: resultado);
       },
     );
   }

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
-import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (querySnapshot.docs.isNotEmpty) {
         final doc = querySnapshot.docs.first;
         final docId = querySnapshot.docs.first.id;
-        final Map<String, dynamic> userData =
-            doc.data();
+        final Map<String, dynamic> userData = doc.data();
         userData['docId'] = docId;
         return userData;
       } else {
@@ -49,10 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
       final Map<String, dynamic>? existingUserData =
           await _checkUserExistence(user);
       if (existingUserData != null) {
-        userProvider.updateUserData(existingUserData);
         prefs.setEmail(existingUserData['email']);
         prefs.setUserId(existingUserData['docId']);
         prefs.setLoggedIn(true);
+        prefs.initializeData();
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
@@ -76,7 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 10.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                   gradient: LinearGradient(

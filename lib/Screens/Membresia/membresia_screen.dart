@@ -1,31 +1,57 @@
+
+import 'package:fitsolutions/Modelo/Screens.dart';
+import 'package:fitsolutions/providers/membresia_provider.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/components/components.dart';
-import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+class Membresia {
+  final String nombre;
+  final double precio;
+
+  Membresia({required this.nombre, required this.precio});
+}
+
+final List<Membresia> membresias = [
+  Membresia(nombre: 'Membresía Básica', precio: 50.0),
+  Membresia(nombre: 'Membresía Estándar', precio: 100.0),
+  Membresia(nombre: 'Membresía Premium', precio: 150.0),
+];
+
 class MembresiaScreen extends StatefulWidget {
-  const MembresiaScreen({super.key});
+  final UserData provider;
+  const MembresiaScreen({super.key, required this.provider});
 
   @override
   State<MembresiaScreen> createState() => _MembresiaScreenState();
 }
 
 class _MembresiaScreenState extends State<MembresiaScreen> {
-  bool showMembresiaForm = false;
-  void refreshScreen() async {
-    setState(() {
-      showMembresiaForm = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserData>();
+    context.read<UserData>().initializeData();
+    final MembresiaProvider provider = context.read<MembresiaProvider>();
+    final UserData userData = context.read<UserData>();
 
     return Scaffold(
-      body: userProvider.esBasico()
-          ? const MembresiaDisplayerBasico()
-          : const MembresiaDisplayerPropietario(),
+      body: FutureBuilder(
+        future: provider.getMembresiasOrigen(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final membresias = snapshot.data!;
+            return userData.esBasico()
+                ? MembresiaDisplayerBasico(membresias: membresias)
+                : const MembresiaDisplayerPropietario();
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Error al obtener las membresias'));
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
+      bottomNavigationBar: const FooterBottomNavigationBar(
+        initialScreen: ScreenType.membresia,
+      ),
     );
   }
 }

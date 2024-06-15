@@ -1,11 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
-//import 'package:fitsolutions/Modelo/Screens.dart';
-//import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-//import 'package:provider/provider.dart';
 
 class GimnasioScreen extends StatefulWidget {
   const GimnasioScreen({super.key});
@@ -19,7 +16,6 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
   Logger log = Logger();
   SharedPrefsHelper prefs = SharedPrefsHelper();
   Future<Map<String, dynamic>?> getGym() async {
-    //final userProvider = context.read<UserData>();
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('gimnasio')

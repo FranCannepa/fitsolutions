@@ -1,19 +1,13 @@
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioActividadCard.dart';
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioAgregarActividadDialog.dart';
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioDiaActual.dart';
-//import 'package:fitsolutions/Components/CommonComponents/noDataError.dart';
-//import 'package:fitsolutions/Components/components.dart';
-//import 'package:fitsolutions/Utilities/formaters.dart';
-//import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+
 import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_card.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_dia_actual.dart';
 import 'package:fitsolutions/components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
-import 'package:fitsolutions/modelo/user_data.dart';
+import 'package:fitsolutions/providers/actividad_provider.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-//import 'dart:developer';
 
 class CalendarioDisplayer extends StatefulWidget {
   const CalendarioDisplayer({super.key});
@@ -24,7 +18,13 @@ class CalendarioDisplayer extends StatefulWidget {
 
 class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
   DateTime fechaSeleccionada = DateTime.now();
-  List<Map<String, dynamic>> actividadesFetched = [];
+  late List<Map<String, dynamic>> actividadesFetched;
+  String origenActividades = '';
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void actividadesSiguientes() {
     setState(() {
@@ -40,43 +40,53 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
 
   @override
   Widget build(BuildContext context) {
-    //final prefs = SharedPrefsHelper();
-    final userProvider = context.read<UserData>();
-    final fetchAction = userProvider.gimnasioId != '' ||
-            userProvider.gimnasioIdPropietario != ''
-        ? context.read<UserData>().fetchActividadesGimnasio(fechaSeleccionada)
-        : context
-            .read<UserData>()
-            .fetchActividadesEntrenador(fechaSeleccionada);
+    final actividadesProvider = context.read<ActividadProvider>();
+    final UserData userProvider = context.read<UserData>();
+    userProvider.initializeData();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           FutureBuilder<List<Map<String, dynamic>>>(
-            future: fetchAction,
+            future: actividadesProvider.fetchActividades(fechaSeleccionada),
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                return Center(
+                    child: Column(
+                  children: [
+                    const NoDataError(message: "No quedan actividades por hoy"),
+                    if (!userProvider.esBasico())
+                      ElevatedButton(
+                        onPressed: () => {
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                CalendarioAgregarActividadDialog(
+                              propietarioActividadId: origenActividades,
+                              onClose: () => Navigator.pop(context),
+                            ),
+                          )
+                        },
+                        child: const Text("Nueva Actividad"),
+                      ),
+                  ],
+                ));
+              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                 actividadesFetched = snapshot.data!;
                 return Center(
                   child: Column(
                     children: [
-                      if (actividadesFetched.isEmpty)
-                        const NoDataError(
-                          message: "No quedan actividades por hoy",
-                        )
-                      else
-                        const Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
-                          children: [
-                            DiaActual(),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            ScreenTitle(title: "Actividades"),
-                          ],
-                        ),
+                      const Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          DiaActual(),
+                          SizedBox(width: 10),
+                          ScreenTitle(title: "Actividades"),
+                        ],
+                      ),
                       Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -86,7 +96,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                                 child: const Icon(Icons.arrow_back_ios),
                                 onPressed: () => actividadesAnterior(),
                               ),
-                            if (actividadesFetched.isNotEmpty)
+                            if (snapshot.data!.isNotEmpty)
                               ElevatedButton(
                                 child: const Icon(Icons.arrow_forward_ios),
                                 onPressed: () => actividadesSiguientes(),
@@ -96,32 +106,20 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                       ),
                       ListView.builder(
                         shrinkWrap: true,
-                        itemCount: actividadesFetched.length,
+                        itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
-                          final actividad = actividadesFetched[index];
+                          final actividad = snapshot.data![index];
                           return SizedBox(
                             child: CartaActividad(actividad: actividad),
                           );
                         },
                       ),
-                      ElevatedButton(
-                          onPressed: () => {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      CalendarioAgregarActividadDialog(
-                                    propietarioActividadId: userProvider
-                                        .gimnasioIdPropietario as String,
-                                    onClose: () => Navigator.pop(context),
-                                  ),
-                                )
-                              },
-                          child: const Text("Nueva Actividad")),
                     ],
                   ),
                 );
+              } else {
+                return Text('Error: ${snapshot.error}');
               }
-              return const CircularProgressIndicator();
             },
           ),
         ],

@@ -6,7 +6,6 @@ class ResultDialog extends StatelessWidget {
   final String text;
   final ResultType type;
 
-
   const ResultDialog({super.key, required this.text, required this.type});
 
   @override

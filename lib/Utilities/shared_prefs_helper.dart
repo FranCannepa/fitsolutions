@@ -10,6 +10,7 @@ class SharedPrefsHelper {
   final String _userTipo = 'userTipo';
   final String _propietarioGym = 'propietarioGym';
   final String _asociadoId = 'asociadoId';
+  final String _membresiaId = 'mebresiaId';
 
   static final SharedPrefsHelper _instance = SharedPrefsHelper._internal();
 
@@ -21,16 +22,34 @@ class SharedPrefsHelper {
     return await SharedPreferences.getInstance();
   }
 
-  bool esBasico() {
-    return _userTipo == "Basico";
+  Future<bool> esBasico() async {
+    final String? userType = await getUserTipo();
+    return userType == "Basico";
   }
 
-  bool esPropietario() {
-    return _userTipo == "Propietario";
+  Future<bool> tieneSub() async {
+    final String? tieneSub = await getSubscripcion();
+    return tieneSub != null;
   }
 
-  bool esEntrenador() {
-    return _userTipo == "Entrenador";
+  Future<bool> esPropietario() async {
+    final String? userType = await getUserTipo();
+    return userType == "Propietario";
+  }
+
+  Future<bool> esEntrenador() async {
+    final String? userType = await getUserTipo();
+    return userType == "Entrenador";
+  }
+
+  Future<void> setMembresia(String membresiaId) async {
+    final prefs = await _getInstance();
+    await prefs.setString(_membresiaId, membresiaId);
+  }
+
+    Future<String?> getMembresia() async {
+    final prefs = await _getInstance();
+    return prefs.getString(_membresiaId);
   }
 
   Future<void> setSubscripcion(String subId) async {
@@ -111,11 +130,11 @@ class SharedPrefsHelper {
       final userTipo = userData?['tipo'];
       setUserId(userData?['userId']);
       setEmail(userData?['email']);
-      if (userTipo == 0) {
+      if (userTipo == "Basico") {
         initializeBasico(userData);
-      } else if (userTipo == 1) {
+      } else if (userTipo == "Propietario") {
         initializePropietario(userData);
-      } else if (userTipo == 3) {
+      } else if (userTipo == "Entrenador") {
         initializeEntrenador(userData);
       }
     }
@@ -163,8 +182,8 @@ class SharedPrefsHelper {
   void initializePropietario(Map<String, dynamic>? userData) async {
     setUserTipo("Propietario");
     setEmail(userData?['email']);
-    // final gymId = await getGimnasioPropietario(getDocId());
-    // setGymPropietario(a));
+    final gymId = await getGimnasioPropietario(userData?['userId']) as String;
+    setSubscripcion(gymId);
   }
 
   void initializeEntrenador(Map<String, dynamic>? userData) {

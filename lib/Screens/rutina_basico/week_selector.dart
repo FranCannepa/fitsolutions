@@ -1,4 +1,5 @@
 import 'package:fitsolutions/providers/fitness_provider.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/screens/Plan/ejercicio_create_dialogue.dart';
 import 'package:fitsolutions/screens/rutina_basico/exercise_rows.dart';
 import 'package:fitsolutions/screens/rutina_basico/header_row.dart';

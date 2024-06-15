@@ -1,10 +1,10 @@
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
 
 class ActividadProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
-  
   Future<List<Map<String, dynamic>>> fetchActividades(DateTime fecha) async {
     String? ownerActividades = await prefs.getSubscripcion();
     try {
@@ -31,7 +31,6 @@ class ActividadProvider extends ChangeNotifier {
       return [];
     }
   }
-
   // Future<List<Map<String, dynamic>>> fetchPlanes(String idActividad) async {
   //   final String? usuarioId = await prefs.getUserId();
   //   try {

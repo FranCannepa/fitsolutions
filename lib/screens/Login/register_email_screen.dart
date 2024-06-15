@@ -1,14 +1,11 @@
-//import 'package:fitsolutions/Modelo/user_data.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/components/components.dart';
-import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-//import 'package:provider/provider.dart';
 
 class RegisterEmailScreen extends StatefulWidget {
   final UserProvider userProvider;
