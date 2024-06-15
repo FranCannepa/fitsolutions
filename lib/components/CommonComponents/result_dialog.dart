@@ -4,13 +4,13 @@ enum ResultType { error, success, warning, info }
 
 class ResultDialog extends StatelessWidget {
   final String text;
-  final ResultType type;
+  final ResultType resultType;
 
-  const ResultDialog({super.key, required this.text, required this.type});
+  const ResultDialog({super.key, required this.text, required this.resultType});
 
   @override
   Widget build(BuildContext context) {
-    final textColor = _getColorByType(type);
+    final textColor = _getColorByType(resultType);
 
     return AlertDialog(
       title: Text(
