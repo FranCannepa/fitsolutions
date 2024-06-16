@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitsolutions/Modelo/Membresia.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -92,22 +93,22 @@ class UserData extends ChangeNotifier {
         .get();
     final membersias = querySnapshot.docs.map((doc) {
       final data = doc.data();
-      data['id'] = doc.id;
+      data['membresiaId'] = doc.id;
       return data;
     }).toList();
 
     return membersias;
   }
 
-  Future<Map<String, dynamic>?> getMembresia() async {
+  Future<Membresia?> getMembresia() async {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('membresia')
         .doc(membresiaId)
         .get();
-
     if (querySnapshot.exists) {
       final data = querySnapshot.data();
-      return data;
+      data?['membresiaId'] = querySnapshot.id;
+      return Membresia.fromDocument(data!);
     } else {
       return null;
     }
