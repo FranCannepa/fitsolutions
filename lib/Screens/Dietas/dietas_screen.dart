@@ -21,6 +21,7 @@ class _DietasScreenState extends State<DietasScreen> {
     final UserData userData = context.read<UserData>();
     return Scaffold(
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           userData.esBasico()
               ? const DietaDisplayer()

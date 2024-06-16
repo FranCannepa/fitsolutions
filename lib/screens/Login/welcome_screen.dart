@@ -1,3 +1,4 @@
+import 'package:fitsolutions/Components/CommonComponents/image_logo.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/login_email_screen.dart';
 import 'package:fitsolutions/screens/Login/register_email_screen.dart';
@@ -26,54 +27,13 @@ class _WelcomePageState extends State<WelcomePage>
     final userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
-        backgroundColor: Colors.grey.shade400,
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         body: SafeArea(
             top: true,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
+            child: SingleChildScrollView(
+                child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(0, 45, 0, 0),
-                  child: Container(
-                      width: double.infinity,
-                      constraints: const BoxConstraints(
-                        maxWidth: 600,
-                      ),
-                      decoration: const BoxDecoration(
-                        color: Colors.amber,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(16),
-                          bottomRight: Radius.circular(16),
-                          topLeft: Radius.circular(0),
-                          topRight: Radius.circular(0),
-                        ),
-                      ),
-                      alignment: const AlignmentDirectional(-1, 0),
-                      child: const Align(
-                          alignment: AlignmentDirectional(-1, 0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(16, 0, 0, 0),
-                                child: Text(
-                                  'FitSolutions',
-                                  style: TextStyle(
-                                    fontFamily: 'Plus Jakarta Sans',
-                                    color: Color(0xFF101213),
-                                    fontSize: 24,
-                                    letterSpacing: 0,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ))),
-                ),
                 Container(
                   width: double.infinity,
                   height: 700,
@@ -96,8 +56,8 @@ class _WelcomePageState extends State<WelcomePage>
                       ],
                     ),
                   ),
-                )
+                ),
               ],
-            )));
+            ))));
   }
 }

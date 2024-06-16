@@ -1,3 +1,4 @@
+import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:flutter/material.dart';
 
@@ -63,8 +64,10 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
             ],
           ),
         ),
+        const ScreenSubTitle(text: "Datos"),
         const SizedBox(height: 16.0),
-        Padding(
+        Container(
+            color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
             padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

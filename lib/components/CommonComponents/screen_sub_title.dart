@@ -9,8 +9,10 @@ class ScreenSubTitle extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: Colors.grey[600], 
-        fontSize: 20.0, 
+        color: Colors.grey[600],
+        fontSize: 20.0,
+        fontWeight: FontWeight.w400,
+        height: 1.2,
       ),
     );
   }

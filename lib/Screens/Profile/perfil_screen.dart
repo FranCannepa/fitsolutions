@@ -1,4 +1,6 @@
+import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigator.dart';
 import 'package:fitsolutions/Components/ProfileComponents/perfilDetailed.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +37,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
             }
           },
         ),
+      ),
+      bottomNavigationBar: const FooterBottomNavigationBar(
+        initialScreen: ScreenType.perfil,
       ),
     ));
   }

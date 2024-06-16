@@ -1,4 +1,3 @@
-
 import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
@@ -12,12 +11,6 @@ class Membresia {
 
   Membresia({required this.nombre, required this.precio});
 }
-
-final List<Membresia> membresias = [
-  Membresia(nombre: 'Membresía Básica', precio: 50.0),
-  Membresia(nombre: 'Membresía Estándar', precio: 100.0),
-  Membresia(nombre: 'Membresía Premium', precio: 150.0),
-];
 
 class MembresiaScreen extends StatefulWidget {
   final UserData provider;
@@ -33,7 +26,6 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
     context.read<UserData>().initializeData();
     final MembresiaProvider provider = context.read<MembresiaProvider>();
     final UserData userData = context.read<UserData>();
-
     return Scaffold(
       body: FutureBuilder(
         future: provider.getMembresiasOrigen(),

@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:fitsolutions/Components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +28,7 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
       'nombreMembresia': _nombreMembresia.text,
       'costo': _costoMembresia.text,
       'descripcion': _descripcionMembresia.text,
+      'origenMembresia': widget.origenMembresia
     };
   }
 
@@ -40,7 +44,7 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ScreenSubTitle(text: "Nueva Membresia"),
+            const ScreenSubTitle(text: "Nueva Membresia"),
             const SizedBox(height: 16.0),
             RoundedInputField(
               labelText: 'Nombre',
@@ -77,10 +81,21 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
             const SizedBox(height: 16.0),
             SubmitButton(
                 text: "Registrar",
-                onPressed: () {
+                onPressed: () async {
                   final Map<String, dynamic> membresiaData =
                       collectMembresiaData();
-                  membresiaProvider.registrarMembresia(membresiaData);
+                  final success =
+                      await membresiaProvider.registrarMembresia(membresiaData);
+                  if (success) {
+                    const ResultDialog(
+                        text: "Membresia creada exitosamente",
+                        resultType: ResultType.success);
+                    widget.onClose();
+                  } else {
+                    const ResultDialog(
+                        text: "Error al crear membresia",
+                        resultType: ResultType.error);
+                  }
                 }),
             TextButton(
               onPressed: widget.onClose,
