@@ -93,7 +93,7 @@ class UserData extends ChangeNotifier {
         .get();
     final membersias = querySnapshot.docs.map((doc) {
       final data = doc.data();
-      data['id'] = doc.id;
+      data['membresiaId'] = doc.id;
       return data;
     }).toList();
 
@@ -107,7 +107,7 @@ class UserData extends ChangeNotifier {
         .get();
     if (querySnapshot.exists) {
       final data = querySnapshot.data();
-      data?['id'] = querySnapshot.id;
+      data?['membresiaId'] = querySnapshot.id;
       return Membresia.fromDocument(data!);
     } else {
       return null;
