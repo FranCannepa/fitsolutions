@@ -16,19 +16,21 @@ class _DietaDisplayerState extends State<DietaDisplayer> {
   @override
   Widget build(BuildContext context) {
     final dietaProvider = context.watch<DietaProvider>();
-    return FutureBuilder(
+    return Center(
+      child: FutureBuilder<Dieta?>(
         future: dietaProvider.getDieta(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else if (snapshot.hasData) {
+            Dieta miDieta = snapshot.data!;
+            return DietaCard(dieta: miDieta);
+          } else if (snapshot.hasError || !snapshot.hasData) {
             return const NoDataError(message: "No tiene Dietas Asignadas");
           }
-          if (snapshot.hasData) {
-            Dieta miDieta = snapshot.data!;
-            return Column(
-              children: [DietaCard(dieta: miDieta)],
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        });
+          return Container();
+        },
+      ),
+    );
   }
 }

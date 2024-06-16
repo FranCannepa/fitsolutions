@@ -1,11 +1,14 @@
+import 'dart:developer';
+
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaSeleccionador.dart';
+import 'package:fitsolutions/Modelo/Membresia.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MembresiaDisplayerBasico extends StatefulWidget {
-  final List<Map<String, dynamic>> membresias;
+  final List<Membresia> membresias;
   const MembresiaDisplayerBasico({super.key, required this.membresias});
 
   @override
@@ -19,14 +22,14 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     final UserData userProvider = context.read<UserData>();
 
     return Center(
-      child: FutureBuilder(
+      child: FutureBuilder<Membresia?>(
         future: userProvider.getMembresia(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final membresia = snapshot.data!;
             return Visibility(
                 visible: snapshot.hasData,
-                child: MembresiaInfo(membresiaData: membresia));
+                child: MembresiaInfo(membresia: membresia));
           } else if (!snapshot.hasData) {
             return Stack(
               children: [

@@ -20,12 +20,3 @@ class ScreenTitle extends StatelessWidget {
     );
   }
 }
-
-class MainContainer extends StatelessWidget {
-  const MainContainer({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}

@@ -18,7 +18,6 @@ class MembresiaPicker extends StatelessWidget {
           children: [
             const ScreenSubTitle(text: "Membresias Disponibles"),
             FutureBuilder(
-              // Assuming getMembresias returns a list of formatted details
               future: provider.getMembresias(userId),
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -33,9 +32,9 @@ class MembresiaPicker extends StatelessWidget {
                   );
                 } else if (snapshot.hasError) {
                   return Text(
-                      'Error fetching memberships: ${snapshot.error}'); // Handle errors
+                      'Error fetching memberships: ${snapshot.error}'); 
                 }
-                return const CircularProgressIndicator(); // Show progress indicator while loading
+                return const CircularProgressIndicator();
               },
             ),
           ],

@@ -1,8 +1,10 @@
+import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresia_card.dart';
+import 'package:fitsolutions/Modelo/Membresia.dart';
 import 'package:flutter/material.dart';
 
 class SeleccionarMembresia extends StatefulWidget {
-  final List<Map<String, dynamic>> membresias;
+  final List<Membresia> membresias;
   const SeleccionarMembresia({super.key, required this.membresias});
 
   @override
@@ -12,16 +14,36 @@ class SeleccionarMembresia extends StatefulWidget {
 class _MembresiaSeleccionadorState extends State<SeleccionarMembresia> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ...widget.membresias.map((membresia) => Center(
-                child: MembershipCard(membership: membresia),
-              )),
-        ],
-      )),
+    return Column(
+      children: [
+        Container(
+          height: 50.0,
+          margin: const EdgeInsets.only(
+            top: 30.0,
+            left: 30.0,
+            right: 30.0,
+          ),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [ScreenTitle(title: "Membresias")],
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ...widget.membresias.map(
+                    (membresia) => MembershipCard(membresia: membresia),
+                  ),
+                  const SizedBox(height: 4.0),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
