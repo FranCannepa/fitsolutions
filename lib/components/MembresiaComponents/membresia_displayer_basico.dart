@@ -6,6 +6,7 @@ import 'package:fitsolutions/Modelo/Membresia.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
 
 class MembresiaDisplayerBasico extends StatefulWidget {
   final List<Membresia> membresias;
@@ -20,6 +21,9 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
   @override
   Widget build(BuildContext context) {
     final UserData userProvider = context.read<UserData>();
+    final PaymentService paymentService = PaymentService();
+
+    paymentService.verifyPayment(context);
 
     return Center(
       child: FutureBuilder<Membresia?>(

@@ -101,6 +101,9 @@ class UserData extends ChangeNotifier {
   }
 
   Future<Membresia?> getMembresia() async {
+    if(membresiaId == ''){
+      return null;
+    }
     final querySnapshot = await FirebaseFirestore.instance
         .collection('membresia')
         .doc(membresiaId)
@@ -111,6 +114,19 @@ class UserData extends ChangeNotifier {
       return Membresia.fromDocument(data!);
     } else {
       return null;
+    }
+  }
+
+  Future<void> updateMembresiaId(String membresiaId) async {
+    final String? userId = await getUserId();
+    if (userId != null) {
+      await FirebaseFirestore.instance.collection('usuario').doc(userId).update({
+        'membresiaId': membresiaId,
+      });
+      this.membresiaId = membresiaId;
+      notifyListeners();
+    } else {
+      log.d("No se pudo actualizar la membresia");
     }
   }
 

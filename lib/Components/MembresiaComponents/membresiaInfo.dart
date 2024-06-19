@@ -16,7 +16,7 @@ class MembresiaInfo extends StatelessWidget {
     // final costo = membresiaData['costo'];
 
     void handlePayment(double costo) {
-      _paymentService.createPayment(context, costo, 'cliente1@correo.com');
+      //_paymentService.createPayment(context, costo, 'cliente1@correo.com');
     }
 
     return Container(
