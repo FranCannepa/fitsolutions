@@ -1,6 +1,6 @@
-
+import 'dart:developer';
+import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_card.dart';
-import 'package:fitsolutions/components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_dia_actual.dart';
 import 'package:fitsolutions/components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
@@ -18,13 +18,7 @@ class CalendarioDisplayer extends StatefulWidget {
 
 class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
   DateTime fechaSeleccionada = DateTime.now();
-  late List<Map<String, dynamic>> actividadesFetched;
-  String origenActividades = '';
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  late List<Actividad> actividadesFetched;
 
   void actividadesSiguientes() {
     setState(() {
@@ -43,87 +37,110 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
     final actividadesProvider = context.read<ActividadProvider>();
     final UserData userProvider = context.read<UserData>();
     userProvider.initializeData();
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: actividadesProvider.fetchActividades(fechaSeleccionada),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-                return Center(
-                    child: Column(
-                  children: [
-                    const NoDataError(message: "No quedan actividades por hoy"),
-                    if (!userProvider.esBasico())
-                      ElevatedButton(
-                        onPressed: () => {
-                          showDialog(
-                            context: context,
-                            builder: (context) =>
-                                CalendarioAgregarActividadDialog(
-                              propietarioActividadId: origenActividades,
-                              onClose: () => Navigator.pop(context),
-                            ),
-                          )
-                        },
-                        child: const Text("Nueva Actividad"),
-                      ),
-                  ],
-                ));
-              } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                actividadesFetched = snapshot.data!;
-                return Center(
-                  child: Column(
+    return FutureBuilder<List<Actividad>>(
+      future: actividadesProvider.fetchActividades(fechaSeleccionada),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasData) {
+          return Center(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 40.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          DiaActual(),
-                          SizedBox(width: 10),
-                          ScreenTitle(title: "Actividades"),
-                        ],
+                      DiaActual(
+                        fecha: fechaSeleccionada,
                       ),
-                      Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (fechaSeleccionada.isAfter(DateTime.now()))
-                              ElevatedButton(
-                                child: const Icon(Icons.arrow_back_ios),
-                                onPressed: () => actividadesAnterior(),
-                              ),
-                            if (snapshot.data!.isNotEmpty)
-                              ElevatedButton(
-                                child: const Icon(Icons.arrow_forward_ios),
-                                onPressed: () => actividadesSiguientes(),
-                              ),
-                          ],
+                      const SizedBox(width: 10),
+                      const ScreenTitle(title: "Actividades"),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 15.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (fechaSeleccionada.isAfter(DateTime.now()))
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          onPressed: () => actividadesAnterior(),
                         ),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          final actividad = snapshot.data![index];
-                          return SizedBox(
-                            child: CartaActividad(actividad: actividad),
-                          );
-                        },
+                      const Spacer(),
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondary,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        onPressed: () => actividadesSiguientes(),
                       ),
                     ],
                   ),
-                );
-              } else {
-                return Text('Error: ${snapshot.error}');
-              }
-            },
-          ),
-        ],
-      ),
+                ),
+                if (snapshot.data!.isNotEmpty)
+                  Expanded(
+                      child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          ...snapshot.data!.map(
+                            (actividad) => CartaActividad(actividad: actividad),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ))
+                else
+                  Container(
+                    margin: const EdgeInsets.only(top: 200.0),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        NoDataError(message: "No quedan actividades por hoy"),
+                      ],
+                    ),
+                  )
+              ],
+            ),
+          );
+        } else {
+          return Text('Error: ${snapshot.error}');
+        }
+      },
     );
   }
 }

@@ -41,13 +41,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<UserData>(create: (context) => UserData()),
         ChangeNotifierProvider<UserProvider>(
             create: (context) => UserProvider()),
-         ChangeNotifierProvider<FitnessProvider>(
+        ChangeNotifierProvider<FitnessProvider>(
             create: (context) => FitnessProvider(FirebaseFirestore.instance)),
         ChangeNotifierProvider<ActividadProvider>(
             create: (context) => ActividadProvider()),
         ChangeNotifierProvider<MembresiaProvider>(
             create: (context) => MembresiaProvider()),
-        ChangeNotifierProvider<DietaProvider>(create: (context) => DietaProvider()),
+        ChangeNotifierProvider<DietaProvider>(
+            create: (context) => DietaProvider()),
       ],
       child: MaterialApp(
         navigatorKey: NavigationService.navigatorKey,

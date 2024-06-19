@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
+import 'package:intl/intl.dart';
 
 class DiaActual extends StatelessWidget {
-  const DiaActual({super.key});
+  final DateTime fecha;
+
+  const DiaActual({super.key, required this.fecha});
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final day = DateFormat('d').format(now);
+    final day = DateFormat('d').format(fecha);
 
     final monthMap = {
       1: 'Enero',
@@ -19,12 +20,12 @@ class DiaActual extends StatelessWidget {
       7: 'Julio',
       8: 'Agosto',
       9: 'Septiembre',
-      10: 'Cctubre',
+      10: 'Octubre',
       11: 'Noviembre',
       12: 'Diciembre',
     };
 
-    final month = monthMap[now.month];
+    final month = monthMap[fecha.month];
 
     return Container(
       color: Colors.black,
@@ -43,7 +44,7 @@ class DiaActual extends StatelessWidget {
               ),
             ),
             Text(
-              month!, // Use null-safe access after map lookup
+              month!,
               style: const TextStyle(
                 fontSize: 16.0,
                 color: Colors.white,
