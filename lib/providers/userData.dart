@@ -18,10 +18,10 @@ class UserData extends ChangeNotifier {
   String photoUrl = '';
   String gimnasioId = '';
   late String calendarioId = '';
-  late String membresiaId = '';
+  late String membresiaId;
   late String entrenadorId = '';
   String? gimnasioIdPropietario = '';
-  late String origenAdministrador;
+  late String origenAdministrador = '';
 
   final prefs = SharedPrefsHelper();
   Logger log = Logger();
@@ -134,6 +134,10 @@ class UserData extends ChangeNotifier {
     return gimnasioIdPropietario != '';
   }
 
+  Future<bool> rutasBasico() async {
+    return await prefs.getUserTipo() == "Basico";
+  }
+
   bool esBasico() {
     return tipo == "Basico";
   }
@@ -234,7 +238,6 @@ class UserData extends ChangeNotifier {
         return null;
       }
     } catch (e) {
-      //print(e);
       return null;
     }
   }

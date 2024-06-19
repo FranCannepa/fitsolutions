@@ -21,30 +21,21 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
   @override
   Widget build(BuildContext context) {
     final UserData userProvider = context.read<UserData>();
-    final PaymentService paymentService = PaymentService();
-
     paymentService.verifyPayment(context);
-
+    userProvider.initializeData();
     return Center(
       child: FutureBuilder<Membresia?>(
         future: userProvider.getMembresia(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final membresia = snapshot.data!;
-            return Visibility(
-                visible: snapshot.hasData,
-                child: MembresiaInfo(membresia: membresia));
-          } else if (!snapshot.hasData) {
-            return Stack(
-              children: [
-                Visibility(
-                  visible: !snapshot.hasData,
-                  child: SeleccionarMembresia(membresias: widget.membresias),
-                ),
-              ],
-            );
-          } else {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            final membresia = snapshot.data;
+            return membresia != null
+                ? MembresiaInfo(membresia: membresia)
+                : SeleccionarMembresia(membresias: widget.membresias);
           }
         },
       ),
