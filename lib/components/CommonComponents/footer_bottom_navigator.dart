@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,11 +18,9 @@ class FooterBottomNavigationBar extends StatefulWidget {
 class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
   int _selectedIndex = 0;
   List<String> _screens = [];
-
-  @override
-  Widget build(BuildContext context) {
-    final UserData userProvider = context.read<UserData>();
-    if (userProvider.esBasico()) {
+  void initRoutes(UserData provider) async {
+    final esBasico = await provider.rutasBasico();
+    if (esBasico) {
       _screens = [
         '/ejercicios',
         '/perfil',
@@ -30,14 +30,24 @@ class _FooterBottomNavigationBarState extends State<FooterBottomNavigationBar> {
       ];
     } else {
       _screens = [
-        //'/plan',
         '/gimnasio',
         '/home',
         '/dieta',
         '/membresia',
       ];
     }
+  }
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final UserData userProvider = context.read<UserData>();
+    userProvider.initializeData();
+    initRoutes(userProvider);
     List<BottomNavigationBarItem> getBotones() {
       if (userProvider.esBasico()) {
         return <BottomNavigationBarItem>[
