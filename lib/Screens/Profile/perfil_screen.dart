@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Screens/Profile/editar_perfil_screen.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -157,17 +158,41 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       ],
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const EditarPerfilScreen(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(),
-                    child: const Text('Editar Perfil'),
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EditarPerfilScreen(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(),
+                        child: const Text('Editar Perfil'),
+                      ),
+                                      ElevatedButton(
+                      onPressed: () => {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration: const Duration(milliseconds: 500),
+                            pageBuilder: (_, __, ___) =>
+                                const FormInscriptionScreen(),
+                            transitionsBuilder: (_, Animation<double> animation,
+                                __, Widget child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        )
+                      },
+                      child: const Text('Inscripcion'),
+                    ),
+                    ],
                   ),
                 ],
               );

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class MembresiaDisplayerBasico extends StatefulWidget {
@@ -101,7 +100,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(membresia['gimnasio']),
+                    //Text(membresia['gimnasio']),
                     const SizedBox(height: 10.0),
                     const Text(
                       'Costo:',
@@ -119,9 +118,9 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
+                    /*Text(
                       DateFormat('dd/MM/yyyy').format(membresia['vencimiento']),
-                    )
+                    )*/
                   ],
                 ),
     );

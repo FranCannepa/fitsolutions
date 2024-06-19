@@ -3,11 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:fitsolutions/Components/components.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
+import 'package:fitsolutions/providers/user_provider.dart';
 //import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen.dart';
 import 'package:fitsolutions/screens/Home/home_screen_content.dart';
+import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 //import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
@@ -68,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final userProvider = context.read<UserData>();
-            
+
             List<Widget> screens = userProvider.esBasico()
                 ? [
                     const EjerciciosScreen(),
@@ -130,6 +132,29 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             return Scaffold(
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).primaryColor,
+                automaticallyImplyLeading:
+                    false, // This removes the back button
+                actions: [
+                  IconButton(
+                    onPressed: () async {
+                      UserProvider userProvider = context.read<UserProvider>();
+                      await userProvider.signOut();
+                      if (context.mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                const WelcomePage(),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.logout),
+                  ),
+                ],
+              ),
               body: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: IndexedStack(
