@@ -64,6 +64,8 @@ dependencies:
   firebase_storage: ^11.7.7
   flutter_local_notifications: ^17.1.2
   firebase_messaging: ^14.9.4
+  url_launcher: ^6.3.0
+  http: ^1.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -94,6 +96,7 @@ flutter:
     - assets/icons/membership_icon.png
     - assets/icons/home_icon.png
     - assets/icons/dumbell2_icon.png
+    - assets/media/main_logo.png
   
   
   ##- assets/icons/mainIcon.png

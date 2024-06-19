@@ -1,4 +1,4 @@
-//import 'dart:developer';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:fitsolutions/Components/CommonComponents/inputDatePicker.dart';
@@ -51,16 +51,12 @@ class _CalendarioAgregarActividadDialogState
           .combineDateTime(fechaActividad, horaFinActividadSeleccionada));
       actividadData['cupos'] = int.tryParse(cuposActividadController.text) ?? 0;
       actividadData['participantes'] = 0;
-    } else {
-      //print('Form is invalid.');
-    }
+    } else {}
   }
 
   Future<void> registrarActividad() async {
     summarizeData();
     actividadData['propietarioActividadId'] = widget.propietarioActividadId;
-    //print(actividadData);
-
     try {
       final docRef = await FirebaseFirestore.instance
           .collection('actividad')
@@ -82,7 +78,7 @@ class _CalendarioAgregarActividadDialogState
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return ResultDialog(text: mensaje, type: resultado);
+        return ResultDialog(text: mensaje, resultType: resultado);
       },
     );
   }
@@ -115,8 +111,9 @@ class _CalendarioAgregarActividadDialogState
             mainAxisSize: MainAxisSize.min,
             children: [
               RoundedInputField(
-                  labelText: "Nombre Actividad",
-                  controller: nombreActividadController),
+                labelText: "Nombre Actividad",
+                controller: nombreActividadController,
+              ),
               InputDropdown(
                   labelText: "Tipo",
                   controller: tipoActividadController,

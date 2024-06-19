@@ -1,14 +1,11 @@
-//import 'package:fitsolutions/Modelo/user_data.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/components/components.dart';
-import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-//import 'package:provider/provider.dart';
 
 class RegisterEmailScreen extends StatefulWidget {
   final UserProvider userProvider;
@@ -37,12 +34,13 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
   bool contains8Length = false;
 
   String? passwordRegisterVerification(String? val) {
-   if (val == null) return null;
+    if (val == null) return null;
 
     bool hasUpperCase = val.contains(RegExp(r'[A-Z]'));
     bool hasLowerCase = val.contains(RegExp(r'[a-z]'));
     bool hasNumber = val.contains(RegExp(r'[0-9]'));
-    bool hasSpecialChar = val.contains(RegExp(r'[!@#$&*~`)\%\-(_+=;:,.<>/?"[{\]}\|^]'));
+    bool hasSpecialChar =
+        val.contains(RegExp(r'[!@#$&*~`)\%\-(_+=;:,.<>/?"[{\]}\|^]'));
     bool isLengthValid = val.length >= 8;
 
     setState(() {
@@ -77,6 +75,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
       key: _formKeyRegister,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 30),
           MyTextField(
@@ -129,11 +128,15 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
             ),
           ),
           const SizedBox(height: 40),
+          Text('Requerimientos',
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onPrimary)),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Requerimientos'),
               Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,21 +146,21 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                       style: TextStyle(
                           color: containsUpperCase
                               ? Colors.green
-                              : Theme.of(context).colorScheme.onSurface),
+                              : Theme.of(context).colorScheme.onPrimary),
                     ),
                     Text(
                       "⚈  1 Caracter minuscula",
                       style: TextStyle(
                           color: containsLowerCase
                               ? Colors.green
-                              : Theme.of(context).colorScheme.onSurface),
+                              : Theme.of(context).colorScheme.onPrimary),
                     ),
                     Text(
                       "⚈  1 Numero",
                       style: TextStyle(
                           color: containsNumber
                               ? Colors.green
-                              : Theme.of(context).colorScheme.onSurface),
+                              : Theme.of(context).colorScheme.onPrimary),
                     ),
                   ],
                 ),
@@ -170,14 +173,14 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                     style: TextStyle(
                         color: containsSpecialChar
                             ? Colors.green
-                            : Theme.of(context).colorScheme.onSurface),
+                            : Theme.of(context).colorScheme.onPrimary),
                   ),
                   Text(
                     "⚈  Minimo 8 caracteres",
                     style: TextStyle(
                         color: contains8Length
                             ? Colors.green
-                            : Theme.of(context).colorScheme.onSurface),
+                            : Theme.of(context).colorScheme.onPrimary),
                   ),
                 ],
               ),
@@ -221,19 +224,20 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
             onPressed: () async {
               try {
                 bool valid = _formKeyRegister.currentState!.validate();
-                if (valid && _passwordController.text == _confirmController.text) {
+                if (valid &&
+                    _passwordController.text == _confirmController.text) {
                   UserCredential userCred = await widget.userProvider.signUp(
                     _emailController.text,
                     _passwordController.text,
                   );
-                  if(context.mounted){
+                  if (context.mounted) {
                     final userDataProvider = context.read<UserData>();
                     userDataProvider.firstLogin(userCred.user!);
                     NavigationService.instance.pushNamed("/registro");
                   }
-                } else if(!valid) {
+                } else if (!valid) {
                   snackBarMessage(context, "El formulario tiene errores");
-                } else{
+                } else {
                   snackBarMessage(context, "Las contraseñas no coiniciden");
                 }
               } catch (e) {

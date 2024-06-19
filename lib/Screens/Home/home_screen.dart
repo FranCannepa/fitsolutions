@@ -15,12 +15,13 @@ import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fitsolutions/Components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
+import 'package:fitsolutions/Components/CalendarComponents/calendario_displayer.dart';
+import 'package:fitsolutions/Components/components.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../modelo/models.dart';
-
-//import '../../modelo/models.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -61,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return null;
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -77,13 +78,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     const PerfilScreen(),
                     const HomeScreenContent(), // Separate widget for home screen content
                     const DietasScreen(),
-                    const MembresiaScreen(),
+                    MembresiaScreen(provider: userProvider),
                   ]
                 : [
                     const GimnasioScreen(),
                     const HomeScreenContent(), // Separate widget for home screen content
                     const DietasScreen(),
-                    const MembresiaScreen(),
+                    MembresiaScreen(provider: userProvider),
                     const PlanScreen(),
                   ];
 
@@ -184,8 +185,8 @@ class _HomeScreenState extends State<HomeScreen> {
               body: Center(child: CircularProgressIndicator()),
             );
           }
-        },
-      ),
+        }
+      )
     );
   }
 }

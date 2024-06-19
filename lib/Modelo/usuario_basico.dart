@@ -20,12 +20,12 @@ class UsuarioBasico extends Usuario {
         telefono: 'TEL');
   }
 
-  static Map<String,dynamic> toDocument(UsuarioBasico u){
+  static Map<String, dynamic> toDocument(UsuarioBasico u) {
     return {
-      'email':u.email,
-      'nombreCompleto':u.nombreCompleto,
+      'email': u.email,
+      'nombreCompleto': u.nombreCompleto,
       'peso': u.peso,
-      'altura':u.altura,
+      'altura': u.altura,
     };
   }
 }

@@ -18,14 +18,13 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<Plan?> getRutinaDeUsuario(String docId) async {
-    CollectionReference collectionRef =
-        _firebase.collection('usuario');
+    CollectionReference collectionRef = _firebase.collection('usuario');
     DocumentReference documentRef = collectionRef.doc(docId);
 
     final dataUser = await documentRef.get();
-    Map<String, dynamic> data = dataUser.data() as Map<String,dynamic>;
+    Map<String, dynamic> data = dataUser.data() as Map<String, dynamic>;
     Plan? plan = await getPlanById(data['rutina']);
-    return plan ;
+    return plan;
   }
 
   //tested
@@ -33,10 +32,8 @@ class FitnessProvider extends ChangeNotifier {
     Logger log = Logger();
     try {
       // Retrieve the document with the specified planId
-      DocumentSnapshot planDoc = await _firebase
-          .collection('plan')
-          .doc(planId)
-          .get();
+      DocumentSnapshot planDoc =
+          await _firebase.collection('plan').doc(planId).get();
 
       // Check if the document exists
       if (planDoc.exists) {
@@ -115,7 +112,8 @@ class FitnessProvider extends ChangeNotifier {
   //tested
   Future<List<Ejercicio>> getEjerciciosDelDiaList(
       Plan plan, String week, String dia) async {
-    final querySnapshot = await _firebase.collection('plan')
+    final querySnapshot = await _firebase
+        .collection('plan')
         .doc(plan.planId)
         .collection('week')
         .doc(week)
@@ -131,7 +129,8 @@ class FitnessProvider extends ChangeNotifier {
   Future<void> addUsuarioARutina(
       String planId, List<UsuarioBasico> usuarios) async {
     for (final user in usuarios) {
-      await _firebase.collection('plan')
+      await _firebase
+          .collection('plan')
           .doc(planId)
           .collection('subscripto')
           .doc(user.docId)
@@ -142,15 +141,19 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<List<UsuarioBasico>> getUsuariosEnRutina(String planId) async {
-    final usersFromStore =
-        await _firebase.collection('plan').doc(planId).collection('subscripto').get();
+    final usersFromStore = await _firebase
+        .collection('plan')
+        .doc(planId)
+        .collection('subscripto')
+        .get();
     return usersFromStore.docs.map((doc) {
       return UsuarioBasico.fromDocument(doc.id, doc.data());
     }).toList();
   }
 
   Future<void> removeUsuarioDeRutina(String planId, String userId) async {
-    await _firebase.collection('plan')
+    await _firebase
+        .collection('plan')
         .doc(planId)
         .collection('subscripto')
         .doc(userId)
@@ -162,8 +165,7 @@ class FitnessProvider extends ChangeNotifier {
   Future<void> deleteFieldFromDocument(
       String collectionName, String documentId, String fieldName) async {
     Logger log = Logger();
-    CollectionReference collectionRef =
-        _firebase.collection(collectionName);
+    CollectionReference collectionRef = _firebase.collection(collectionName);
     DocumentReference documentRef = collectionRef.doc(documentId);
 
     try {
@@ -175,7 +177,8 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<void> addWeek(int number, Plan plan) async {
-    DocumentReference doc = await _firebase.collection('plan')
+    DocumentReference doc = await _firebase
+        .collection('plan')
         .doc(plan.planId)
         .collection('week')
         .add({'number': number});
@@ -203,7 +206,7 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
     return Plan.fromDocument(
         doc.id, docSnapshot.data() as Map<String, dynamic>, []);
-  } 
+  }
 
   Future<void> addEjercicioASemana(
       Plan plan,
@@ -216,7 +219,8 @@ class FitnessProvider extends ChangeNotifier {
       String? ejecucion,
       String? pausa,
       String? dia) async {
-    CollectionReference subcollectionReference = _firebase.collection('plan')
+    CollectionReference subcollectionReference = _firebase
+        .collection('plan')
         .doc(plan.planId)
         .collection('week')
         .doc(weekNumber)
@@ -270,7 +274,8 @@ class FitnessProvider extends ChangeNotifier {
     String? ejecucion,
     String? pausa,
   ) async {
-    _firebase.collection('plan')
+    _firebase
+        .collection('plan')
         .doc(plan.planId)
         .collection('week')
         .doc(weekNumber)
@@ -305,11 +310,8 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<void> deleteWeeksFromPlan(String plan) async {
-    final subCollection = await _firebase
-        .collection('plan')
-        .doc(plan)
-        .collection('week')
-        .get();
+    final subCollection =
+        await _firebase.collection('plan').doc(plan).collection('week').get();
     final batch = _firebase.batch();
     for (var document in subCollection.docs) {
       batch.delete(document.reference);
@@ -323,14 +325,15 @@ class FitnessProvider extends ChangeNotifier {
       await deleteWeeksFromPlan(docRef.id);
       await docRef.delete();
       log.d('Plan with ID $docId has been deleted');
-       notifyListeners(); // Uncomment this line if you're using a state management solution
+      notifyListeners(); // Uncomment this line if you're using a state management solution
     } catch (e) {
       log.e('Error deleting plan: $e');
     }
   }
 
   Future<void> deleteEjercicio(Plan plan, String weekId, String docId) async {
-    await _firebase.collection('plan')
+    await _firebase
+        .collection('plan')
         .doc(plan.planId)
         .collection('week')
         .doc(weekId)
@@ -343,14 +346,19 @@ class FitnessProvider extends ChangeNotifier {
   Future<void> deleteWeek(Plan plan) async {
     String idLastWeek = plan.lastWeek();
     await deleteExercisesfromWeek(plan.planId, plan.lastWeek());
-    _firebase.collection('plan').doc(plan.planId).collection('week').doc(idLastWeek).delete();
+    _firebase
+        .collection('plan')
+        .doc(plan.planId)
+        .collection('week')
+        .doc(idLastWeek)
+        .delete();
     plan.removeWeek();
     notifyListeners();
   }
 
   //Actividad
 
-  Future<void> agregarRutinaActividad(Plan plan, String actividadId) async{
+  Future<void> agregarRutinaActividad(Plan plan, String actividadId) async {
     try {
       // Create a new document in the rutinaActividad collection
       await _firebase.collection('rutinaActividad').add({
@@ -362,14 +370,14 @@ class FitnessProvider extends ChangeNotifier {
       log.e('Error adding rutinaActividad document: $e');
     }
   }
-  
+
   //This returns todas las actividades que involucran a un plan
   //planId esta asociado a un usuario en su Document
-  //Entonces como resultado estamos mostrando todas las actividades que un usuario puede realizar con su 
+  //Entonces como resultado estamos mostrando todas las actividades que un usuario puede realizar con su
   //rutina asi  gnada.
-  
+
   //Future<List<Actividad>> getActividadesDeRutina(String planId) async{
-    /*
+  /*
       // Step 1: Get actividadIds from rutinaActividad collection where planId matches
       QuerySnapshot rutinaActividadSnapshot = await _firebase
           .collection('rutinaActividad')
@@ -381,7 +389,7 @@ class FitnessProvider extends ChangeNotifier {
         return doc['actividadId'] as String;
       }).toList();*/
 
-      /*
+  /*
       // Step 2: Get the corresponding Actividad documents
       List<Actividad> actividades = [];
       for (String actividadId in actividadIds) {

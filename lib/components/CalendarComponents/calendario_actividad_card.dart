@@ -1,22 +1,18 @@
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioActividadDialog.dart';
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioDiaActual.dart';
+import 'package:fitsolutions/Components/CalendarComponents/calendario_actividad_dialog.dart';
+import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
-import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_dialog.dart';
 import 'package:flutter/material.dart';
 
 class CartaActividad extends StatelessWidget {
-  final Map<String, dynamic> actividad;
+  final Actividad actividad;
 
   const CartaActividad({super.key, required this.actividad});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 30),
-      elevation: 3.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
+      color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       child: InkWell(
         onTap: () {
           showDialog(
@@ -28,12 +24,13 @@ class CartaActividad extends StatelessWidget {
           );
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                actividad['nombreActividad'],
+                actividad.nombre,
                 style:
                     const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
@@ -43,15 +40,14 @@ class CartaActividad extends StatelessWidget {
                 children: [
                   const Icon(Icons.timer, size: 16),
                   Text(
-                    Formatters().formatTimestampTime(actividad['inicio']),
+                    Formatters().formatTimestampTime(actividad.inicio),
                     style: const TextStyle(fontSize: 20),
                   ),
                   const Text(' - '),
                   Text(
-                    Formatters().formatTimestampTime(actividad['fin']),
+                    Formatters().formatTimestampTime(actividad.fin),
                     style: const TextStyle(fontSize: 20),
                   ),
-                  
                 ],
               ),
             ],

@@ -5,4 +5,5 @@ enum ScreenType {
   dietas,
   membresia,
   gym,
+  misPlanes
 }

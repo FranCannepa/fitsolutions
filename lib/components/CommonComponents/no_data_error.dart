@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NoDataError extends StatelessWidget {
-  final String message; // Parameter to hold the error message
+  final String message;
 
   const NoDataError({super.key, required this.message});
 
