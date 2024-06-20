@@ -1,5 +1,6 @@
 import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
+import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:flutter/material.dart';
 
 class PerfilDetailed extends StatefulWidget {
@@ -67,56 +68,79 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
         const ScreenSubTitle(text: "Datos"),
         const SizedBox(height: 16.0),
         Container(
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-            padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Altura: ${widget.userData['altura'] ?? 'No informada'}',
-                  style: TextStyle(
+          color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+          padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Altura: ${widget.userData['altura'] ?? 'No informada'}',
+                style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.secondary),
+              ),
+              Text(
+                'Peso: ${widget.userData['peso'] ?? 'No informado'}',
+                style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.secondary),
+              ),
+              Text(
+                'Fecha Nacimiento: ${widget.userData['fechaNacimiento'] ?? 'No informada'}',
+                style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.secondary),
+              ),
+              Row(
+                children: [
+                  Text(
+                    'Edad: ',
+                    style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-                Text(
-                  'Peso: ${widget.userData['peso'] ?? 'No informado'}',
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-                Text(
-                  'Fecha Nacimiento: ${widget.userData['fechaNacimiento'] ?? 'No informada'}',
-                  style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      'Edad: ',
-                      style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                  Text(
+                    Formatters()
+                        .calculateAge(widget.userData['fechaNacimiento'])
+                        .toString(),
+                    style: TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
+                        color: Theme.of(context).colorScheme.secondary),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Row(children: [
+                        ElevatedButton(
+                onPressed: () => {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: const Duration(milliseconds: 500),
+                      pageBuilder: (_, __, ___) =>
+                          const FormInscriptionScreen(),
+                      transitionsBuilder:
+                          (_, Animation<double> animation, __, Widget child) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
                     ),
-                    Text(
-                      Formatters()
-                          .calculateAge(widget.userData['fechaNacimiento'])
-                          .toString(),
-                      style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ],
-                ),
-              ],
-            ))
+                  )
+                },
+                child: const Text('Inscripcion'),
+              ),
+        ],)
       ],
     );
   }
