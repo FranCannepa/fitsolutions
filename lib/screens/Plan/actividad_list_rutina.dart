@@ -1,5 +1,6 @@
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
+import 'package:fitsolutions/providers/inscription_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,9 @@ class _ActividadListRutinaState extends State<ActividadListRutina> {
   bool isLoading = true;
   
   Future<void> fetchUsers() async {
-    List<UsuarioBasico> users = await widget.fitnessProvider.getUsuariosInscriptos(widget.planId);
+  final insProvider = context.read<InscriptionProvider>();
+      String? gymId = await insProvider.gymLoggedIn();
+    List<UsuarioBasico> users = await insProvider.usuariosInscriptos(gymId!);
     List<UsuarioBasico> enRutina = await widget.fitnessProvider.getUsuariosEnRutina(widget.planId);
     setState(() {
       allActivities = users;

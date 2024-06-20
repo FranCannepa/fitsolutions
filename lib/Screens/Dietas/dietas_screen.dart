@@ -28,9 +28,9 @@ class _DietasScreenState extends State<DietasScreen> {
               : const DietaAdministrador(),
         ],
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(
+      /*bottomNavigationBar: const FooterBottomNavigationBar(
         initialScreen: ScreenType.dietas,
-      ),
+      ),*/
       floatingActionButton: userData.esBasico()
           ? null
           : FloatingActionButton(

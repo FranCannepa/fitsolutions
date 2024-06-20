@@ -10,3 +10,7 @@ export 'usuario_particular.dart';
 export 'usuario_propietario.dart';
 export 'usuario.dart';
 export 'week.dart';
+export 'form_model.dart';
+export 'evaluation_model.dart';
+
+
