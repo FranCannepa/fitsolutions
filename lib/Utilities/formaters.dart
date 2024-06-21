@@ -15,6 +15,27 @@ class Formatters {
     }
   }
 
+  DateTime parseTimeFromString(String timeString) {
+    if (RegExp(r'^[0-9]{1,2}:[0-5]{1,2}$').hasMatch(timeString)) {
+      List<String> timeParts = timeString.split(':');
+      int hours = int.parse(timeParts[0]);
+      int minutes = int.parse(timeParts[1]);
+
+      DateTime parsedTime;
+
+      if (timeString.contains('PM')) {
+        hours += 12;
+        parsedTime = DateTime(2024, 6, 19, hours, minutes);
+      } else {
+        parsedTime = DateTime(2024, 6, 19, hours, minutes);
+      }
+
+      return parsedTime;
+    } else {
+      throw FormatException('Invalid time format: $timeString');
+    }
+  }
+
   String formatDateDDMM(DateTime date) {
     final dateFormatter = DateFormat('dd/MM');
     return dateFormatter.format(date);
@@ -55,4 +76,9 @@ class Formatters {
     final minute = hora.minute;
     return DateTime(year, month, day, hour, minute);
   }
+
+  String to24hs(DateTime time) {
+  final DateFormat formatter = DateFormat('HH:mm');
+  return formatter.format(time);
+}
 }

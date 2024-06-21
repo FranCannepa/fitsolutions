@@ -1,10 +1,4 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:fitsolutions/Components/CommonComponents/inputDatePicker.dart';
-//import 'package:fitsolutions/Components/CommonComponents/inputDropDown.dart';
-//import 'package:fitsolutions/Components/CommonComponents/inputTimePicker.dart';
-//import 'package:fitsolutions/Components/CommonComponents/resultDialog.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/components/CommonComponents/input_date_picker.dart';

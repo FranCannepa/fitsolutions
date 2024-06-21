@@ -17,7 +17,7 @@ class MembresiaDetailed extends StatefulWidget {
       required this.onClose});
 
   @override
-  _MembresiaDetailedState createState() => _MembresiaDetailedState();
+  State<MembresiaDetailed> createState() => _MembresiaDetailedState();
 }
 
 class _MembresiaDetailedState extends State<MembresiaDetailed> {
