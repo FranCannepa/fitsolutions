@@ -1,5 +1,5 @@
 import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigator.dart';
-import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
+import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class _MisPlanesActividadState extends State<MisPlanesActividad> {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Column(
-        children: [ScreenTitle(title: "Planes Actividad")],
+        children: [ScreenUpperTitle(title: "Planes Actividad")],
       ),
       bottomNavigationBar:
           FooterBottomNavigationBar(initialScreen: ScreenType.misPlanes),

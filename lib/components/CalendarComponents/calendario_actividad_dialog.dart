@@ -1,5 +1,6 @@
-
+import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
+import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Screens/Plan/misPlanesActividad.dart';
 import 'package:flutter/material.dart';
@@ -36,51 +37,47 @@ class ActividadDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ScreenSubTitle(text: actividad.nombre),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Column(
-                  children: [
-                    Text(
-                      'Cupos: ${actividad.cupos}',
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    Text(
-                      'Participantes: ${actividad.participantes}',
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                  ],
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  color: Colors.black,
+                  child: Text(
+                    actividad.nombre,
+                    style: const TextStyle(color: Colors.white, fontSize: 30),
+                  ),
                 )
               ],
             ),
-            Row(
-              children: [
-                ElevatedButton(
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 30.0),
+                child: SubmitButton(
+                  text: "Ver mis planes",
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MisPlanesActividad(actividadId: actividad.id,)),
+                        builder: (context) => MisPlanesActividad(
+                          actividadId: actividad.id,
+                        ),
+                      ),
                     );
                   },
-                  child: const Text("Ver mis planes"),
                 ),
-              ],
-            ),
+              ),
+            ]),
             const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
                   onPressed: onClose,
-                  child: const Text('Close'),
+                  child: const Text(
+                    'Close',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ],
             ),
