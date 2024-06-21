@@ -1,4 +1,4 @@
-import 'package:fitsolutions/Components/CommonComponents/image_logo.dart';
+//import 'package:fitsolutions/Components/CommonComponents/image_logo.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/login_email_screen.dart';
 import 'package:fitsolutions/screens/Login/register_email_screen.dart';

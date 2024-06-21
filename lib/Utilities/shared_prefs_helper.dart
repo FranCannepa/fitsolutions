@@ -131,7 +131,7 @@ class SharedPrefsHelper {
       setUserId(userData?['userId']);
       setEmail(userData?['email']);
       if (userTipo == "Basico") {
-        initializeBasico(userData);
+        await initializeBasico(userData);
       } else if (userTipo == "Propietario") {
         initializePropietario(userData);
       } else if (userTipo == "Entrenador") {
@@ -173,9 +173,9 @@ class SharedPrefsHelper {
     }
   }
 
-  void initializeBasico(Map<String, dynamic>? userData) {
-    setUserTipo("Basico");
-    setEmail(userData?['email']);
+  Future<void> initializeBasico(Map<String, dynamic>? userData) async{
+    await setUserTipo("Basico");
+    await setEmail(userData?['email']);
     setSubscripcion(userData?['asociadoId']);
   }
 

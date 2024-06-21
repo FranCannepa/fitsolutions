@@ -1,3 +1,4 @@
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_detail_screen.dart';
@@ -16,6 +17,18 @@ class GimnasioScreen extends StatefulWidget {
 class _GimnasioScreenState extends State<GimnasioScreen> {
   bool showGymForm = false;
   Logger log = Logger();
+  bool? esEntrenador;
+
+  @override
+  void initState() {
+    super.initState();
+    esTrainer();
+  }
+
+  Future<void> esTrainer() async {
+    final prefs = SharedPrefsHelper();
+    esEntrenador = await prefs.esEntrenador();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +52,19 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "No tienes ningun gimnasio asociado!",
-                          style: TextStyle(fontSize: 18.0),
-                        ),
+                        esEntrenador!
+                            ? const Text(
+                                "No tienes informacion de entrenador asociado!",
+                                style: TextStyle(fontSize: 18.0),
+                              )
+                            : const Text(
+                                "No tienes ningun gimnasio asociado!",
+                                style: TextStyle(fontSize: 18.0),
+                              ),
                         const SizedBox(height: 16.0),
                         ElevatedButton(
                           onPressed: () => setState(() => showGymForm = true),
-                          child: const Text("Registrar gimnasio"),
+                          child: !esEntrenador! ? const Text("Registrar gimnasio") : const Text("Registar informacion"),
                         ),
                       ],
                     )

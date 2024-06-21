@@ -1,16 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioDisplayer.dart';
-//import 'package:fitsolutions/Components/components.dart';
-//import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
-//import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen.dart';
 import 'package:fitsolutions/screens/Home/home_screen_content.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
-//import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
@@ -146,8 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Scaffold(
                   appBar: AppBar(
                     backgroundColor: Theme.of(context).primaryColor,
-                    automaticallyImplyLeading:
-                        false, // This removes the back button
+                    automaticallyImplyLeading: false,
                     actions: [
                       IconButton(
                         onPressed: () async {
