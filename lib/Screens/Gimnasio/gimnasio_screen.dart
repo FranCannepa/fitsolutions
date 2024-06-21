@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 class GimnasioScreen extends StatefulWidget {
   const GimnasioScreen({super.key});
+
   @override
   State<GimnasioScreen> createState() => _GimnasioScreenState();
 }
@@ -24,15 +25,12 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                 if (gimnasio != null) {
                   return GimnasioInfo(gimnasio: gimnasio);
                 } else {
-                  return Text('No TENGO GYM');
+                  return const Text('No TENGO GYM');
                 }
               } else {
                 return Container();
               }
             }),
-      ),
-      bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.gym,
       ),
     );
   }
