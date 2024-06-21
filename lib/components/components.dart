@@ -3,7 +3,7 @@ export 'RegisterComponents/entrenador_form.dart';
 export 'RegisterComponents/propietario_form.dart';
 export 'RegisterComponents/gimnasio_form.dart';
 export 'MembresiaComponents/membresiaFormDialog.dart';
-export 'GimnasioComponents/my_gym.dart';
+export 'GimnasioComponents/gimnasio_info.dart';
 export 'EjerciciosComponents/ejercicios_card.dart';
 export 'CommonComponents/footer_bottom_navigator.dart';
 export 'CommonComponents/input_round_fields.dart';

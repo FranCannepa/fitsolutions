@@ -62,7 +62,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 15.0),
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -111,8 +111,8 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                 ),
                 if (snapshot.data!.isNotEmpty)
                   Expanded(
-                      child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.5,
+                      child: Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: SingleChildScrollView(
                       child: Column(
                         children: [

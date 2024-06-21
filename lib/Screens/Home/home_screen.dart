@@ -1,4 +1,4 @@
-import 'package:fitsolutions/Components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
+import 'package:fitsolutions/Components/CalendarComponents/calendario_actividad_agregar_dialog.dart';
 import 'package:fitsolutions/Components/CalendarComponents/calendario_displayer.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Modelo/Screens.dart';

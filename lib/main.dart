@@ -8,6 +8,7 @@ import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/providers/dietas_provider.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
+import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
@@ -49,6 +50,8 @@ class MyApp extends StatelessWidget {
             create: (context) => MembresiaProvider()),
         ChangeNotifierProvider<DietaProvider>(
             create: (context) => DietaProvider()),
+        ChangeNotifierProvider<GimnasioProvider>(
+            create: (context) => GimnasioProvider()),
       ],
       child: MaterialApp(
         navigatorKey: NavigationService.navigatorKey,
