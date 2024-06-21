@@ -6,8 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:path/path.dart' as path;
-import 'package:firebase_storage/firebase_storage.dart'
-    as firebase_storage; // Import Firebase Storage
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class GimnasioProvider with ChangeNotifier {
   final Logger log = Logger();
@@ -37,6 +36,7 @@ class GimnasioProvider with ChangeNotifier {
     if (querySnapshot.docs.isNotEmpty) {
       final docSnapshot = querySnapshot.docs.first;
       final data = docSnapshot.data();
+      data['gimnasioId'] = docSnapshot.id;
       Gimnasio? gym = Gimnasio.fromFirestore(docSnapshot.id, data);
       return gym;
     } else {
@@ -59,21 +59,16 @@ class GimnasioProvider with ChangeNotifier {
     if (gymLogo == null) return;
 
     try {
-      // Generate a unique name for the image based on current timestamp
       String fileName = path.basename(gymLogo.path);
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
           .ref()
           .child('gym_logos')
           .child(fileName);
-
-      // Upload file to Firebase Storage
       await ref.putFile(gymLogo);
-
-      // Get the download URL
       gymLogoUrl = await ref.getDownloadURL();
 
       log.d('Logo uploaded. URL: $gymLogoUrl');
-      notifyListeners(); // Notify listeners after logo is uploaded
+      notifyListeners();
     } catch (e) {
       log.e('Error uploading logo: $e');
     }
@@ -114,11 +109,30 @@ class GimnasioProvider with ChangeNotifier {
       }
     };
     await _firebase.collection('gimnasio').add(gymData);
-    notifyListeners(); // Refresh the gym data
+    notifyListeners();
   }
 
-  void toggleGymForm() {
-    showGymForm = !showGymForm;
-    notifyListeners();
+  Future<List<Map<String, dynamic>>> getClientesGym(String gymId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('usuario')
+          .where('asociadoId', isEqualTo: gymId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final List<Map<String, dynamic>> usuarios = [];
+        for (var doc in querySnapshot.docs) {
+          final data = doc.data();
+          data['usuarioId'] = doc.id;
+          usuarios.add(data);
+        }
+        return usuarios;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      log.d("Error getting usuarios data: $e");
+      return [];
+    }
   }
 }

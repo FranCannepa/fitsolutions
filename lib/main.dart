@@ -163,7 +163,6 @@ void initializeFirebaseMessaging() async {
   });
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    // Handle notification tap
   });
 }
 
@@ -179,6 +178,5 @@ void requestIOSPermissions() {
         sound: true,
       )
       .then((value) {
-    // Handle permission response
   });
 }

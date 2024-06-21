@@ -13,7 +13,7 @@ class SubmitButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       onPressed: onPressed,
       child: Text(text, style: const TextStyle(color: Colors.white)),

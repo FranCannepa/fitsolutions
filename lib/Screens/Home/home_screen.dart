@@ -15,7 +15,7 @@ import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fitsolutions/Components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
+import 'package:fitsolutions/Components/CalendarComponents/calendario_actividad_agregar_dialog.dart';
 import 'package:fitsolutions/Components/CalendarComponents/calendario_displayer.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Modelo/Screens.dart';
@@ -62,131 +62,141 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return null;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: FutureBuilder(
-        future: getUserData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final userProvider = context.read<UserData>();
+        child: FutureBuilder(
+            future: getUserData(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final userProvider = context.read<UserData>();
 
-            List<Widget> screens = userProvider.esBasico()
-                ? [
-                    const EjerciciosScreen(),
-                    const PerfilScreen(),
-                    const HomeScreenContent(), // Separate widget for home screen content
-                    const DietasScreen(),
-                    MembresiaScreen(provider: userProvider),
-                  ]
-                : [
-                    const GimnasioScreen(),
-                    const HomeScreenContent(), // Separate widget for home screen content
-                    const DietasScreen(),
-                    MembresiaScreen(provider: userProvider),
-                    const PlanScreen(),
-                  ];
+                List<Widget> screens = userProvider.esBasico()
+                    ? [
+                        const EjerciciosScreen(),
+                        const PerfilScreen(),
+                        const HomeScreenContent(), // Separate widget for home screen content
+                        const DietasScreen(),
+                        MembresiaScreen(provider: userProvider),
+                      ]
+                    : [
+                        const GimnasioScreen(),
+                        const HomeScreenContent(), // Separate widget for home screen content
+                        const DietasScreen(),
+                        MembresiaScreen(provider: userProvider),
+                        const PlanScreen(),
+                      ];
 
-            List<BottomNavigationBarItem> getBotones() {
-              return userProvider.esBasico()
-                  ? [
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/dumbell_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/profile_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/home_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/diet_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/membership_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                    ]
-                  : [
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/dumbell_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/home_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/diet_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/membership_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                    ];
-            }
-
-            return Scaffold(
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).primaryColor,
-                automaticallyImplyLeading:
-                    false, // This removes the back button
-                actions: [
-                  IconButton(
-                    onPressed: () async {
-                      UserProvider userProvider = context.read<UserProvider>();
-                      await userProvider.signOut();
-                      if (context.mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                const WelcomePage(),
+                List<BottomNavigationBarItem> getBotones() {
+                  return userProvider.esBasico()
+                      ? [
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/dumbell_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                           ),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.logout),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/profile_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/home_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/diet_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon:
+                                Image.asset('assets/icons/membership_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                        ]
+                      : [
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/dumbell_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/home_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/diet_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon:
+                                Image.asset('assets/icons/membership_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                        ];
+                }
+
+                return Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    automaticallyImplyLeading:
+                        false, // This removes the back button
+                    actions: [
+                      IconButton(
+                        onPressed: () async {
+                          UserProvider userProvider =
+                              context.read<UserProvider>();
+                          await userProvider.signOut();
+                          if (context.mounted) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const WelcomePage(),
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.logout),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              body: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: IndexedStack(
-                  index: _selectedIndex,
-                  children: screens,
-                ),
-              ),
-              bottomNavigationBar: CupertinoTabBar(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                items: getBotones(),
-                onTap: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-                currentIndex: _selectedIndex,
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return const Scaffold(
-              body: Center(
-                child: Text("Error fetching user data!"),
-              ),
-            );
-          } else {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-        }
-      )
-    );
+                  body: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: IndexedStack(
+                      index: _selectedIndex,
+                      children: screens,
+                    ),
+                  ),
+                  bottomNavigationBar: CupertinoTabBar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    items: getBotones(),
+                    onTap: (index) {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                    },
+                    currentIndex: _selectedIndex,
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return const Scaffold(
+                  body: Center(
+                    child: Text("Error fetching user data!"),
+                  ),
+                );
+              } else {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+            }));
   }
 }
