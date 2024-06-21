@@ -7,29 +7,38 @@ import 'package:logger/logger.dart';
 class InscriptionProvider extends ChangeNotifier {
   Logger log = Logger();
   final FirebaseFirestore _firebase;
+  final prefs = SharedPrefsHelper();
 
   InscriptionProvider(FirebaseFirestore? firestore)
       : _firebase = firestore ?? FirebaseFirestore.instance {
     _firebase.collection('gimnasio').snapshots().listen((snapshot) {
       notifyListeners();
     });
+    _firebase.collection('trainerInfo').snapshots().listen((snapshot) {
+      notifyListeners();
+    });
   }
 
   Future<String?> gymLoggedIn() async {
-    final prefs = SharedPrefsHelper();
     String? userId = await prefs.getUserId();
 
     if (userId == null) {
       return null;
     }
 
-    QuerySnapshot gymSnapshot = await _firebase
-        .collection('gimnasio')
+    final esEntrenador = await prefs.esEntrenador();
+    String? collection = 'gimnasio';
+    if (esEntrenador) {
+      collection = 'trainerInfo';
+    }
+
+    QuerySnapshot trainerSnapshot = await _firebase
+        .collection(collection)
         .where('propietarioId', isEqualTo: userId)
         .get();
 
-    if (gymSnapshot.docs.isNotEmpty) {
-      return gymSnapshot.docs.first.id;
+    if (trainerSnapshot.docs.isNotEmpty) {
+      return trainerSnapshot.docs.first.id;
     }
 
     return null;
@@ -40,13 +49,19 @@ class InscriptionProvider extends ChangeNotifier {
     List<UsuarioBasico> users = [];
     try {
       //Get the ids of subscriced users
-      QuerySnapshot inscriptos = await _firebase
-          .collection('gimnasio')
+      final esEntrenador = await prefs.esEntrenador();
+      String? collection = 'gimnasio';
+      if (esEntrenador) {
+        collection = 'trainerInfo';
+      }
+      QuerySnapshot? inscriptos = await _firebase
+          .collection(collection)
           .doc(gymId)
           .collection('inscripto')
           .get();
 
       //Fetch  each user document from the user collection using the ids
+
       for (var doc in inscriptos.docs) {
         String userId = doc['userId'];
         DocumentSnapshot userDoc =
@@ -67,13 +82,19 @@ class InscriptionProvider extends ChangeNotifier {
     List<UsuarioBasico> users = [];
     try {
       //Get the ids of subscriced users
-      QuerySnapshot pendientes = await _firebase
-          .collection('gimnasio')
+      final esEntrenador = await prefs.esEntrenador();
+      String? collection = 'gimnasio';
+      if (esEntrenador) {
+        collection = 'trainerInfo';
+      }
+      QuerySnapshot? pendientes = await _firebase
+          .collection(collection)
           .doc(gymId)
           .collection('pendiente')
           .get();
 
       //Fetch  each user document from the user collection using the ids
+
       for (var doc in pendientes.docs) {
         String userId = doc['userId'];
         DocumentSnapshot userDoc =
@@ -92,8 +113,13 @@ class InscriptionProvider extends ChangeNotifier {
 
   Future<void> addUserToPending(String gymId, String userId) async {
     try {
+      final esEntrenador = await prefs.esEntrenador();
+      String? collection = 'gimnasio';
+      if (esEntrenador) {
+        collection = 'trainerInfo';
+      }
       await _firebase
-          .collection('gimnasio')
+          .collection(collection)
           .doc(gymId)
           .collection('pendiente')
           .add({'userId': userId});
@@ -111,15 +137,20 @@ class InscriptionProvider extends ChangeNotifier {
         .get();
     List<UsuarioBasico> allUsers = allUsersSnapshot.docs.where((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      return !data.containsKey('subscribed');
+      return !data.containsKey('asociadoId');
     }).map((doc) {
       return UsuarioBasico.fromDocument(
           doc.id, doc.data() as Map<String, dynamic>);
     }).toList();
 
+    final esEntrenador = await prefs.esEntrenador();
+    String? collection = 'gimnasio';
+    if (esEntrenador) {
+      collection = 'trainerInfo';
+    }
     // Fetch pending users
     QuerySnapshot pendingSnapshot = await _firebase
-        .collection('gimnasio')
+        .collection(collection)
         .doc(gymId)
         .collection('pendiente')
         .get();
@@ -128,7 +159,7 @@ class InscriptionProvider extends ChangeNotifier {
 
     // Fetch subscribed users
     QuerySnapshot subscribedSnapshot = await _firebase
-        .collection('gimnasio')
+        .collection(collection)
         .doc(gymId)
         .collection('inscripto')
         .get();
@@ -171,7 +202,7 @@ class InscriptionProvider extends ChangeNotifier {
     await _firebase
         .collection('usuario')
         .doc(basicUserId)
-        .update({'subscribed': ownerId});
+        .update({'asociadoId': ownerId});
     notifyListeners();
   }
 
@@ -203,7 +234,7 @@ class InscriptionProvider extends ChangeNotifier {
     await _firebase
         .collection('form')
         .doc(formId)
-        .update({'formData': formData});
+        .update({'formData': formData,'readOnly':true});
     notifyListeners();
   }
 
@@ -266,9 +297,14 @@ class InscriptionProvider extends ChangeNotifier {
 
   Future<void> moveDocumentToSubscribed(String gymId, String userId) async {
     try {
+      final esEntrenador = await prefs.esEntrenador();
+      String? collection = 'gimnasio';
+      if (esEntrenador) {
+        collection = 'trainerInfo';
+      }
       // Get the document from the "pendiente" subcollection
       QuerySnapshot pendingSnapshot = await _firebase
-          .collection('gimnasio')
+          .collection(collection)
           .doc(gymId)
           .collection('pendiente')
           .where('userId', isEqualTo: userId)
@@ -280,7 +316,7 @@ class InscriptionProvider extends ChangeNotifier {
 
         // Copy the document data to the "subscripto" subcollection
         await _firebase
-            .collection('gimnasio')
+            .collection(collection)
             .doc(gymId)
             .collection('inscripto')
             .doc(pendingDoc.id)
@@ -288,7 +324,7 @@ class InscriptionProvider extends ChangeNotifier {
 
         // Delete the original document from the "pendiente" subcollection
         await _firebase
-            .collection('gimnasio')
+            .collection(collection)
             .doc(gymId)
             .collection('pendiente')
             .doc(pendingDoc.id)

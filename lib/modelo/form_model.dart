@@ -8,7 +8,7 @@ class FormModel {
   final String lesiones;
   final String numeroEmergencia;
   final List<String> objetivos; // New field for objectives
-  // Add other necessary fields
+  final bool readOnly;  // Add this line// Add other necessary fields
 
   FormModel({
     required this.formId,
@@ -20,6 +20,7 @@ class FormModel {
     required this.lesiones,
     required this.numeroEmergencia,
     required this.objetivos,
+    required this.readOnly,
   });
 
   static FormModel fromDocument(String formId, Map<String, dynamic> doc) {
@@ -33,7 +34,8 @@ class FormModel {
       emergencia: formData['emergencia'] ?? '',
       lesiones: formData['lesiones'] ?? '',
       numeroEmergencia: formData['numeroEmergencia'] ?? '',
-      objetivos: List<String>.from(formData['objetivos'] ?? []), // Parse objectives
+      objetivos: List<String>.from(formData['objetivos'] ?? []),
+      readOnly: doc['readOnly'], // Parse objectives
     );
   }
 
@@ -46,7 +48,8 @@ class FormModel {
       'emergencia': form.emergencia,
       'lesiones': form.lesiones,
       'numeroEmergencia': form.numeroEmergencia,
-      'objetivos': form.objetivos, // Save objectives
+      'objetivos': form.objetivos,
+      'readOnly':form.readOnly,// Save objectives
     };
   }
 }

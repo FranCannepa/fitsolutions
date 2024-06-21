@@ -20,6 +20,9 @@ class GimnasioProvider with ChangeNotifier {
     _firebase.collection('gimnasio').snapshots().listen((snapshot) {
       notifyListeners();
     });
+    _firebase.collection('trainerInfo').snapshots().listen((snapshot) {
+      notifyListeners();
+    });
   }
 
   Map<String, dynamic>? gymData;
@@ -29,8 +32,13 @@ class GimnasioProvider with ChangeNotifier {
 
   Future<Gimnasio?> getGym() async {
     final prefs = SharedPrefsHelper();
+    final esEntrenador = await prefs.esEntrenador();
+    String? collection = 'gimnasio';
+    if (esEntrenador) {
+      collection = 'trainerInfo';
+    }
     final querySnapshot = await FirebaseFirestore.instance
-        .collection('gimnasio')
+        .collection(collection)
         .where('propietarioId', isEqualTo: await prefs.getUserId())
         .get();
 
@@ -113,7 +121,12 @@ class GimnasioProvider with ChangeNotifier {
         },
       }
     };
-    await _firebase.collection('gimnasio').add(gymData);
+    final esEntrenador = await prefs.esEntrenador();
+    String? collection = 'gimnasio';
+    if (esEntrenador) {
+      collection = 'trainerInfo';
+    }
+    await _firebase.collection(collection).add(gymData);
     notifyListeners(); // Refresh the gym data
   }
 

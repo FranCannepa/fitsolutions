@@ -3,6 +3,7 @@ import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:flutter/material.dart';
 
+
 class PerfilDetailed extends StatefulWidget {
   final Map<String, dynamic> userData;
   const PerfilDetailed({super.key, required this.userData});
@@ -12,6 +13,7 @@ class PerfilDetailed extends StatefulWidget {
 }
 
 class _PerfilDetailedState extends State<PerfilDetailed> {
+  
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -122,7 +124,7 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
         Row(children: [
                         ElevatedButton(
                 onPressed: () => {
-                  Navigator.push(
+                   Navigator.push(
                     context,
                     PageRouteBuilder(
                       transitionDuration: const Duration(milliseconds: 500),

@@ -1,14 +1,15 @@
 import 'dart:io';
 
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class GymRegistrationForm extends StatefulWidget {
-    final GimnasioProvider provider;
-      final VoidCallback onSubmit;
-  const GymRegistrationForm({super.key, required this.provider, required this.onSubmit});
-
+  final GimnasioProvider provider;
+  final VoidCallback onSubmit;
+  const GymRegistrationForm(
+      {super.key, required this.provider, required this.onSubmit});
 
   @override
   State<GymRegistrationForm> createState() => _GymRegistrationFormState();
@@ -22,6 +23,21 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
   final TextEditingController _contactController = TextEditingController();
 
   File? _gymLogo;
+  bool? esEntrenador;
+
+  @override
+  void initState() {
+    super.initState();
+    esTrainer();
+  }
+
+  Future<void> esTrainer() async {
+    final prefs = SharedPrefsHelper();
+    bool trainerStatus = await prefs.esEntrenador();
+    setState(() {
+      esEntrenador = trainerStatus;
+    });
+  }
 
   final Map<String, TimeOfDay> _openHours = {
     'Monday-Friday': const TimeOfDay(hour: 9, minute: 0),
@@ -104,31 +120,46 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Gym Name'),
+              decoration:  InputDecoration(labelText: esEntrenador == true
+                    ? 'Trainer Name'
+                    : 'Gym Name',),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter the gym name';
+                  return esEntrenador == true
+                      ? 'Please enter the trainer name'
+                      : 'Please enter the gym name';
                 }
                 return null;
               },
             ),
             TextFormField(
               controller: _addressController,
-              decoration: const InputDecoration(labelText: 'Gym Address'),
+              decoration: InputDecoration(
+                labelText: esEntrenador == true
+                    ? 'Trainer Address'
+                    : 'Gym Address',
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter the gym address';
+                  return esEntrenador == true
+                      ? 'Please enter the trainer address'
+                      : 'Please enter the gym address';
                 }
                 return null;
               },
             ),
             TextFormField(
               controller: _contactController,
-              decoration:
-                  const InputDecoration(labelText: 'Contact Info (Phone/Cell)'),
+              decoration: InputDecoration(
+                labelText: esEntrenador == true
+                    ? 'Trainer Contact Info (Phone/Cell)'
+                    : 'Gym Contact Info (Phone/Cell)',
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter the contact information';
+                  return esEntrenador == true
+                      ? 'Please enter the trainer contact information'
+                      : 'Please enter the gym contact information';
                 }
                 return null;
               },
@@ -178,7 +209,7 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
             Center(
               child: ElevatedButton(
                 onPressed: () => _submitForm(context, widget.provider),
-                child: const Text('Register Gym'),
+                child: esEntrenador == true ? const Text('Register Trainer Info') : const Text('Register Gym'),
               ),
             ),
           ],

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:fitsolutions/Components/CalendarComponents/calendarioDisplayer.dart';
 //import 'package:fitsolutions/Components/components.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
@@ -15,12 +16,13 @@ import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fitsolutions/Components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
-import 'package:fitsolutions/Components/CalendarComponents/calendario_displayer.dart';
-import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Modelo/Screens.dart';
+//import 'package:fitsolutions/Components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
+//import 'package:fitsolutions/Components/CalendarComponents/calendario_displayer.dart';
+//import 'package:fitsolutions/Components/components.dart';
+//import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,6 +34,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  Logger log = Logger();
+  bool? esBasico;
 
   Future<void> _initializeScreenIndex() async {
     final userProvider = context.read<UserData>();
@@ -43,7 +47,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _initializeScreenIndex();
+    _initializeFCM();
   }
+
 
   Future<Map<String, dynamic>?> getUserData() async {
     final prefs = SharedPrefsHelper();
@@ -62,7 +68,38 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return null;
   }
-  
+    Future<void> _initializeFCM() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      String? token = await messaging.getToken();
+
+      // Send the token to your server or Firestore
+      _sendTokenToServer(token);
+    } else {
+      log.d('User declined or has not accepted permission');
+    }
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      log.d('Received a message in the foreground: ${message.messageId}');
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      log.d('Message clicked!');
+    });
+  }
+    Future<void> _sendTokenToServer(String? token) async{
+      final prefs = SharedPrefsHelper();
+      String? userId = await prefs.getUserId();
+      FirebaseFirestore.instance.collection('usuario').doc(userId!).update({'fcmToken':token});
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
