@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/modelo/models.dart';
@@ -6,8 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:logger/logger.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:path/path.dart' as path;
-import 'package:firebase_storage/firebase_storage.dart'
-    as firebase_storage; // Import Firebase Storage
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class GimnasioProvider with ChangeNotifier {
   final Logger log = Logger();
@@ -67,68 +67,71 @@ class GimnasioProvider with ChangeNotifier {
     if (gymLogo == null) return;
 
     try {
-      // Generate a unique name for the image based on current timestamp
       String fileName = path.basename(gymLogo.path);
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
           .ref()
           .child('gym_logos')
           .child(fileName);
-
-      // Upload file to Firebase Storage
       await ref.putFile(gymLogo);
-
-      // Get the download URL
       gymLogoUrl = await ref.getDownloadURL();
-
       log.d('Logo uploaded. URL: $gymLogoUrl');
-      notifyListeners(); // Notify listeners after logo is uploaded
+      notifyListeners();
     } catch (e) {
       log.e('Error uploading logo: $e');
     }
   }
 
-  String timeOfDayToString(TimeOfDay timeOfDay) {
+  String formatTimeOfDay(TimeOfDay timeOfDay) {
+    debugger();
     final hours = timeOfDay.hour.toString().padLeft(2, '0');
     final minutes = timeOfDay.minute.toString().padLeft(2, '0');
-    return '$hours:$minutes';
+    final period = timeOfDay.hour < 12 ? 'AM' : 'PM';
+    final formattedHour = hours.startsWith('0') ? hours.substring(1) : hours;
+    return '$formattedHour:$minutes $period';
   }
 
   Future<void> registerGym(
-      String name,
-      String address,
-      String contact,
-      Map<String, TimeOfDay> openHours,
-      Map<String, TimeOfDay> closeHours) async {
+    String name,
+    String address,
+    String contact,
+    Map<String, TimeOfDay> openHours,
+    Map<String, TimeOfDay> closeHours,
+  ) async {
     final userId = await prefs.getUserId();
-    final gymData = {
-      'nombreGimnasio': name,
-      'direccion': address,
-      'contacto': contact,
-      'propietarioId': userId,
-      'logoUrl': gymLogoUrl,
-      'horario': {
-        'Monday-Friday': {
-          'open': timeOfDayToString(openHours['Monday-Friday']!),
-          'close': timeOfDayToString(closeHours['Monday-Friday']!),
-        },
-        'Saturday': {
-          'open': timeOfDayToString(openHours['Saturday']!),
-          'close': timeOfDayToString(closeHours['Saturday']!),
-        },
-        'Sunday': {
-          'open': timeOfDayToString(openHours['Sunday']!),
-          'close': timeOfDayToString(closeHours['Sunday']!),
-        },
+    debugger();
+    try {
+      final gymData = {
+        'nombreGimnasio': name,
+        'direccion': address,
+        'contacto': contact,
+        'propietarioId': userId,
+        'logoUrl': gymLogoUrl ?? '',
+        'horario': {
+          'Monday-Friday': {
+            'open': formatTimeOfDay(openHours['Lunes - Viernes']!),
+            'close': formatTimeOfDay(closeHours['Lunes - Viernes']!),
+          },
+          'Saturday': {
+            'open': formatTimeOfDay(openHours['Sabado']!),
+            'close': formatTimeOfDay(closeHours['Sabado']!),
+          },
+          'Sunday': {
+            'open': formatTimeOfDay(openHours['Domingo']!),
+            'close': formatTimeOfDay(closeHours['Domingo']!),
+          },
+        }
+      };
+      final esEntrenador = await prefs.esEntrenador();
+      String? collection = 'gimnasio';
+      if (esEntrenador) {
+        collection = 'trainerInfo';
       }
-    };
-    final esEntrenador = await prefs.esEntrenador();
-    String? collection = 'gimnasio';
-    if (esEntrenador) {
-      collection = 'trainerInfo';
+      final docRef = await _firebase.collection(collection).add(gymData);
+      prefs.setSubscripcion(docRef.id);
+      notifyListeners();
+    } catch (e) {
+      print(e);
     }
-    final docRef = await _firebase.collection(collection).add(gymData);
-    prefs.setSubscripcion(docRef.id);
-    notifyListeners(); // Refresh the gym data
   }
 
   void toggleGymForm() {
@@ -160,5 +163,3 @@ class GimnasioProvider with ChangeNotifier {
     }
   }
 }
-
-

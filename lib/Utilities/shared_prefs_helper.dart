@@ -47,7 +47,7 @@ class SharedPrefsHelper {
     await prefs.setString(_membresiaId, membresiaId);
   }
 
-    Future<String?> getMembresia() async {
+  Future<String?> getMembresia() async {
     final prefs = await _getInstance();
     return prefs.getString(_membresiaId);
   }
@@ -153,7 +153,6 @@ class SharedPrefsHelper {
         return null;
       }
     } catch (e) {
-      //print(e);
       return null;
     }
   }
@@ -173,7 +172,7 @@ class SharedPrefsHelper {
     }
   }
 
-  Future<void> initializeBasico(Map<String, dynamic>? userData) async{
+  Future<void> initializeBasico(Map<String, dynamic>? userData) async {
     await setUserTipo("Basico");
     await setEmail(userData?['email']);
     setSubscripcion(userData?['asociadoId']);
@@ -182,7 +181,7 @@ class SharedPrefsHelper {
   Future<void> initializePropietario(Map<String, dynamic>? userData) async {
     setUserTipo("Propietario");
     setEmail(userData?['email']);
-    final gymId = await getGimnasioPropietario(userData?['userId']) as String;
+    final gymId = await getGimnasioPropietario(userData?['userId']) ?? '';
     setSubscripcion(gymId);
   }
 
