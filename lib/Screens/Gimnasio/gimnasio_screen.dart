@@ -1,6 +1,6 @@
+import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/modelo/models.dart';
-import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_detail_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_registration_form.dart';
@@ -45,7 +45,8 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
               return Text('Error fetching gym data: ${snapshot.error}');
             } else if (snapshot.hasData && snapshot.data != null) {
               final gymData = snapshot.data!;
-              return GymDetailScreen(gym: gymData);
+              //return GymDetailScreen(gym: gymData);
+              return GimnasioInfo(gimnasio: gymData);
             } else {
               return !showGymForm
                   ? Column(
@@ -64,39 +65,23 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                         const SizedBox(height: 16.0),
                         ElevatedButton(
                           onPressed: () => setState(() => showGymForm = true),
-                          child: !esEntrenador! ? const Text("Registrar gimnasio") : const Text("Registar informacion"),
+                          child: !esEntrenador!
+                              ? const Text("Registrar gimnasio")
+                              : const Text("Registar informacion"),
                         ),
                       ],
                     )
-                  : Column(
-                      children: [
-                        GymRegistrationForm(
-                          provider: gimnasioProvider,
-                          onSubmit: () {
-                            setState(() {
-                              showGymForm = false;
-                            });
-                          },
-                        ),
-                      ],
+                  : GymRegistrationForm(
+                      provider: gimnasioProvider,
+                      onSubmit: () {
+                        setState(() {
+                          showGymForm = false;
+                        });
+                      },
                     );
             }
           },
-        ),/*
-        child: FutureBuilder(
-            future: gimnasioProvider.getGym(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final gimnasio = snapshot.data;
-                if (gimnasio != null) {
-                  return GimnasioInfo(gimnasio: gimnasio);
-                } else {
-                  return const Text('No TENGO GYM');
-                }
-              } else {
-                return Container();
-              }
-            }),*/
+        ),
       ),
     );
   }

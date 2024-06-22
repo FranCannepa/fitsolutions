@@ -1,5 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:flutter/material.dart';
@@ -40,15 +43,15 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
   }
 
   final Map<String, TimeOfDay> _openHours = {
-    'Monday-Friday': const TimeOfDay(hour: 9, minute: 0),
-    'Saturday': const TimeOfDay(hour: 9, minute: 0),
-    'Sunday': const TimeOfDay(hour: 9, minute: 0),
+    'Lunes - Viernes': const TimeOfDay(hour: 9, minute: 0),
+    'Sabado': const TimeOfDay(hour: 9, minute: 0),
+    'Domingo': const TimeOfDay(hour: 9, minute: 0),
   };
 
   final Map<String, TimeOfDay> _closeHours = {
-    'Monday-Friday': const TimeOfDay(hour: 22, minute: 0),
-    'Saturday': const TimeOfDay(hour: 22, minute: 0),
-    'Sunday': const TimeOfDay(hour: 22, minute: 0),
+    'Lunes - Viernes': const TimeOfDay(hour: 22, minute: 0),
+    'Sabado': const TimeOfDay(hour: 22, minute: 0),
+    'Domingo': const TimeOfDay(hour: 22, minute: 0),
   };
 
   Future<void> _selectTime(
@@ -101,9 +104,9 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
         _closeHours,
       );
       if (context.mounted) {
-        widget.onSubmit(); // Call the callback to notify parent widget
+        widget.onSubmit();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gym registered successfully')),
+          const SnackBar(content: Text('Ginasio registriado exitosamente')),
         );
       }
     }
@@ -111,7 +114,8 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
+    return SingleChildScrollView(
+        child: Form(
       key: _formKey,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -120,14 +124,16 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
           children: [
             TextFormField(
               controller: _nameController,
-              decoration:  InputDecoration(labelText: esEntrenador == true
-                    ? 'Trainer Name'
-                    : 'Gym Name',),
+              decoration: InputDecoration(
+                labelText: esEntrenador == true
+                    ? 'Nombre Entrenador'
+                    : 'Nombre Gimnasio',
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return esEntrenador == true
-                      ? 'Please enter the trainer name'
-                      : 'Please enter the gym name';
+                      ? 'Ingrese el nombre del entrenador'
+                      : 'Ingrese el nombre del gimnasio';
                 }
                 return null;
               },
@@ -136,14 +142,14 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
               controller: _addressController,
               decoration: InputDecoration(
                 labelText: esEntrenador == true
-                    ? 'Trainer Address'
-                    : 'Gym Address',
+                    ? 'Direccion Entrenador'
+                    : 'Direccion Gimnasio',
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return esEntrenador == true
-                      ? 'Please enter the trainer address'
-                      : 'Please enter the gym address';
+                      ? 'Ingrese la direccion del entrenador'
+                      : 'Ingrese la direccion del gimnasio';
                 }
                 return null;
               },
@@ -152,14 +158,12 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
               controller: _contactController,
               decoration: InputDecoration(
                 labelText: esEntrenador == true
-                    ? 'Trainer Contact Info (Phone/Cell)'
-                    : 'Gym Contact Info (Phone/Cell)',
+                    ? 'Contacto Entrenador (Telefono/Celular)'
+                    : 'Contacto Gimnasio (Telefono/Celular)',
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return esEntrenador == true
-                      ? 'Please enter the trainer contact information'
-                      : 'Please enter the gym contact information';
+                  return 'Ingrese la informacion de contacto';
                 }
                 return null;
               },
@@ -172,11 +176,11 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
                   : Container(
                       color: Colors.grey[200],
                       height: 100,
-                      child: const Center(child: Text('Tap to upload logo')),
+                      child: const Center(child: Text('Agregar Logo')),
                     ),
             ),
             const SizedBox(height: 16),
-            const Text('Open Hours:'),
+            const Text('Horarios'),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: _openHours.keys.map((day) {
@@ -207,14 +211,13 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
             ),
             const SizedBox(height: 20),
             Center(
-              child: ElevatedButton(
-                onPressed: () => _submitForm(context, widget.provider),
-                child: esEntrenador == true ? const Text('Register Trainer Info') : const Text('Register Gym'),
-              ),
-            ),
+                child: SubmitButton(
+              onPressed: () => _submitForm(context, widget.provider),
+              text: "Registrar",
+            )),
           ],
         ),
       ),
-    );
+    ));
   }
 }

@@ -193,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Scaffold(
                   appBar: AppBar(
                     automaticallyImplyLeading:
-                        false, // This removes the back button
+                        false,
                     actions: [
                       IconButton(
                         onPressed: () async {
