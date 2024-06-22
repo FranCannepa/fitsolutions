@@ -1,6 +1,13 @@
-import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigator.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:fitsolutions/Components/components.dart';
+//import 'package:fitsolutions/Modelo/Screens.dart';
+//import 'package:fitsolutions/Screens/Profile/editar_perfil_screen.dart';
+//import 'package:fitsolutions/Utilities/formaters.dart';
+//import 'package:fitsolutions/modelo/models.dart';
+//import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
+//import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigator.dart';
 import 'package:fitsolutions/Components/ProfileComponents/perfilDetailed.dart';
-import 'package:fitsolutions/Modelo/Screens.dart';
+//import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,9 +45,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
           },
         ),
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(
+      /*bottomNavigationBar: const FooterBottomNavigationBar(
         initialScreen: ScreenType.perfil,
-      ),
+      ),*/
     ));
   }
 }

@@ -1,8 +1,8 @@
 import 'package:fitsolutions/Components/DietasComponents/dietaAdministrador.dart';
 import 'package:fitsolutions/Components/DietasComponents/dietaAgregarDialog.dart';
 import 'package:fitsolutions/Components/DietasComponents/dietaDisplayer.dart';
-import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Modelo/Screens.dart';
+//import 'package:fitsolutions/Components/components.dart';
+//import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,12 +28,13 @@ class _DietasScreenState extends State<DietasScreen> {
               : const DietaAdministrador(),
         ],
       ),
-      bottomNavigationBar: const FooterBottomNavigationBar(
+      /*bottomNavigationBar: const FooterBottomNavigationBar(
         initialScreen: ScreenType.dietas,
-      ),
+      ),*/
       floatingActionButton: userData.esBasico()
           ? null
           : FloatingActionButton(
+              heroTag: 'unique1',
               onPressed: () => {
                 showDialog(
                   context: context,

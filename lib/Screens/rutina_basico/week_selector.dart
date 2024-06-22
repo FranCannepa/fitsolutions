@@ -1,3 +1,4 @@
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/screens/Plan/ejercicio_create_dialogue.dart';
@@ -48,8 +49,22 @@ class _WeekSelectorState extends State<WeekSelector> {
 
   int _selectedWeekIndex = 0;
   int _selectedDayIndex = 0;
+  bool? esBasico;
+  Logger log = Logger();
 
-  final List<String> days = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+  @override
+  void initState() {
+    super.initState();
+    esUserBasico();
+  }
+
+  Future<void> esUserBasico() async {
+    final prefs = SharedPrefsHelper();
+    esBasico = await prefs.esBasico();
+    log.d('From week $esBasico');
+  }
+  
+  final List<String> days = ['1', '2', '3', '4', '5', '6', '7'];
   final List<String> daysNames = [
     'Domingo',
     'Lunes',
@@ -74,10 +89,10 @@ class _WeekSelectorState extends State<WeekSelector> {
     final provider = context.watch<FitnessProvider>();
     final userData = context.read<UserData>();
     return Scaffold(
-      appBar: AppBar(
+      appBar: esBasico == false ? AppBar(
           title: const Text('Rutina'),
           backgroundColor: Theme.of(context).colorScheme.primary,
-          automaticallyImplyLeading: widget.leading),
+          automaticallyImplyLeading: widget.leading) : null,
       body: Column(
         children: [
           Container(
