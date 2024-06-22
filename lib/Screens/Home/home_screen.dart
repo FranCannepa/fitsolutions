@@ -191,29 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
 
                 return Scaffold(
-                  appBar: AppBar(
-                    automaticallyImplyLeading:
-                        false, // This removes the back button
-                    actions: [
-                      IconButton(
-                        onPressed: () async {
-                          UserProvider userProvider =
-                              context.read<UserProvider>();
-                          await userProvider.signOut();
-                          if (context.mounted) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const WelcomePage(),
-                              ),
-                            );
-                          }
-                        },
-                        icon: const Icon(Icons.logout),
-                      ),
-                    ],
-                  ),
+                  
                   body: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: IndexedStack(

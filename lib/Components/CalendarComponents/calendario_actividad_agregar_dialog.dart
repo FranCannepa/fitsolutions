@@ -7,7 +7,6 @@ import 'package:fitsolutions/components/CommonComponents/input_time_picker.dart'
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class CalendarioAgregarActividadDialog extends StatefulWidget {
   final String propietarioActividadId;

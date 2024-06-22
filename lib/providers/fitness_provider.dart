@@ -142,6 +142,7 @@ class FitnessProvider extends ChangeNotifier {
           .doc(user.docId)
           .set(UsuarioBasico.toDocument(user));
       await asigarRutinaToUser(user.docId, planId);
+      _notificationService.sendNotification(user.fcmToken, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
     }
     notifyListeners();
   }

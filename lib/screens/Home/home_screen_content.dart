@@ -6,22 +6,41 @@ import 'package:fitsolutions/modelo/Actividad.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Make sure you have provider package imported
+import 'package:provider/provider.dart';
+import 'package:fitsolutions/providers/user_provider.dart';
+import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 
 class HomeScreenContent extends StatelessWidget {
-    final ActividadProvider actividadProvider;
+  final ActividadProvider actividadProvider;
   const HomeScreenContent({super.key, required this.actividadProvider});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = 
+    final userProvider =
         Provider.of<UserData>(context); // Access the UserData provider
 
-return Scaffold(
+    return Scaffold(
       body: const CalendarioDisplayer(),
-      /*bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.home,
-      ),*/
+      appBar: AppBar(
+        automaticallyImplyLeading: false, // This removes the back button
+        actions: [
+          IconButton(
+            onPressed: () async {
+              UserProvider userProvider = context.read<UserProvider>();
+              await userProvider.signOut();
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const WelcomePage(),
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.logout),
+          ),
+        ],
+      ),
       floatingActionButton: userProvider.esBasico()
           ? null
           : FloatingActionButton(

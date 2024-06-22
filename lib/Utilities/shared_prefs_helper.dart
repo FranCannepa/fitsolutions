@@ -135,7 +135,7 @@ class SharedPrefsHelper {
       } else if (userTipo == "Propietario") {
         await initializePropietario(userData);
       } else if (userTipo == "Entrenador") {
-        initializeEntrenador(userData);
+        await initializeEntrenador(userData);
       }
     }
   }
@@ -144,6 +144,24 @@ class SharedPrefsHelper {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('gimnasio')
+          .where('propietarioId', isEqualTo: propietarioId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final docSnapshot = querySnapshot.docs.first;
+        return docSnapshot.id;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      //print(e);
+      return null;
+    }
+  }
+
+  Future<String?> getTrainerInfo(String propietarioId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('trainerInfo')
           .where('propietarioId', isEqualTo: propietarioId)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
@@ -186,7 +204,10 @@ class SharedPrefsHelper {
     setSubscripcion(gymId);
   }
 
-  void initializeEntrenador(Map<String, dynamic>? userData) {
+  Future<void> initializeEntrenador(Map<String, dynamic>? userData) async {
     setUserTipo("Entrenador");
+    setEmail(userData?['email']);
+    final trainerId = await getTrainerInfo(userData?['userId']) as String;
+    setSubscripcion(trainerId);
   }
 }

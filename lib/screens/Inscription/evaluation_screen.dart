@@ -212,6 +212,7 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
         labelText: hint,
         border: const OutlineInputBorder(),
       ),
+      keyboardType: TextInputType.number,
       onSaved: (value) => onSaved(value ?? ''),
       validator: (value) {
         if (value == null || value.isEmpty) {

@@ -62,8 +62,8 @@ class MyApp extends StatelessWidget {
             create: (context) => FitnessProvider(FirebaseFirestore.instance,
                 NotificationService(flutterLocalNotificationsPlugin))),
         ChangeNotifierProvider<InscriptionProvider>(
-            create: (context) =>
-                InscriptionProvider(FirebaseFirestore.instance)),
+            create: (context) => InscriptionProvider(FirebaseFirestore.instance,
+                NotificationService(flutterLocalNotificationsPlugin))),
         ChangeNotifierProvider<GimnasioProvider>(
             create: (context) => GimnasioProvider(FirebaseFirestore.instance)),
         ChangeNotifierProvider<ActividadProvider>(
