@@ -34,7 +34,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
 
   @override
   Widget build(BuildContext context) {
-    final actividadesProvider = context.read<ActividadProvider>();
+    final actividadesProvider = context.watch<ActividadProvider>();
     final UserData userProvider = context.read<UserData>();
     userProvider.initializeData();
     return FutureBuilder<List<Actividad>>(

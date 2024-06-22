@@ -133,7 +133,7 @@ class SharedPrefsHelper {
       if (userTipo == "Basico") {
         await initializeBasico(userData);
       } else if (userTipo == "Propietario") {
-        initializePropietario(userData);
+        await initializePropietario(userData);
       } else if (userTipo == "Entrenador") {
         initializeEntrenador(userData);
       }
@@ -179,7 +179,7 @@ class SharedPrefsHelper {
     setSubscripcion(userData?['asociadoId']);
   }
 
-  void initializePropietario(Map<String, dynamic>? userData) async {
+  Future<void> initializePropietario(Map<String, dynamic>? userData) async {
     setUserTipo("Propietario");
     setEmail(userData?['email']);
     final gymId = await getGimnasioPropietario(userData?['userId']) as String;

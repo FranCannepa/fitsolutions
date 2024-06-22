@@ -1,4 +1,5 @@
-import 'package:fitsolutions/modelo/gimnasio.dart';
+import 'package:fitsolutions/components/GimnasioComponents/gimnasio_clientes.dart';
+import 'package:fitsolutions/modelo/Gimnasio.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
@@ -112,6 +113,21 @@ class GymDetailScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                SizedBox(
+                    width: 170.0,
+                    child: ElevatedButton(
+                      onPressed: () => {
+                        showDialog(
+                          context: context,
+                          builder: (context) => GimnasioClientes(
+                            gimnasioId: gym.gymId,
+                            onClose: () => Navigator.pop(context),
+                          ),
+                        )
+                      },
+                      child: const Text('Mis Clientes'),
+                    ),
+                  ),
 
             ElevatedButton(
               onPressed: () => {

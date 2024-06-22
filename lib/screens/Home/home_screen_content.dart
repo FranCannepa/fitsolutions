@@ -1,50 +1,43 @@
-import 'package:fitsolutions/components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
+import 'package:fitsolutions/Modelo/Screens.dart';
+import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_agregar_dialog.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_displayer.dart';
+import 'package:fitsolutions/components/CommonComponents/footer_bottom_navigator.dart';
+import 'package:fitsolutions/modelo/Actividad.dart';
+import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Make sure you have provider package imported
 
 class HomeScreenContent extends StatelessWidget {
-  const HomeScreenContent({super.key});
+    final ActividadProvider actividadProvider;
+  const HomeScreenContent({super.key, required this.actividadProvider});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserData>(context); // Access the UserData provider
+    final userProvider = 
+        Provider.of<UserData>(context); // Access the UserData provider
 
-    return Stack(
-      children: [
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                alignment: Alignment.topRight, // Align the button to the bottom right corner
-                margin: const EdgeInsets.all(16), // Adjust margin as needed
-              ),
-              const CalendarioDisplayer(),
-              // Add the bottom navigation bar here
-            ],
-          ),
-        ),
-        if (!userProvider.esBasico())
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: FloatingActionButton(
-              heroTag: 'uniqueTag', // Assign a unique hero tag
+return Scaffold(
+      body: const CalendarioDisplayer(),
+      /*bottomNavigationBar: const FooterBottomNavigationBar(
+        initialScreen: ScreenType.home,
+      ),*/
+      floatingActionButton: userProvider.esBasico()
+          ? null
+          : FloatingActionButton(
+              heroTag: 'unique2',
               onPressed: () => {
                 showDialog(
                   context: context,
                   builder: (context) => CalendarioAgregarActividadDialog(
                     onClose: () => Navigator.pop(context),
                     propietarioActividadId: userProvider.origenAdministrador,
+                    actividadProvider: actividadProvider,
                   ),
                 )
               },
               child: const Icon(Icons.add),
             ),
-          ),
-      ],
     );
   }
 }

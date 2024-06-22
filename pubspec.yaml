@@ -108,10 +108,10 @@ flutter_launcher_icons:
   image_path: "assets/icons/mainIcon.png"
   min_sdk_android: 21
 
-  fonts:
-    - family: TitleFont
-      fonts:
-        - asset: fonts/titleFont.ttf
+fonts:
+  - family: TitleFont
+    fonts:
+      - asset: fonts/titleFont.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

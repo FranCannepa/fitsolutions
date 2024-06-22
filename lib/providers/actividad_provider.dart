@@ -7,6 +7,12 @@ import 'package:flutter/material.dart';
 class ActividadProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
 
+   ActividadProvider(){
+    FirebaseFirestore.instance.collection('actividad').snapshots().listen((snapshot) {
+      notifyListeners();
+    });
+  }
+  
   Future<List<Actividad>> fetchActividades(DateTime fecha) async {
     String? ownerActividades = await prefs.getSubscripcion();
     try {
@@ -31,6 +37,18 @@ class ActividadProvider extends ChangeNotifier {
     } catch (e) {
       print('Error fetching actividades: $e');
       return [];
+    }
+  }
+
+  Future<bool> registrarActividad(Map<String, dynamic> actividadData) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('actividad')
+          .add(actividadData);
+      notifyListeners();
+      return true;
+    } on FirebaseException catch (e) {
+      rethrow;
     }
   }
 }

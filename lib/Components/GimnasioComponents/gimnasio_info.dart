@@ -30,22 +30,16 @@ class GimnasioInfo extends StatelessWidget {
             children: [
               ScreenTitle(title: gimnasio.nombreGimnasio),
               InfoItem(
-                  text: gimnasio.direccion_1, icon: const Icon(Icons.place)),
+                  text: gimnasio.direccion, icon: const Icon(Icons.place)),
               InfoItem(
-                  text: gimnasio.telefono as String,
+                  text: gimnasio.contacto as String,
                   icon: const Icon(Icons.call)),
               const SizedBox(width: 25),
-              InfoItem(
-                  text: gimnasio.celular as String,
-                  icon: const Icon(Icons.phone_android)),
-              Row(
+              const Row(
                 children: [
-                  InfoItem(
-                    text: Formatters().to24hs(gimnasio.horarioApertura),
-                    icon: const Icon(Icons.access_time),
-                  ),
-                  InfoItem(
-                    text: Formatters().to24hs(gimnasio.horarioClausura),
+                   InfoItem(
+                    text:  'Horario',
+                    icon:   Icon(Icons.access_time),
                   ),
                 ],
               ),
@@ -58,7 +52,7 @@ class GimnasioInfo extends StatelessWidget {
                         showDialog(
                           context: context,
                           builder: (context) => GimnasioClientes(
-                            gimnasioId: gimnasio.id,
+                            gimnasioId: gimnasio.gymId,
                             onClose: () => Navigator.pop(context),
                           ),
                         )

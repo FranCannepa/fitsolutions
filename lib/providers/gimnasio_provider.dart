@@ -126,7 +126,8 @@ class GimnasioProvider with ChangeNotifier {
     if (esEntrenador) {
       collection = 'trainerInfo';
     }
-    await _firebase.collection(collection).add(gymData);
+    final docRef = await _firebase.collection(collection).add(gymData);
+    prefs.setSubscripcion(docRef.id);
     notifyListeners(); // Refresh the gym data
   }
 
@@ -134,4 +135,30 @@ class GimnasioProvider with ChangeNotifier {
     showGymForm = !showGymForm;
     notifyListeners();
   }
+
+  Future<List<Map<String, dynamic>>> getClientesGym(String gymId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('usuario')
+          .where('asociadoId', isEqualTo: gymId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final List<Map<String, dynamic>> usuarios = [];
+        for (var doc in querySnapshot.docs) {
+          final data = doc.data();
+          data['usuarioId'] = doc.id;
+          usuarios.add(data);
+        }
+        return usuarios;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      log.d("Error getting usuarios data: $e");
+      return [];
+    }
+  }
 }
+
+
