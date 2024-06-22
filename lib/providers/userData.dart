@@ -1,5 +1,7 @@
 //import 'dart:developer';
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Modelo/Membresia.dart';
@@ -184,7 +186,7 @@ class UserData extends ChangeNotifier {
     userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
-    origenAdministrador = (await getGimnasioPropietario(userId))!;
+    origenAdministrador = (await getGimnasioPropietario(userId)) ?? '';
     notifyListeners();
   }
 

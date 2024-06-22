@@ -2,9 +2,8 @@ import 'package:fitsolutions/Components/CommonComponents/info_item.dart';
 import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/Components/GimnasioComponents/gimnasio_clientes.dart';
-import 'package:fitsolutions/Modelo/Gimnasio.dart';
+import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/Screens/Plan/plan_screen.dart';
-import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 
@@ -16,6 +15,7 @@ class GimnasioInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.max,
       children: [
         const ScreenUpperTitle(
           title: "Mi gimnasio",
@@ -29,21 +29,42 @@ class GimnasioInfo extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ScreenTitle(title: gimnasio.nombreGimnasio),
-              InfoItem(
-                  text: gimnasio.direccion, icon: const Icon(Icons.place)),
-              InfoItem(
-                  text: gimnasio.contacto as String,
-                  icon: const Icon(Icons.call)),
+              InfoItem(text: gimnasio.direccion, icon: const Icon(Icons.place)),
+              InfoItem(text: gimnasio.contacto, icon: const Icon(Icons.call)),
               const SizedBox(width: 25),
-              const Row(
-                children: [
-                   InfoItem(
-                    text:  'Horario',
-                    icon:   Icon(Icons.access_time),
-                  ),
-                ],
+              Text(
+                'Horarios de apertura:',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
-              Row(
+              const SizedBox(height: 8.0),
+              Column(
+                children: gimnasio.horario.entries.map((entry) {
+                  final day = entry.key;
+                  final openClose = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          day,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        Text(
+                          '${openClose['open']} - ${openClose['close']}',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 8.0),
+              Wrap(
+                verticalDirection: VerticalDirection.down,
+                spacing: 8.0,
                 children: [
                   SizedBox(
                     width: 170.0,
@@ -60,7 +81,6 @@ class GimnasioInfo extends StatelessWidget {
                       child: const Text('Mis Clientes'),
                     ),
                   ),
-                  const Spacer(),
                   SizedBox(
                     width: 170.0,
                     child: ElevatedButton(
@@ -84,27 +104,29 @@ class GimnasioInfo extends StatelessWidget {
                       child: const Text('Gestion de Rutinas'),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () => {
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: const Duration(
-                              milliseconds:
-                                  500), // Adjust the duration as needed
-                          pageBuilder: (_, __, ___) =>
-                              const InscriptionScreen(),
-                          transitionsBuilder: (_, Animation<double> animation,
-                              __, Widget child) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
-                        ),
-                      )
-                    },
-                    child: const Text('Inscripciones'),
+                  SizedBox(
+                    width: 170.0,
+                    child: ElevatedButton(
+                      onPressed: () => {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 500),
+                            pageBuilder: (_, __, ___) =>
+                                const InscriptionScreen(),
+                            transitionsBuilder: (_, Animation<double> animation,
+                                __, Widget child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        )
+                      },
+                      child: const Text('Inscripciones'),
+                    ),
                   ),
                 ],
               )

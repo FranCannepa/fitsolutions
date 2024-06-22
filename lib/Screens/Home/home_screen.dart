@@ -191,7 +191,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
 
                 return Scaffold(
-                  
                   body: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: IndexedStack(
