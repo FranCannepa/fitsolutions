@@ -1,26 +1,23 @@
-//import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:fitsolutions/Components/CommonComponents/inputDatePicker.dart';
-//import 'package:fitsolutions/Components/CommonComponents/inputDropDown.dart';
-//import 'package:fitsolutions/Components/CommonComponents/inputTimePicker.dart';
-//import 'package:fitsolutions/Components/CommonComponents/resultDialog.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/components/CommonComponents/input_date_picker.dart';
 import 'package:fitsolutions/components/CommonComponents/input_dropdown.dart';
 import 'package:fitsolutions/components/CommonComponents/input_time_picker.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
+import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CalendarioAgregarActividadDialog extends StatefulWidget {
   final String propietarioActividadId;
   final VoidCallback onClose;
+  final ActividadProvider actividadProvider;
 
   const CalendarioAgregarActividadDialog({
     super.key,
     required this.propietarioActividadId,
-    required this.onClose,
+    required this.onClose, required this.actividadProvider,
   });
 
   @override
@@ -51,12 +48,12 @@ class _CalendarioAgregarActividadDialogState
           .combineDateTime(fechaActividad, horaFinActividadSeleccionada));
       actividadData['cupos'] = int.tryParse(cuposActividadController.text) ?? 0;
       actividadData['participantes'] = 0;
+      actividadData['propietarioActividadId'] = widget.propietarioActividadId;
     } else {}
   }
 
   Future<void> registrarActividad() async {
     summarizeData();
-    actividadData['propietarioActividadId'] = widget.propietarioActividadId;
     try {
       final docRef = await FirebaseFirestore.instance
           .collection('actividad')
@@ -156,7 +153,20 @@ class _CalendarioAgregarActividadDialogState
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: registrarActividad,
+                      onPressed: () async{
+                        summarizeData();
+                        final result = await widget.actividadProvider.registrarActividad(actividadData);
+                        if (result) {
+                          _showSuccessModal("Actividad Creada", ResultType.success);
+                          _formKey.currentState!.reset();
+                          widget.onClose;
+                        } else {
+                          _showSuccessModal("Error al crear", ResultType.error);
+                        }
+                        if(context.mounted){
+                          Navigator.pop(context);
+                        }
+                      },
                       child: const Text('Guardar'),
                     ),
                     const SizedBox(width: 10.0),

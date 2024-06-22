@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:fitsolutions/Components/components.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
+import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 //import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
@@ -50,7 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _initializeFCM();
   }
 
-
   Future<Map<String, dynamic>?> getUserData() async {
     final prefs = SharedPrefsHelper();
     try {
@@ -68,7 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return null;
   }
-    Future<void> _initializeFCM() async {
+
+  Future<void> _initializeFCM() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
     NotificationSettings settings = await messaging.requestPermission(
@@ -94,136 +95,154 @@ class _HomeScreenState extends State<HomeScreen> {
       log.d('Message clicked!');
     });
   }
-    Future<void> _sendTokenToServer(String? token) async{
-      final prefs = SharedPrefsHelper();
-      String? userId = await prefs.getUserId();
-      FirebaseFirestore.instance.collection('usuario').doc(userId!).update({'fcmToken':token});
+
+  Future<void> _sendTokenToServer(String? token) async {
+    final prefs = SharedPrefsHelper();
+    String? userId = await prefs.getUserId();
+    FirebaseFirestore.instance
+        .collection('usuario')
+        .doc(userId!)
+        .update({'fcmToken': token});
   }
 
   @override
   Widget build(BuildContext context) {
+    final actividadProvider = context.read<ActividadProvider>();
     return SafeArea(
-      child: FutureBuilder(
-        future: getUserData(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final userProvider = context.read<UserData>();
+        child: FutureBuilder(
+            future: getUserData(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final userProvider = context.read<UserData>();
 
-            List<Widget> screens = userProvider.esBasico()
-                ? [
-                    const EjerciciosScreen(),
-                    const PerfilScreen(),
-                    const HomeScreenContent(), // Separate widget for home screen content
-                    const DietasScreen(),
-                    MembresiaScreen(provider: userProvider),
-                  ]
-                : [
-                    const GimnasioScreen(),
-                    const HomeScreenContent(), // Separate widget for home screen content
-                    const DietasScreen(),
-                    MembresiaScreen(provider: userProvider),
-                    const PlanScreen(),
-                  ];
+                List<Widget> screens = userProvider.esBasico()
+                    ? [
+                        const EjerciciosScreen(),
+                        const PerfilScreen(),
+                        HomeScreenContent(
+                            actividadProvider:
+                                actividadProvider), // Separate widget for home screen content
+                        const DietasScreen(),
+                        MembresiaScreen(provider: userProvider),
+                      ]
+                    : [
+                        const GimnasioScreen(),
+                        HomeScreenContent(
+                            actividadProvider:
+                                actividadProvider), // Separate widget for home screen content
+                        const DietasScreen(),
+                        MembresiaScreen(provider: userProvider),
+                        const PlanScreen(),
+                      ];
 
-            List<BottomNavigationBarItem> getBotones() {
-              return userProvider.esBasico()
-                  ? [
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/dumbell_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/profile_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/home_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/diet_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/membership_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                    ]
-                  : [
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/dumbell_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/home_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/diet_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Image.asset('assets/icons/membership_icon.png'),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      ),
-                    ];
-            }
-
-            return Scaffold(
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).primaryColor,
-                automaticallyImplyLeading:
-                    false, // This removes the back button
-                actions: [
-                  IconButton(
-                    onPressed: () async {
-                      UserProvider userProvider = context.read<UserProvider>();
-                      await userProvider.signOut();
-                      if (context.mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                const WelcomePage(),
+                List<BottomNavigationBarItem> getBotones() {
+                  return userProvider.esBasico()
+                      ? [
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/dumbell_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                           ),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.logout),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/profile_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/home_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/diet_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon:
+                                Image.asset('assets/icons/membership_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                        ]
+                      : [
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/dumbell_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/home_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Image.asset('assets/icons/diet_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                          BottomNavigationBarItem(
+                            icon:
+                                Image.asset('assets/icons/membership_icon.png'),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          ),
+                        ];
+                }
+
+                return Scaffold(
+                  appBar: AppBar(
+                    automaticallyImplyLeading:
+                        false, // This removes the back button
+                    actions: [
+                      IconButton(
+                        onPressed: () async {
+                          UserProvider userProvider =
+                              context.read<UserProvider>();
+                          await userProvider.signOut();
+                          if (context.mounted) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const WelcomePage(),
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.logout),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              body: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: IndexedStack(
-                  index: _selectedIndex,
-                  children: screens,
-                ),
-              ),
-              bottomNavigationBar: CupertinoTabBar(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                items: getBotones(),
-                onTap: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-                currentIndex: _selectedIndex,
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return const Scaffold(
-              body: Center(
-                child: Text("Error fetching user data!"),
-              ),
-            );
-          } else {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-        }
-      )
-    );
+                  body: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: IndexedStack(
+                      index: _selectedIndex,
+                      children: screens,
+                    ),
+                  ),
+                  bottomNavigationBar: CupertinoTabBar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    items: getBotones(),
+                    onTap: (index) {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                    },
+                    currentIndex: _selectedIndex,
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return const Scaffold(
+                  body: Center(
+                    child: Text("Error fetching user data!"),
+                  ),
+                );
+              } else {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+            }));
   }
 }

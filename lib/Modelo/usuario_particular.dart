@@ -1,11 +1,9 @@
-import 'package:fitsolutions/Modelo/Calendario.dart';
 import 'package:fitsolutions/Modelo/usuario.dart';
 import 'package:fitsolutions/Modelo/usuario_basico.dart';
 
 class UsuarioParticular extends Usuario {
   String nombreCompleto;
   String telefono;
-  late Calendario calendario;
   late List<UsuarioBasico> clientes;
 
   UsuarioParticular(

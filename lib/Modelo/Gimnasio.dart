@@ -18,7 +18,6 @@ class Gimnasio {
   });
 
   factory Gimnasio.fromFirestore(String id, Map<String, dynamic> data) {
-
     final horario = (data['horario'] as Map<String, dynamic>).map((key, value) {
       final openCloseMap = Map<String, String>.from(value as Map);
       return MapEntry(key, openCloseMap);
@@ -30,7 +29,7 @@ class Gimnasio {
       contacto: data['contacto'] ?? '',
       logoUrl: data['logoUrl'] ?? '',
       propietarioId: data['propietarioId'] ?? '',
-      horario:horario,
+      horario: horario,
     );
   }
 

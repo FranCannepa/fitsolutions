@@ -1,4 +1,5 @@
 import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
+import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaFormDialog.dart';
 import 'package:fitsolutions/Modelo/Membresia.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_card.dart';
@@ -41,17 +42,8 @@ class _MembresiaDisplayerPropietarioState
             if (membershipData.isNotEmpty) {
               return Column(
                 children: [
-                  Container(
-                    height: 50.0,
-                    margin: const EdgeInsets.only(
-                      top: 30.0,
-                      left: 30.0,
-                      right: 30.0,
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [ScreenTitle(title: "Mis Membresias")],
-                    ),
+                  const ScreenUpperTitle(
+                    title: "Mis Membresias",
                   ),
                   Expanded(
                     child: Padding(

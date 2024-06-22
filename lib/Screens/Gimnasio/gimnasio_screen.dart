@@ -1,5 +1,6 @@
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_detail_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_registration_form.dart';
@@ -32,12 +33,11 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<GimnasioProvider>();
-
+    final gimnasioProvider = context.read<GimnasioProvider>();
     return Scaffold(
       body: Center(
         child: FutureBuilder<Gimnasio?>(
-          future: provider.getGym(),
+          future: gimnasioProvider.getGym(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
@@ -71,7 +71,7 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                   : Column(
                       children: [
                         GymRegistrationForm(
-                          provider: provider,
+                          provider: gimnasioProvider,
                           onSubmit: () {
                             setState(() {
                               showGymForm = false;
@@ -82,7 +82,21 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                     );
             }
           },
-        ),
+        ),/*
+        child: FutureBuilder(
+            future: gimnasioProvider.getGym(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final gimnasio = snapshot.data;
+                if (gimnasio != null) {
+                  return GimnasioInfo(gimnasio: gimnasio);
+                } else {
+                  return const Text('No TENGO GYM');
+                }
+              } else {
+                return Container();
+              }
+            }),*/
       ),
     );
   }
