@@ -1,7 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fitsolutions/Components/CalendarComponents/calendario_actividad_dialog.dart';
 import 'package:fitsolutions/Components/CalendarComponents/calendario_actividad_edit_dialog.dart';
 import 'package:fitsolutions/Components/CommonComponents/info_item.dart';
-import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/providers/userData.dart';
@@ -43,11 +43,15 @@ class CartaActividad extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    AutoSizeText(
                       actividad.nombre,
                       style: TextStyle(
-                          fontSize: 25,
-                          color: Theme.of(context).colorScheme.primary),
+                        fontSize: const TextStyle(fontSize: 35.0).fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     InfoItem(
                       icon: const Icon(Icons.timer, size: 20),

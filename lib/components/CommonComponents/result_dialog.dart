@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 enum ResultType { error, success, warning, info }
@@ -11,7 +13,7 @@ class ResultDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = _getColorByType(resultType);
-
+    debugger();
     return AlertDialog(
       title: Text(
         text,

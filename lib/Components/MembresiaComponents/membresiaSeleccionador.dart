@@ -1,6 +1,6 @@
-import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresia_card.dart';
-import 'package:fitsolutions/Modelo/Membresia.dart';
+import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:flutter/material.dart';
 
 class SeleccionarMembresia extends StatefulWidget {
@@ -16,17 +16,8 @@ class _MembresiaSeleccionadorState extends State<SeleccionarMembresia> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          height: 50.0,
-          margin: const EdgeInsets.only(
-            top: 30.0,
-            left: 30.0,
-            right: 30.0,
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [ScreenTitle(title: "Membresias")],
-          ),
+        const ScreenUpperTitle(
+          title: "Membresias",
         ),
         Expanded(
           child: Padding(

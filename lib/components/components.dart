@@ -2,7 +2,7 @@ export 'RegisterComponents/basico_form.dart';
 export 'RegisterComponents/entrenador_form.dart';
 export 'RegisterComponents/propietario_form.dart';
 export 'RegisterComponents/gimnasio_form.dart';
-export 'MembresiaComponents/membresiaFormDialog.dart';
+export 'MembresiaComponents/membresia_agregar_dialog.dart';
 export 'GimnasioComponents/gimnasio_info.dart';
 export 'EjerciciosComponents/ejercicios_card.dart';
 export 'CommonComponents/footer_bottom_navigator.dart';
