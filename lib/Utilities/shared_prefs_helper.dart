@@ -195,7 +195,7 @@ class SharedPrefsHelper {
   Future<void> initializeBasico(Map<String, dynamic>? userData) async {
     await setUserTipo("Basico");
     await setEmail(userData?['email']);
-    setSubscripcion(userData?['asociadoId']);
+    setSubscripcion(userData?['asociadoId'] ?? '');
   }
 
   Future<void> initializePropietario(Map<String, dynamic>? userData) async {

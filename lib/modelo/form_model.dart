@@ -35,7 +35,7 @@ class FormModel {
       lesiones: formData['lesiones'] ?? '',
       numeroEmergencia: formData['numeroEmergencia'] ?? '',
       objetivos: List<String>.from(formData['objetivos'] ?? []),
-      readOnly: doc['readOnly'], // Parse objectives
+      readOnly: doc['readOnly'] ?? false, // Parse objectives
     );
   }
 

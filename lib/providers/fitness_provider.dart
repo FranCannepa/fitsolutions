@@ -143,10 +143,12 @@ class FitnessProvider extends ChangeNotifier {
           .doc(user.docId)
           .set(UsuarioBasico.toDocument(user));
       await asigarRutinaToUser(user.docId, planId);
+
       _notificationService.sendNotification(user.fcmToken, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
       
       final provider = NotificationProvider(_firebase);
       provider.addNotification(user.docId, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina','/ejercicios');
+
 
     }
     notifyListeners();
@@ -247,6 +249,14 @@ class FitnessProvider extends ChangeNotifier {
       'pausa': pausa,
       'dia': dia
     });
+    final list = await _firebase.collection('usuario').where('rutina',isEqualTo: plan.planId).get();     
+      
+      final provider = NotificationProvider(_firebase);
+
+    for(var user in list.docs){
+      _notificationService.sendNotification(user.get('fcmToken'), 'NUEVO EJERCICIO', 'Un nuevo ejercicio fue agregado a $weekNumber - $dia');
+      provider.addNotification(user.id, 'NUEVO EJERCICIO', 'Un nuevo ejercicio fue agregado a $weekNumber - $dia','/ejercicios');
+    }
     notifyListeners();
   }
 

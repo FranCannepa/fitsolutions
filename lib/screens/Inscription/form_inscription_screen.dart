@@ -1,8 +1,10 @@
 import 'package:fitsolutions/Utilities/ci_input_formatter.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/inscription_provider.dart';
@@ -70,6 +72,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Logger log = Logger();
     if (_loading) {
       return Scaffold(
         appBar: AppBar(title: const Text('Formulario de Inscripcion')),
@@ -86,9 +89,10 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
+                log.e(snapshot.data);
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData) {
-                return const Center(child: Text('No form requests'));
+                return const Center(child: NoDataError(message: 'No hay formulario disponible'));
               }
 
               var form = snapshot.data!;
