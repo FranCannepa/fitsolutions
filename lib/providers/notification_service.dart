@@ -36,27 +36,26 @@ class NotificationService {
     );
   }
   
-Future<void> sendNotification(String token, String title, String body) async {
-  const String apiUrl = 'https://fcm-server-halhc5ozba-uc.a.run.app/sendNotification';
+  Future<void> sendNotification(String token, String title, String body) async {
+    const String apiUrl = 'https://fcm-server-halhc5ozba-uc.a.run.app/sendNotification';
 
-  final response = await http.post(
-    Uri.parse(apiUrl),
-    headers: <String, String>{
-      'Content-Type': 'application/json',
-    },
-    body: jsonEncode(<String, String>{
-      'token': token,
-      'title': title,
-      'body': body,
-    }),
-  );
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'token': token,
+        'title': title,
+        'body': body,
+      }),
+    );
 
-  if (response.statusCode == 200) {
-    log.d('Notification sent successfully');
-  } else {
-    log.e('Error sending notification: ${response.body}');
+    if (response.statusCode == 200) {
+      log.d('Notification sent successfully');
+    } else {
+      log.e('Error sending notification: ${response.body}');
+    }
   }
-}
-
 }
 

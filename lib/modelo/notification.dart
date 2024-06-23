@@ -6,6 +6,7 @@ class NotificationModel {
   final String message;
   final DateTime timestamp;
   final bool read;
+  final String route;
 
   NotificationModel({
     required this.id,
@@ -13,6 +14,7 @@ class NotificationModel {
     required this.message,
     required this.timestamp,
     required this.read,
+    required this.route,
   });
 
   factory NotificationModel.fromFirestore(DocumentSnapshot doc) {
@@ -23,6 +25,7 @@ class NotificationModel {
       message: data['message'] ?? '',
       timestamp: (data['timestamp'] as Timestamp).toDate(),
       read: data['read'] ?? false,
+      route: data['route'] ?? '',
     );
   }
 
@@ -32,6 +35,7 @@ class NotificationModel {
       'message': message,
       'timestamp': Timestamp.fromDate(timestamp),
       'read': read,
+      'route': route,
     };
   }
 }

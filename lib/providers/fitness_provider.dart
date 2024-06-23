@@ -145,9 +145,8 @@ class FitnessProvider extends ChangeNotifier {
       await asigarRutinaToUser(user.docId, planId);
       _notificationService.sendNotification(user.fcmToken, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
       
-      final forTestinOnly = await SharedPrefsHelper().getUserId();
       final provider = NotificationProvider(_firebase);
-      provider.addNotification(forTestinOnly!, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
+      provider.addNotification(user.docId, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina','/ejercicios');
 
     }
     notifyListeners();

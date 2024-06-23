@@ -1,9 +1,13 @@
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
 import 'package:fitsolutions/screens/Notification/notification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:provider/provider.dart';
 
 class NotificationBell extends StatefulWidget {
+
   const NotificationBell({super.key});
 
   @override
@@ -11,8 +15,7 @@ class NotificationBell extends StatefulWidget {
 }
 
 class _NotificationBellState extends State<NotificationBell> {
-  int _notificationCount = 5; 
-  final prefs = SharedPrefsHelper();
+    final prefs = SharedPrefsHelper();
   String? userId;
 
   @override
@@ -22,30 +25,47 @@ class _NotificationBellState extends State<NotificationBell> {
   }
 
   void getUserId() async{
-    userId = await prefs.getUserId();
+    final result = await prefs.getUserId();
+    setState(() {
+      userId = result;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<NotificationProvider>();
+    return StreamBuilder<List<NotificationModel>>(
+      stream: provider.getUserNotifications(userId),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {},
+          );
+        }
 
-    return IconButton(
-      icon: badges.Badge(
-        badgeContent: Text(
-          _notificationCount.toString(),
-          style: const TextStyle(color: Colors.white),
-        ),
-        showBadge: _notificationCount > 0,
-        child:  const Icon(Icons.notifications),
-      ),
-      onPressed: () async{
-        // Handle notification bell tap
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) =>  NotificationScreen(userId: userId!)),
+        var unreadCount = snapshot.data!
+            .where((notification) => !notification.read)
+            .length;
+
+        return IconButton(
+          icon: badges.Badge(
+            badgeContent: Text(
+              unreadCount.toString(),
+              style: const TextStyle(color: Colors.white),
+            ),
+            showBadge: unreadCount > 0,
+            child: const Icon(Icons.notifications),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NotificationScreen(userId: userId!),
+              ),
+            );
+          },
         );
-        setState(() {
-          _notificationCount = 0;
-        });
       },
     );
   }
