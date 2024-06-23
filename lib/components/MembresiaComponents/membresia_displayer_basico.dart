@@ -1,8 +1,7 @@
 import 'dart:developer';
-
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaSeleccionador.dart';
-import 'package:fitsolutions/Modelo/Membresia.dart';
+import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
