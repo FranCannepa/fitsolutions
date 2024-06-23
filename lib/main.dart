@@ -12,6 +12,7 @@ import 'package:fitsolutions/providers/dietas_provider.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/providers/inscription_provider.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
@@ -66,6 +67,8 @@ class MyApp extends StatelessWidget {
                 NotificationService(flutterLocalNotificationsPlugin))),
         ChangeNotifierProvider<GimnasioProvider>(
             create: (context) => GimnasioProvider(FirebaseFirestore.instance)),
+        ChangeNotifierProvider<NotificationProvider>(
+            create: (context) => NotificationProvider(FirebaseFirestore.instance)),
         ChangeNotifierProvider<ActividadProvider>(
             create: (context) => ActividadProvider()),
         ChangeNotifierProvider<MembresiaProvider>(

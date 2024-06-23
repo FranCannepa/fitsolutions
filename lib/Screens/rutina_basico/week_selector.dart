@@ -49,7 +49,7 @@ class _WeekSelectorState extends State<WeekSelector> {
 
   int _selectedWeekIndex = 0;
   int _selectedDayIndex = 0;
-  bool? esBasico = false;
+  bool? esBasico = true;
   Logger log = Logger();
 
   @override
@@ -60,8 +60,11 @@ class _WeekSelectorState extends State<WeekSelector> {
 
   Future<void> esUserBasico() async {
     final prefs = SharedPrefsHelper();
-    esBasico = await prefs.esBasico();
-    log.d('From week $esBasico');
+    bool result = await prefs.esBasico();
+    log.d('From week $result');
+    setState(() {
+      esBasico = result;
+    });
   }
   
   final List<String> days = ['1', '2', '3', '4', '5', '6', '7'];

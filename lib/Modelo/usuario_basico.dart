@@ -19,7 +19,7 @@ class UsuarioBasico extends Usuario {
         email: doc['email'],
         nombreCompleto: doc['nombreCompleto'],
         telefono: 'TEL',
-        fcmToken: doc['fcmToken']
+        fcmToken: doc['fcmToken'] ?? '',
       );
   }
 

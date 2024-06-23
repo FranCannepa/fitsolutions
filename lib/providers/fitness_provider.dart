@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -143,6 +144,11 @@ class FitnessProvider extends ChangeNotifier {
           .set(UsuarioBasico.toDocument(user));
       await asigarRutinaToUser(user.docId, planId);
       _notificationService.sendNotification(user.fcmToken, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
+      
+      final forTestinOnly = await SharedPrefsHelper().getUserId();
+      final provider = NotificationProvider(_firebase);
+      provider.addNotification(forTestinOnly!, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
+
     }
     notifyListeners();
   }

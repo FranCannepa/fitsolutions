@@ -5,6 +5,7 @@ import 'package:fitsolutions/components/CommonComponents/footer_bottom_navigator
 import 'package:fitsolutions/modelo/Actividad.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/screens/Notification/notification_bell.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
@@ -24,6 +25,7 @@ class HomeScreenContent extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false, // This removes the back button
         actions: [
+          const NotificationBell(),
           IconButton(
             onPressed: () async {
               UserProvider userProvider = context.read<UserProvider>();
