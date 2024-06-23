@@ -1,7 +1,6 @@
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
-import 'package:fitsolutions/screens/Plan/actividad_list_rutina.dart';
 import 'package:fitsolutions/screens/Plan/plan_create_dialogue.dart';
 import 'package:fitsolutions/screens/Plan/plan_info_screen.dart';
 import 'package:fitsolutions/screens/Plan/user_list_rutina.dart';

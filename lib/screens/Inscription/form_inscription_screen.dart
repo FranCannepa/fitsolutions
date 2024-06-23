@@ -102,7 +102,6 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                 _numeroEmergenciaController.text = form.numeroEmergencia;
                 _selectedObjectives.addAll(form.objetivos);
                 _isReadOnly =form.readOnly; 
-                print('$form.readOnly');// Set _isReadOnly based on form data
               }
 
               return Form(
