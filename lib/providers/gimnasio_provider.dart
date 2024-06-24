@@ -82,7 +82,6 @@ class GimnasioProvider with ChangeNotifier {
   }
 
   String formatTimeOfDay(TimeOfDay timeOfDay) {
-    debugger();
     final hours = timeOfDay.hour.toString().padLeft(2, '0');
     final minutes = timeOfDay.minute.toString().padLeft(2, '0');
     final period = timeOfDay.hour < 12 ? 'AM' : 'PM';
@@ -98,7 +97,6 @@ class GimnasioProvider with ChangeNotifier {
     Map<String, TimeOfDay> closeHours,
   ) async {
     final userId = await prefs.getUserId();
-    debugger();
     try {
       final gymData = {
         'nombreGimnasio': name,

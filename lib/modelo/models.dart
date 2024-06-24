@@ -12,5 +12,3 @@ export 'week.dart';
 export 'membresia.dart';
 export 'form_model.dart';
 export 'evaluation_model.dart';
-
-

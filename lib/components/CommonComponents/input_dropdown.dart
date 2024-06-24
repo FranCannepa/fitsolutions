@@ -22,15 +22,13 @@ class _InputDropdownState extends State<InputDropdown> {
   @override
   void initState() {
     super.initState();
-    if (widget.options.isNotEmpty) {
-      selectedOption = widget.options[0];
-    }
+    selectedOption = widget.options.isNotEmpty ? widget.options[0] : "Mixto";
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: DropdownButtonFormField<String>(
         value: selectedOption,
         decoration: InputDecoration(
@@ -58,8 +56,8 @@ class _InputDropdownState extends State<InputDropdown> {
             .toList(),
         onChanged: (String? newValue) {
           setState(() {
-            selectedOption = newValue!;
-            widget.controller.text = newValue;
+            selectedOption = newValue ?? "Mixto";
+            widget.controller.text = newValue!;
           });
         },
       ),

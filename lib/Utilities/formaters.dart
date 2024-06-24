@@ -15,6 +15,11 @@ class Formatters {
     }
   }
 
+  TimeOfDay timestampToTimeOfDay(Timestamp timestamp) {
+    final DateTime dateTime = timestamp.toDate();
+    return TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
+  }
+
   DateTime parseTimeFromString(String timeString) {
     if (RegExp(r'^[0-9]{1,2}:[0-5]{1,2}$').hasMatch(timeString)) {
       List<String> timeParts = timeString.split(':');
@@ -78,7 +83,7 @@ class Formatters {
   }
 
   String to24hs(DateTime time) {
-  final DateFormat formatter = DateFormat('HH:mm');
-  return formatter.format(time);
-}
+    final DateFormat formatter = DateFormat('HH:mm');
+    return formatter.format(time);
+  }
 }

@@ -1,5 +1,5 @@
-import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
-import 'package:fitsolutions/Modelo/Membresia.dart';
+import 'package:fitsolutions/modelo/Membresia.dart';
+import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
@@ -30,15 +30,51 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ScreenSubTitle(text: membresia.nombreMembresia),
-          Text(membresia.descripcion),
-          Text(membresia.costo),
-          if (!userProvider.esBasico())
-            ElevatedButton(
-                onPressed: () {
-                  print("PRESIONADO");
-                },
-                child: const Text("Asignar a cliente"))
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                color: Colors.black,
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  membresia.nombreMembresia,
+                  style: const TextStyle(
+                      fontSize: 25.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: widget.onClose,
+              ),
+            ],
+          ),
+          const SizedBox(height: 20.0),
+          Container(
+              height: 90,
+              width: 250,
+              child: membresia.descripcion.isNotEmpty
+                  ? Text(
+                      membresia.descripcion,
+                      style: TextStyle(fontSize: 16),
+                    )
+                  : const ScreenSubTitle(text: 'No hay descripcion')),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "\$${membresia.costo.toString()}",
+                style: const TextStyle(fontSize: 16),
+              ),
+              if (!userProvider.esBasico())
+                SubmitButton(
+                    text: "Asingar Cliente",
+                    onPressed: () {
+                      print("ASIGNAR");
+                    })
+            ],
+          ),
         ],
       ),
     );

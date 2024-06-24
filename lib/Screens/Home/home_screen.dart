@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _initializeScreenIndex() async {
     final userProvider = context.read<UserData>();
     _selectedIndex =
-        userProvider.esBasico() ? 2 : 1; // Set index based on user's status
+        userProvider.esBasico() ? 2 : 1;
   }
 
   @override
@@ -80,8 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       String? token = await messaging.getToken();
-
-      // Send the token to your server or Firestore
       _sendTokenToServer(token);
     } else {
       log.d('User declined or has not accepted permission');
@@ -121,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const PerfilScreen(),
                         HomeScreenContent(
                             actividadProvider:
-                                actividadProvider), // Separate widget for home screen content
+                                actividadProvider), 
                         const DietasScreen(),
                         MembresiaScreen(provider: userProvider),
                       ]
@@ -129,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const GimnasioScreen(),
                         HomeScreenContent(
                             actividadProvider:
-                                actividadProvider), // Separate widget for home screen content
+                                actividadProvider),
                         const DietasScreen(),
                         MembresiaScreen(provider: userProvider),
                         const PlanScreen(),

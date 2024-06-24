@@ -1,10 +1,8 @@
-//import 'dart:developer';
 
 import 'dart:developer';
-
+import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitsolutions/Modelo/Membresia.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -165,9 +163,9 @@ class UserData extends ChangeNotifier {
   }
 
   void dataFormBasic(Map<String, dynamic>? userData) async {
-    String? userId = userData?['userId'];
-    if (userId != null) {
-      userId = userId;
+    String? usuarioId = userData?['userId'];
+    if (usuarioId != null) {
+      userId = usuarioId;
     } else {
       userId = await prefs.getUserId() as String;
     }
