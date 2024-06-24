@@ -18,11 +18,7 @@ class FitnessProvider extends ChangeNotifier {
     });
   }
   
-  Future<void> sendNotification(String userId) async{
-    final user = await _firebase.collection('usuario').doc(userId).get();
-    final data = user.data();
-    _notificationService.sendNotification(data!['fcmToken'],'Notification','Body');
-  }
+
 
   Future<Plan?> getRutinaDeUsuario(String docId) async {
     CollectionReference collectionRef = _firebase.collection('usuario');
