@@ -119,7 +119,6 @@ class MembresiaEdit extends StatelessWidget {
                     final success = await membresiaProvider
                         .actualizarMembresia(membresiaData);
                     if (success) {
-                      debugger();
                       return const ResultDialog(
                           text: "Membresia actualizada exitosamente",
                           resultType: ResultType.success);

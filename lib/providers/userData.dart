@@ -163,9 +163,9 @@ class UserData extends ChangeNotifier {
   }
 
   void dataFormBasic(Map<String, dynamic>? userData) async {
-    String? userId = userData?['userId'];
-    if (userId != null) {
-      userId = userId;
+    String? usuarioId = userData?['userId'];
+    if (usuarioId != null) {
+      userId = usuarioId;
     } else {
       userId = await prefs.getUserId() as String;
     }
