@@ -132,6 +132,10 @@ class FitnessProvider extends ChangeNotifier {
   Future<void> addUsuarioARutina(
       String planId, List<UsuarioBasico> usuarios) async {
     for (final user in usuarios) {
+      if(user.rutina != ''){
+        await removeUsuarioDeRutina(user.rutina, user.docId);
+      }
+      
       await _firebase
           .collection('plan')
           .doc(planId)

@@ -6,12 +6,14 @@ class UsuarioBasico extends Usuario {
   int altura = 0;
   double peso = 0.0;
   String fcmToken;
+  String rutina;
 
   UsuarioBasico(
       {required super.docId,
       required super.email,
       required this.nombreCompleto,
-      required this.telefono, required this.fcmToken});
+      required this.telefono, required this.fcmToken,
+      required this.rutina});
 
   static UsuarioBasico fromDocument(String docId, Map<String, dynamic> doc) {
     return UsuarioBasico(
@@ -20,6 +22,7 @@ class UsuarioBasico extends Usuario {
         nombreCompleto: doc['nombreCompleto'],
         telefono: 'TEL',
         fcmToken: doc['fcmToken'] ?? '',
+        rutina: doc['rutina'] ?? '',
       );
   }
 
@@ -31,5 +34,10 @@ class UsuarioBasico extends Usuario {
       'altura': u.altura,
       'fcmToken': u.fcmToken,
     };
+  }
+
+  static bool hasAttribute(UsuarioBasico u, String attributeName) {
+    var attributes = toDocument(u);
+    return attributes.containsKey(attributeName);
   }
 }
