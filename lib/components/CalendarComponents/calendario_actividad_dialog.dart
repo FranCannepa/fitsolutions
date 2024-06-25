@@ -1,10 +1,11 @@
 
 import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
+import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Screens/Plan/misPlanesActividad.dart';
 import 'package:flutter/material.dart';
 
 class ActividadDialog extends StatelessWidget {
-  final Map<String, dynamic> actividad;
+  final Actividad actividad;
   final VoidCallback onClose;
 
   const ActividadDialog(
@@ -35,21 +36,21 @@ class ActividadDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ScreenSubTitle(text: actividad['nombreActividad']),
+            ScreenSubTitle(text: actividad.nombre),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
                   children: [
                     Text(
-                      'Cupos: ${actividad['cupos']}',
+                      'Cupos: ${actividad.cupos}',
                       style: TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.secondary),
                     ),
                     Text(
-                      'Participantes: ${actividad['participantes']}',
+                      'Participantes: ${actividad.participantes}',
                       style: TextStyle(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
@@ -66,7 +67,7 @@ class ActividadDialog extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MisPlanesActividad(actividadId: actividad['id'],)),
+                          builder: (context) => MisPlanesActividad(actividadId: actividad.id,)),
                     );
                   },
                   child: const Text("Ver mis planes"),

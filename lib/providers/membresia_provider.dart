@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Modelo/Membresia.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
@@ -25,6 +27,37 @@ class MembresiaProvider extends ChangeNotifier {
     } catch (e) {
       print('Error fetching membresias: $e');
       return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getOrigenMembresia(String documentId) async {
+    try {
+      final usuarioRef =
+          FirebaseFirestore.instance.collection('usuario').doc(documentId);
+      final usuarioSnapshot = await usuarioRef.get();
+
+      if (usuarioSnapshot.exists) {
+        final data = usuarioSnapshot.data()!;
+        return {
+          ...data,
+          'origenTipo': 'Entrenador',
+        };
+      }
+      final gimnasioRef =
+          FirebaseFirestore.instance.collection('gimnasio').doc(documentId);
+      final gimnasioSnapshot = await gimnasioRef.get();
+      if (gimnasioSnapshot.exists) {
+        final data = gimnasioSnapshot.data()!;
+        final nombreOrigen = data['nombreGimnasio'];
+        return {
+          'nombreOrigen': nombreOrigen,
+          'origenTipo': 'Gimnasio',
+        };
+      }
+      return null;
+    } catch (e) {
+      print("Error fetching origen membership: $e");
+      return null;
     }
   }
 
