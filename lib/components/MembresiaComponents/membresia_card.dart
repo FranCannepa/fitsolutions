@@ -68,9 +68,10 @@ class MembershipCard extends StatelessWidget {
                 const SizedBox(height: 4.0),
                 ElevatedButton(onPressed: () async {
                   final userEmail = await prefs.getEmail(); //obtengo el email del usuario
+                  final asociadoId = userProvider.gimnasioId;
                   final double costo = double.tryParse(membresia.costo) ?? 0.0; //parseo a double el costo (es un texto)
                   if (userEmail != null && userEmail.isNotEmpty) {
-                    await paymentService.createPayment(context, costo, 'userEmail@user.com', membresia.id); //temporal lo del email
+                    await paymentService.createPayment(context, costo, "pepito@gmail.com", membresia.id, asociadoId); //temporal lo del email
                   }
                 }, 
                 child: const Text('Comprar'),

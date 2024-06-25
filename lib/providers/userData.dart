@@ -17,6 +17,7 @@ class UserData extends ChangeNotifier {
   String email = '';
   String photoUrl = '';
   String gimnasioId = '';
+  String asociadoId = '';
   late String calendarioId = '';
   late String membresiaId = '';
   late String entrenadorId = '';
@@ -179,7 +180,7 @@ class UserData extends ChangeNotifier {
     }
     nombreCompleto = userData?['nombreCompleto'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    gimnasioId = userData?['gimnasioSub'] ?? '';
+    gimnasioId = userData?['asociadoId'] ?? '';
     entrenadorId = userData?['entrenadorSub'] ?? '';
     membresiaId = userData?['membresiaId'] ?? '';
     tipo = "Basico";
