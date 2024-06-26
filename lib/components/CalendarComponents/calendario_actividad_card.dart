@@ -124,10 +124,16 @@ class CartaActividad extends StatelessWidget {
                                             ),
                                           ),
                                           TextButton(
-                                            onPressed: () {
-                                              actividadProvider
-                                                  .eliminarActividad(
-                                                      actividad.id);
+                                            onPressed: () async {
+                                              final result =
+                                                  await actividadProvider
+                                                      .eliminarActividad(
+                                                          actividad.id);
+                                              if (result) {
+                                                if (context.mounted) {
+                                                  Navigator.pop(context);
+                                                }
+                                              }
                                             },
                                             child: const Text(
                                               'Eliminar',

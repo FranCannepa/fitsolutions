@@ -21,7 +21,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.50,
-      color: Colors.amber,
+      color: Theme.of(context).primaryColor,
       child: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -32,7 +32,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'Plan: ${plan.name}',
+                  plan.name,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -44,7 +44,7 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'Descripcion: ${plan.description}',
+                  plan.description,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -107,17 +107,24 @@ class _PlanInfoScreenState extends State<PlanInfoScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                child: const Text('Gestionar rutina semanal'),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => WorkoutSchedule(plan: plan,leading: true)),
-                ),
-              ),
-              ElevatedButton(
-                child: const Text('Cerrar'),
-                onPressed: () => Navigator.pop(context),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    child: const Text('Gestionar Ejercicios Semanales'),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              WorkoutSchedule(plan: plan, leading: true)),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  ElevatedButton(
+                    child: const Text('Cerrar'),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
               ),
             ],
           ),

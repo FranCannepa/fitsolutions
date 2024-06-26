@@ -11,7 +11,7 @@ class ScreenUpperTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 130,
+      padding: const EdgeInsets.only(bottom: 30, top: 0),
       width: double.infinity,
       color: Theme.of(context).colorScheme.secondary,
       child: Row(

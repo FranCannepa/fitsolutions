@@ -110,8 +110,6 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
                           gymId: gymId!,
                           isSubscribed: false,
                           onComplete: () async {
-                            await inscriptionProvider.addFormRequest(
-                                gymId!, user.docId);
                             if (context.mounted) {
                               Navigator.push(
                                 context,
@@ -226,6 +224,7 @@ class UserCard extends StatelessWidget {
                   );
                 },
               ),
+            if (!isSubscribed && onAddToPending == null) ...{
             IconButton(
               icon: const Icon(Icons.description),
               onPressed: () {
@@ -240,6 +239,7 @@ class UserCard extends StatelessWidget {
                 );
               },
             ),
+            },
             if (!isSubscribed && onComplete != null)
               ElevatedButton(
                 onPressed: onComplete,

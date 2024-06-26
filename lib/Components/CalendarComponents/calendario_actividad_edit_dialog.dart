@@ -30,6 +30,8 @@ class _CalendarioActividadEditDialogState
       Formatters().timestampToTimeOfDay(widget.actividad.inicio);
   late TimeOfDay horaFinUpdated =
       Formatters().timestampToTimeOfDay(widget.actividad.fin);
+
+  late DateTime fechaSelected = widget.actividad.inicio.toDate();
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> actividadData = {};
@@ -67,9 +69,9 @@ class _CalendarioActividadEditDialogState
         actividadData['tipo'] = tipoActividadController.text;
         actividadData['nombreActividad'] = nombreActividadController.text;
         actividadData['inicio'] = Timestamp.fromDate(
-            Formatters().combineDateTime(fechaActividad, horaInicioUpdated));
+            Formatters().combineDateTime(fechaSelected, horaInicioUpdated));
         actividadData['fin'] = Timestamp.fromDate(
-            Formatters().combineDateTime(fechaActividad, horaFinUpdated));
+            Formatters().combineDateTime(fechaSelected, horaFinUpdated));
         actividadData['cupos'] =
             int.tryParse(cuposActividadController.text) ?? 0;
         actividadData['participantes'] = 0;
@@ -141,7 +143,8 @@ class _CalendarioActividadEditDialogState
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     InputTimePicker(
-                      labelText: "Hora Inicio",
+                      labelText:
+                          Formatters().timeOfDayString(horaInicioUpdated),
                       horaSeleccionada: horaInicioActividadSeleccionada,
                       onTimeSelected: (time) {
                         setState(() {
@@ -150,7 +153,7 @@ class _CalendarioActividadEditDialogState
                       },
                     ),
                     InputTimePicker(
-                      labelText: "Hora Fin",
+                      labelText: Formatters().timeOfDayString(horaFinUpdated),
                       horaSeleccionada: horaFinActividadSeleccionada,
                       onTimeSelected: (time) {
                         setState(() {
@@ -159,11 +162,12 @@ class _CalendarioActividadEditDialogState
                       },
                     ),
                     InputDatePicker(
-                        labelText: "Fecha",
+                        labelText:
+                            Formatters().formatDateDayMonthShort(fechaSelected),
                         fechaSeleccionada: fechaActividad,
                         onDateSelected: (date) {
                           setState(() {
-                            fechaActividad = date;
+                            fechaSelected = date;
                           });
                         }),
                   ],

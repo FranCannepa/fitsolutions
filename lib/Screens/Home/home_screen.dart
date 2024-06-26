@@ -5,13 +5,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
-import 'package:fitsolutions/providers/user_provider.dart';
 //import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen.dart';
 import 'package:fitsolutions/screens/Home/home_screen_content.dart';
-import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 //import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
@@ -40,8 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initializeScreenIndex() async {
     final userProvider = context.read<UserData>();
-    _selectedIndex =
-        userProvider.esBasico() ? 2 : 1;
+    _selectedIndex = userProvider.esBasico() ? 2 : 1;
   }
 
   @override
@@ -117,17 +114,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? [
                         const EjerciciosScreen(),
                         const PerfilScreen(),
-                        HomeScreenContent(
-                            actividadProvider:
-                                actividadProvider), 
+                        HomeScreenContent(actividadProvider: actividadProvider),
                         const DietasScreen(),
                         MembresiaScreen(provider: userProvider),
                       ]
                     : [
                         const GimnasioScreen(),
-                        HomeScreenContent(
-                            actividadProvider:
-                                actividadProvider),
+                        HomeScreenContent(actividadProvider: actividadProvider),
                         const DietasScreen(),
                         MembresiaScreen(provider: userProvider),
                         const PlanScreen(),
@@ -187,31 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ];
                 }
-
                 return Scaffold(
-                  appBar: AppBar(
-                    automaticallyImplyLeading:
-                        false,
-                    actions: [
-                      IconButton(
-                        onPressed: () async {
-                          UserProvider userProvider =
-                              context.read<UserProvider>();
-                          await userProvider.signOut();
-                          if (context.mounted) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const WelcomePage(),
-                              ),
-                            );
-                          }
-                        },
-                        icon: const Icon(Icons.logout),
-                      ),
-                    ],
-                  ),
                   body: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: IndexedStack(

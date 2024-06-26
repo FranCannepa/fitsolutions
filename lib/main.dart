@@ -12,10 +12,13 @@ import 'package:fitsolutions/providers/dietas_provider.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/providers/inscription_provider.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
+import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
+import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
@@ -62,10 +65,12 @@ class MyApp extends StatelessWidget {
             create: (context) => FitnessProvider(FirebaseFirestore.instance,
                 NotificationService(flutterLocalNotificationsPlugin))),
         ChangeNotifierProvider<InscriptionProvider>(
-            create: (context) =>
-                InscriptionProvider(FirebaseFirestore.instance)),
+            create: (context) => InscriptionProvider(FirebaseFirestore.instance,
+                NotificationService(flutterLocalNotificationsPlugin))),
         ChangeNotifierProvider<GimnasioProvider>(
             create: (context) => GimnasioProvider(FirebaseFirestore.instance)),
+        ChangeNotifierProvider<NotificationProvider>(
+            create: (context) => NotificationProvider(FirebaseFirestore.instance)),
         ChangeNotifierProvider<ActividadProvider>(
             create: (context) => ActividadProvider()),
         ChangeNotifierProvider<MembresiaProvider>(
@@ -111,7 +116,9 @@ class MyApp extends StatelessWidget {
               ),
           '/registro': (BuildContext context) => const RegistroScreen(),
           '/gimnasio': (BuildContext context) => const GimnasioScreen(),
-          '/welcome': (BuildContext context) => const WelcomePage()
+          '/welcome': (BuildContext context) => const WelcomePage(),
+          '/inscription':(BuildContext context) => const InscriptionScreen(),
+          '/form_inscription':(BuildContext context) => const FormInscriptionScreen(),
         },
       ),
     );

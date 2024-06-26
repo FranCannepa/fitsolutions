@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/modelo/models.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
+import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
@@ -8,8 +10,9 @@ class InscriptionProvider extends ChangeNotifier {
   Logger log = Logger();
   final FirebaseFirestore _firebase;
   final prefs = SharedPrefsHelper();
+  final NotificationService _notificationService;
 
-  InscriptionProvider(FirebaseFirestore? firestore)
+  InscriptionProvider(FirebaseFirestore? firestore, this._notificationService)
       : _firebase = firestore ?? FirebaseFirestore.instance {
     _firebase.collection('gimnasio').snapshots().listen((snapshot) {
       notifyListeners();
@@ -193,29 +196,31 @@ class InscriptionProvider extends ChangeNotifier {
 
   //funcionalidad de agregar una form request a la double
   Future<void> addFormRequest(String ownerId, String basicUserId) async {
-    await _firebase.collection('form').add({
-      'ownerId': ownerId,
-      'basicUserId': basicUserId,
-      'formData': {},
-    });
+    try {
+      await _firebase.collection('form').add({
+        'ownerId': ownerId,
+        'basicUserId': basicUserId,
+        'formData': {},
+      });
 
-    await _firebase
-        .collection('usuario')
-        .doc(basicUserId)
-        .update({'asociadoId': ownerId});
-    notifyListeners();
+      await _firebase
+          .collection('usuario')
+          .doc(basicUserId)
+          .update({'asociadoId': ownerId});
+
+      final user = await _firebase.collection('usuario').doc(basicUserId).get();
+      final token = user.data();
+      _notificationService.sendNotification(
+          token!['fcmToken'],
+          'Formulario Disponible',
+          'Tiene un formulario de Inscripcion disponible');
+      notifyListeners();
+
+      NotificationProvider(_firebase).addNotification(basicUserId, 'Formulario Disponible', 'Tiene un formulario de Inscripcion disponible', '/form_inscription');
+    } catch (e) {
+      rethrow;
+    }
   }
-
-  /*
-  //funcionlidad de agarrar un form request para el owner
-    Stream<List<GymForm>> getFormsForOwner(String ownerId) {
-    return _firebase.collection('form')
-        .where('ownerId', isEqualTo: ownerId)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-        .map((doc) => GymForm.fromFirestore(doc))
-        .toList());
-  }*/
 
   Future<FormModel?> getFormByUserId(String userId) async {
     QuerySnapshot formSnapshot = await _firebase
@@ -231,11 +236,28 @@ class InscriptionProvider extends ChangeNotifier {
 
   Future<void> submitFormData(
       String formId, Map<String, dynamic> formData) async {
-    await _firebase
+    try{
+    final form = await _firebase.collection('form').doc(formId).get();
+        
+        await _firebase
         .collection('form')
-        .doc(formId)
-        .update({'formData': formData,'readOnly':true});
+        .doc(formId).update({'formData': formData, 'readOnly': true});
+    //Get the user ID from
+
+    final user = await _firebase.collection('usuario').doc(form.get('basicUserId')).get();
+    final gym = await _firebase.collection('gimnasio').doc(form.get('ownerId')).get();
+    final owner= await _firebase.collection('usuario').doc(gym.get('propietarioId')).get();
+
+    final userToken = owner.get('fcmToken');
+
+    _notificationService.sendNotification(userToken,'Formulario Completado', 'El usuario ${user.get('nombreCompleto')} completo el formulario');
+    NotificationProvider(_firebase).addNotification(owner.id,'Formulario Completado','El usuario ${user.get('nombreCompleto')} completo el formulario','/inscription');
+
     notifyListeners();
+    }
+    catch(e){
+      rethrow;
+    }
   }
 
   Future<FormModel?> getFormData(String ownerId, String userId) async {
@@ -290,6 +312,11 @@ class InscriptionProvider extends ChangeNotifier {
         'lagartija': evaluationModel.lagartija,
         'sentadillaExcentrica': evaluationModel.sentadillaExcentrica,
       });
+
+      final user = await _firebase.collection('usuario').doc(userId).get();
+      _notificationService.sendNotification(user.get('fcmToken'),'Inscripcion Completada', 'Se finalizo tu inscripcion a un gimnasio!');
+      NotificationProvider(_firebase).addNotification(user.id,'Inscripcion Completada','Se finalizo tu inscripcion a un gimnasio!','/ejercicios');
+
     } catch (e) {
       log.e(e);
     }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -17,11 +18,7 @@ class FitnessProvider extends ChangeNotifier {
     });
   }
   
-  Future<void> sendNotification(String userId) async{
-    final user = await _firebase.collection('usuario').doc(userId).get();
-    final data = user.data();
-    _notificationService.sendNotification(data!['fcmToken'],'Notification','Body');
-  }
+
 
   Future<Plan?> getRutinaDeUsuario(String docId) async {
     CollectionReference collectionRef = _firebase.collection('usuario');
@@ -135,6 +132,10 @@ class FitnessProvider extends ChangeNotifier {
   Future<void> addUsuarioARutina(
       String planId, List<UsuarioBasico> usuarios) async {
     for (final user in usuarios) {
+      if(user.rutina != ''){
+        await removeUsuarioDeRutina(user.rutina, user.docId);
+      }
+      
       await _firebase
           .collection('plan')
           .doc(planId)
@@ -142,6 +143,13 @@ class FitnessProvider extends ChangeNotifier {
           .doc(user.docId)
           .set(UsuarioBasico.toDocument(user));
       await asigarRutinaToUser(user.docId, planId);
+
+      _notificationService.sendNotification(user.fcmToken, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
+      
+      final provider = NotificationProvider(_firebase);
+      provider.addNotification(user.docId, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina','/ejercicios');
+
+
     }
     notifyListeners();
   }
@@ -241,6 +249,14 @@ class FitnessProvider extends ChangeNotifier {
       'pausa': pausa,
       'dia': dia
     });
+    final list = await _firebase.collection('usuario').where('rutina',isEqualTo: plan.planId).get();     
+      
+      final provider = NotificationProvider(_firebase);
+
+    for(var user in list.docs){
+      _notificationService.sendNotification(user.get('fcmToken'), 'NUEVO EJERCICIO', 'Un nuevo ejercicio fue agregado a $weekNumber - $dia');
+      provider.addNotification(user.id, 'NUEVO EJERCICIO', 'Un nuevo ejercicio fue agregado a $weekNumber - $dia','/ejercicios');
+    }
     notifyListeners();
   }
 

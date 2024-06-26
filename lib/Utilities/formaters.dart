@@ -68,6 +68,17 @@ class Formatters {
     return years;
   }
 
+  String timeOfDayString(TimeOfDay time) {
+    String hourString = time.hour.toString().padLeft(2, '0');
+    String minuteString = time.minute.toString().padLeft(2, '0');
+    return '$hourString:$minuteString';
+  }
+
+  String formatDateDayMonthShort(DateTime date) {
+    final formatter = DateFormat('d/MM');
+    return formatter.format(date);
+  }
+
   int getTimestampFromTimeOfDayAndDate(TimeOfDay hora, DateTime fecha) {
     return DateTime(fecha.year, fecha.month, fecha.day, hora.hour, hora.minute)
         .millisecondsSinceEpoch;
@@ -85,5 +96,10 @@ class Formatters {
   String to24hs(DateTime time) {
     final DateFormat formatter = DateFormat('HH:mm');
     return formatter.format(time);
+  }
+
+  DateTime timeStampToDateTime(int timestamp) {
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    return DateTime(dateTime.year, dateTime.month);
   }
 }
