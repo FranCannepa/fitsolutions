@@ -1,8 +1,5 @@
-import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_agregar_dialog.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_displayer.dart';
-import 'package:fitsolutions/components/CommonComponents/footer_bottom_navigator.dart';
-import 'package:fitsolutions/modelo/Actividad.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/screens/Notification/notification_bell.dart';
