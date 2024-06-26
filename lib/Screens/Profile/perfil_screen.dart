@@ -26,7 +26,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
     return SafeArea(
         child: Scaffold(
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<Map<String, dynamic>?>(
           future: userProvider.getUserProfile(),
           builder: (context, snapshot) {

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaSeleccionador.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
@@ -19,23 +18,25 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
   @override
   Widget build(BuildContext context) {
     final UserData userProvider = context.read<UserData>();
-    userProvider.initializeData();
-    return Center(
-      child: FutureBuilder<Membresia?>(
-        future: userProvider.getMembresia(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            final membresia = snapshot.data;
-            return membresia != null
-                ? MembresiaInfo(membresia: membresia)
-                : SeleccionarMembresia(membresias: widget.membresias);
-          }
-        },
-      ),
-    );
+    return Scaffold(
+        body: Column(children: [
+      Expanded(
+        child: FutureBuilder<Membresia?>(
+          future: userProvider.getMembresia(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              final membresia = snapshot.data;
+              return membresia != null
+                  ? MembresiaInfo(membresia: membresia)
+                  : SeleccionarMembresia(membresias: widget.membresias);
+            }
+          },
+        ),
+      )
+    ]));
   }
 }

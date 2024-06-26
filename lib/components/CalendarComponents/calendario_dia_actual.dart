@@ -29,6 +29,7 @@ class DiaActual extends StatelessWidget {
 
     return Container(
       color: Colors.white,
+      width: 80,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

@@ -42,9 +42,6 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      /*bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.membresia,
-      ),*/
     );
   }
 }
