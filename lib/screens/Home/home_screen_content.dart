@@ -6,6 +6,7 @@ import 'package:fitsolutions/modelo/Actividad.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/screens/Notification/notification_bell.dart';
+import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
@@ -29,15 +30,26 @@ class HomeScreenContent extends StatelessWidget {
           IconButton(
             onPressed: () async {
               UserProvider userProvider = context.read<UserProvider>();
-              await userProvider.signOut();
-              if (context.mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const WelcomePage(),
-                  ),
-                );
-              }
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ConfirmDialog(
+                        title: 'Cerrar Sesion',
+                        content: '¿Desea Cerrar Sesion?',
+                        onConfirm: () async {
+                          await userProvider.signOut();
+                          if (context.mounted) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const WelcomePage(),
+                              ),
+                            );
+                          }
+                        },
+                        parentKey: null);
+                  });
             },
             icon: const Icon(Icons.logout),
           ),
