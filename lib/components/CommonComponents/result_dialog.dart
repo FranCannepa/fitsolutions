@@ -13,7 +13,6 @@ class ResultDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = _getColorByType(resultType);
-    debugger();
     return AlertDialog(
       title: Text(
         text,
@@ -51,7 +50,7 @@ class ResultDialog extends StatelessWidget {
       case ResultType.success:
         return Colors.green;
       case ResultType.warning:
-        return Colors.orange;
+        return Colors.yellow;
       case ResultType.info:
         return Colors.blue;
       default:

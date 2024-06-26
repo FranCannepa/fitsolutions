@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
@@ -16,7 +18,8 @@ class CalendarioAgregarActividadDialog extends StatefulWidget {
   const CalendarioAgregarActividadDialog({
     super.key,
     required this.propietarioActividadId,
-    required this.onClose, required this.actividadProvider,
+    required this.onClose,
+    required this.actividadProvider,
   });
 
   @override
@@ -28,7 +31,7 @@ class _CalendarioAgregarActividadDialogState
     extends State<CalendarioAgregarActividadDialog> {
   final _formKey = GlobalKey<FormState>();
   final nombreActividadController = TextEditingController();
-  final tipoActividadController = TextEditingController();
+  final tipoActividadController = TextEditingController(text: "Definida");
   final cuposActividadController = TextEditingController();
   late DateTime fechaActividad = DateTime.now();
   late TimeOfDay horaInicioActividadSeleccionada = TimeOfDay.now();
@@ -51,32 +54,17 @@ class _CalendarioAgregarActividadDialogState
     } else {}
   }
 
-  Future<void> registrarActividad() async {
-    summarizeData();
-    try {
-      final docRef = await FirebaseFirestore.instance
-          .collection('actividad')
-          .add(actividadData);
-      final snapshot = await docRef.get();
-      if (snapshot.exists) {
-        _showSuccessModal("Actividad Creada", ResultType.success);
-        _formKey.currentState!.reset();
-        widget.onClose;
-      } else {
-        _showSuccessModal("Error al crear", ResultType.error);
-      }
-    } on FirebaseException catch (e) {
-      rethrow;
-    }
-  }
-
   void _showSuccessModal(String mensaje, ResultType resultado) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return ResultDialog(text: mensaje, resultType: resultado);
       },
-    );
+    ).then((_) {
+      if (resultado == ResultType.success) {
+        widget.onClose();
+      }
+    });
   }
 
   @override
@@ -103,80 +91,124 @@ class _CalendarioAgregarActividadDialogState
         ),
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              RoundedInputField(
-                labelText: "Nombre Actividad",
-                controller: nombreActividadController,
-              ),
-              InputDropdown(
-                  labelText: "Tipo",
-                  controller: tipoActividadController,
-                  options: const ["Mixto", "Libre", "Unica"]),
-              RoundedInputField(
-                  labelText: "Cupos", controller: cuposActividadController),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  InputTimePicker(
-                    labelText: "Hora Inicio",
-                    horaSeleccionada: horaInicioActividadSeleccionada,
-                    onTimeSelected: (time) {
-                      setState(() {
-                        horaInicioActividadSeleccionada = time;
-                      });
-                    },
-                  ),
-                  InputTimePicker(
-                    labelText: "Hora Fin",
-                    horaSeleccionada: horaFinActividadSeleccionada,
-                    onTimeSelected: (time) {
-                      setState(() {
-                        horaFinActividadSeleccionada = time;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              InputDatePicker(
-                  labelText: "Fecha",
-                  fechaSeleccionada: fechaActividad,
-                  onDateSelected: (date) {
-                    setState(() {
-                      fechaActividad = date;
-                    });
-                  }),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ElevatedButton(
-                      onPressed: () async{
-                        summarizeData();
-                        final result = await widget.actividadProvider.registrarActividad(actividadData);
-                        if (result) {
-                          _showSuccessModal("Actividad Creada", ResultType.success);
-                          _formKey.currentState!.reset();
-                          widget.onClose;
-                        } else {
-                          _showSuccessModal("Error al crear", ResultType.error);
-                        }
-                        if(context.mounted){
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: const Text('Guardar'),
+                    Container(
+                      color: Colors.black,
+                      padding: const EdgeInsets.all(10),
+                      child: const Text(
+                        'Nueva Actividad',
+                        style: TextStyle(
+                          fontSize: 25.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    const SizedBox(width: 10.0),
-                    ElevatedButton(
+                    IconButton(
+                      icon: const Icon(Icons.close),
                       onPressed: widget.onClose,
-                      child: const Text('Cancelar'),
                     ),
                   ],
                 ),
-              )
-            ],
+                RoundedInputField(
+                  labelText: "Nombre Actividad",
+                  controller: nombreActividadController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'El nombre de la actividad es obligatorio.';
+                    }
+                    return null;
+                  },
+                ),
+                InputDropdown(
+                  labelText: "Tipo",
+                  controller: tipoActividadController,
+                  options: const ["Definida", "Libre"],
+                ),
+                RoundedInputField(
+                  labelText: "Cupos",
+                  controller: cuposActividadController,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Debes especificar la cantidad de cupos.';
+                    }
+                    try {
+                      int.parse(value);
+                    } catch (e) {
+                      return 'La cantidad de cupos debe ser un número.';
+                    }
+                    return null;
+                  },
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    InputTimePicker(
+                      labelText: "Hora Inicio",
+                      horaSeleccionada: horaInicioActividadSeleccionada,
+                      onTimeSelected: (time) {
+                        setState(() {
+                          horaInicioActividadSeleccionada = time;
+                        });
+                      },
+                    ),
+                    InputTimePicker(
+                      labelText: "Hora Fin",
+                      horaSeleccionada: horaFinActividadSeleccionada,
+                      onTimeSelected: (time) {
+                        setState(() {
+                          horaFinActividadSeleccionada = time;
+                        });
+                      },
+                    ),
+                    InputDatePicker(
+                      labelText: "Fecha",
+                      fechaSeleccionada: fechaActividad,
+                      onDateSelected: (date) {
+                        setState(() {
+                          fechaActividad = date;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SubmitButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            summarizeData();
+                            final result = await widget.actividadProvider
+                                .registrarActividad(actividadData);
+                            if (result) {
+                              _showSuccessModal(
+                                  "Actividad Creada", ResultType.success);
+                              _formKey.currentState!.reset();
+                            } else {
+                              _showSuccessModal(
+                                  "Error al crear", ResultType.error);
+                            }
+                          } else {
+                            _showSuccessModal("Campos Vacios", ResultType.info);
+                          }
+                        },
+                        text: "Agregar",
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

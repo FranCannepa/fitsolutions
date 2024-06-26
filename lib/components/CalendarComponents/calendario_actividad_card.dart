@@ -4,6 +4,7 @@ import 'package:fitsolutions/Components/CalendarComponents/calendario_actividad_
 import 'package:fitsolutions/Components/CommonComponents/info_item.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
+import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,8 @@ class CartaActividad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserData userData = context.read<UserData>();
+    final ActividadProvider actividadProvider =
+        context.read<ActividadProvider>();
     return Card(
       shape: RoundedRectangleBorder(
         side: const BorderSide(color: Colors.black, width: 4.0),
@@ -80,6 +83,9 @@ class CartaActividad extends StatelessWidget {
                                         builder: (context) =>
                                             CalendarioActividadEditDialog(
                                               actividad: actividad,
+                                              onClose: () {
+                                                Navigator.pop(context);
+                                              },
                                             ));
                                   },
                                 ),
@@ -119,7 +125,9 @@ class CartaActividad extends StatelessWidget {
                                           ),
                                           TextButton(
                                             onPressed: () {
-                                              Navigator.pop(context);
+                                              actividadProvider
+                                                  .eliminarActividad(
+                                                      actividad.id);
                                             },
                                             child: const Text(
                                               'Eliminar',
