@@ -45,7 +45,6 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
               return Text('Error fetching gym data: ${snapshot.error}');
             } else if (snapshot.hasData && snapshot.data != null) {
               final gymData = snapshot.data!;
-              //return GymDetailScreen(gym: gymData);
               return GimnasioInfo(gimnasio: gymData);
             } else {
               return !showGymForm

@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 
+
 class HomeScreenContent extends StatelessWidget {
   final ActividadProvider actividadProvider;
   const HomeScreenContent({super.key, required this.actividadProvider});
@@ -16,12 +17,11 @@ class HomeScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider =
-        Provider.of<UserData>(context); // Access the UserData provider
-
+        Provider.of<UserData>(context);
     return Scaffold(
       body: const CalendarioDisplayer(),
       appBar: AppBar(
-        automaticallyImplyLeading: false, // This removes the back button
+        automaticallyImplyLeading: false,
         actions: [
           const NotificationBell(),
           IconButton(

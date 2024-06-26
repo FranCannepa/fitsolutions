@@ -49,7 +49,6 @@ class _CalendarioAgregarActividadDialogState
       actividadData['fin'] = Timestamp.fromDate(Formatters()
           .combineDateTime(fechaActividad, horaFinActividadSeleccionada));
       actividadData['cupos'] = int.tryParse(cuposActividadController.text) ?? 0;
-      actividadData['participantes'] = 0;
       actividadData['propietarioActividadId'] = widget.propietarioActividadId;
     } else {}
   }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
