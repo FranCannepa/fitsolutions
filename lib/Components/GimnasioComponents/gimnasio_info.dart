@@ -67,7 +67,7 @@ class GimnasioInfo extends StatelessWidget {
                 spacing: 8.0,
                 children: [
                   SizedBox(
-                    width: 170.0,
+                    width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => {
                         showDialog(
