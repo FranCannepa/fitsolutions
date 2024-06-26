@@ -16,7 +16,10 @@ class ScreenTitle extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-          fontSize: fontSize, fontWeight: fontWeight, fontFamily: 'Roboto'),
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          fontFamily: 'Roboto',
+          color: Colors.white),
     );
   }
 }

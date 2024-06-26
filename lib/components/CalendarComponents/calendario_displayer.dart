@@ -47,7 +47,8 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
             child: Column(
               children: [
                 Container(
-                  margin: const EdgeInsets.only(top: 40.0),
+                  color: Theme.of(context).colorScheme.secondary,
+                  padding: const EdgeInsets.only(bottom: 30),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +56,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                       DiaActual(
                         fecha: fechaSeleccionada,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 20),
                       const ScreenTitle(title: "Actividades"),
                     ],
                   ),

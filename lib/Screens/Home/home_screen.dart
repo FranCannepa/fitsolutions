@@ -40,8 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initializeScreenIndex() async {
     final userProvider = context.read<UserData>();
-    _selectedIndex =
-        userProvider.esBasico() ? 2 : 1;
+    _selectedIndex = userProvider.esBasico() ? 2 : 1;
   }
 
   @override
@@ -117,17 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? [
                         const EjerciciosScreen(),
                         const PerfilScreen(),
-                        HomeScreenContent(
-                            actividadProvider:
-                                actividadProvider), 
+                        HomeScreenContent(actividadProvider: actividadProvider),
                         const DietasScreen(),
                         MembresiaScreen(provider: userProvider),
                       ]
                     : [
                         const GimnasioScreen(),
-                        HomeScreenContent(
-                            actividadProvider:
-                                actividadProvider),
+                        HomeScreenContent(actividadProvider: actividadProvider),
                         const DietasScreen(),
                         MembresiaScreen(provider: userProvider),
                         const PlanScreen(),
@@ -190,8 +185,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 return Scaffold(
                   appBar: AppBar(
-                    automaticallyImplyLeading:
-                        false,
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    automaticallyImplyLeading: false,
                     actions: [
                       IconButton(
                         onPressed: () async {
@@ -208,7 +203,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           }
                         },
-                        icon: const Icon(Icons.logout),
+                        icon: const Icon(
+                          Icons.logout,
+                          color: Colors.white,
+                        ),
+                        iconSize: 36.0,
                       ),
                     ],
                   ),

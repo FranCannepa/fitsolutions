@@ -31,14 +31,25 @@ class ActividadProvider extends ChangeNotifier {
   Future<List<Actividad>> fetchActividades(DateTime fecha) async {
     String? ownerActividades = await prefs.getSubscripcion();
     try {
-      final todayStart = DateTime(fecha.year, fecha.month, fecha.day, 0, 0);
       final now = DateTime.now();
+      DateTime start;
+      DateTime end;
+
+      if (fecha.year == now.year &&
+          fecha.month == now.month &&
+          fecha.day == now.day) {
+        start = now;
+        end = DateTime(now.year, now.month, now.day, 23, 59, 59);
+      } else {
+        start = DateTime(fecha.year, fecha.month, fecha.day, 0, 0);
+        end = DateTime(fecha.year, fecha.month, fecha.day, 23, 59, 59);
+      }
 
       final querySnapshot = await FirebaseFirestore.instance
           .collection('actividad')
           .where('propietarioActividadId', isEqualTo: ownerActividades)
-          .where('inicio', isGreaterThanOrEqualTo: todayStart)
-          .where('fin', isGreaterThan: now)
+          .where('inicio', isLessThanOrEqualTo: end)
+          .where('fin', isGreaterThanOrEqualTo: start)
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -49,7 +60,6 @@ class ActividadProvider extends ChangeNotifier {
           actividad.participantes = await cantidadParticipantes(doc.id);
           return actividad;
         }).toList();
-
         final completedActividades = await Future.wait(fetchedActividades);
         return completedActividades;
       } else {
