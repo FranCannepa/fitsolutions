@@ -22,7 +22,11 @@ class ActividadDialog extends StatelessWidget {
         builder: (BuildContext context) {
           return ResultDialog(text: mensaje, resultType: resultado);
         },
-      );
+      ).then((_) {
+        if (resultado == ResultType.success) {
+          onClose();
+        }
+      });
     }
 
     final ActividadProvider actividadProvider =
@@ -87,13 +91,31 @@ class ActividadDialog extends StatelessWidget {
                             child: SubmitButton(
                               text:
                                   isInscrito ? "Darse de baja" : "Inscribirse",
-                              onPressed: () {
+                              onPressed: () async {
                                 if (isInscrito) {
-                                  actividadProvider.desinscribirseActividad(
-                                      userProvider.userId, actividad.id);
+                                  final result = await actividadProvider
+                                      .desinscribirseActividad(
+                                          userProvider.userId, actividad.id);
+                                  if (result) {
+                                    _showSuccessModal(
+                                        "Dado de baja exitosamente",
+                                        ResultType.success);
+                                  } else {
+                                    _showSuccessModal("Error al darse de baja",
+                                        ResultType.error);
+                                  }
                                 } else {
-                                  actividadProvider.anotarseActividad(
-                                      userProvider.userId, actividad.id);
+                                  final result =
+                                      await actividadProvider.anotarseActividad(
+                                          userProvider.userId, actividad.id);
+
+                                  if (result) {
+                                    _showSuccessModal("Inscripcion exitosa",
+                                        ResultType.success);
+                                  } else {
+                                    _showSuccessModal("Error al inscribirse",
+                                        ResultType.error);
+                                  }
                                 }
                               },
                             ),

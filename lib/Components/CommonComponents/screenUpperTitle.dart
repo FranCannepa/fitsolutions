@@ -19,7 +19,7 @@ class ScreenUpperTitle extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 30, left: 16.0),
+            padding: const EdgeInsets.only(top: 10, left: 16.0),
             child: Text(
               title,
               style: const TextStyle(
