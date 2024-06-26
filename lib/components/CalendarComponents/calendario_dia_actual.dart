@@ -28,7 +28,7 @@ class DiaActual extends StatelessWidget {
     final month = monthMap[fecha.month];
 
     return Container(
-      color: Colors.black,
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -39,7 +39,7 @@ class DiaActual extends StatelessWidget {
               day,
               style: const TextStyle(
                 fontSize: 36.0,
-                color: Colors.white,
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -47,7 +47,7 @@ class DiaActual extends StatelessWidget {
               month!,
               style: const TextStyle(
                 fontSize: 16.0,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
           ],
