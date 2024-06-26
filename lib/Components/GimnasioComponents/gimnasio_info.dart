@@ -82,7 +82,7 @@ class GimnasioInfo extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: 170.0,
+                    width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => {
                         Navigator.push(
@@ -105,7 +105,7 @@ class GimnasioInfo extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: 170.0,
+                    width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () => {
                         Navigator.push(
