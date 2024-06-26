@@ -2,7 +2,7 @@ import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
-import 'package:fitsolutions/screens/Gimnasio/gym_detail_screen.dart';
+//import 'package:fitsolutions/screens/Gimnasio/gym_detail_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_registration_form.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';

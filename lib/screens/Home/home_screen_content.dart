@@ -2,8 +2,13 @@ import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_
 import 'package:fitsolutions/components/CalendarComponents/calendario_displayer.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/screens/Notification/notification_bell.dart';
+import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fitsolutions/providers/user_provider.dart';
+import 'package:fitsolutions/screens/Login/welcome_screen.dart';
+
 
 class HomeScreenContent extends StatelessWidget {
   final ActividadProvider actividadProvider;
@@ -11,9 +16,42 @@ class HomeScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserData>(context);
+    final userProvider =
+        Provider.of<UserData>(context);
     return Scaffold(
       body: const CalendarioDisplayer(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        actions: [
+          const NotificationBell(),
+          IconButton(
+            onPressed: () async {
+              UserProvider userProvider = context.read<UserProvider>();
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ConfirmDialog(
+                        title: 'Cerrar Sesion',
+                        content: '¿Desea Cerrar Sesion?',
+                        onConfirm: () async {
+                          await userProvider.signOut();
+                          if (context.mounted) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    const WelcomePage(),
+                              ),
+                            );
+                          }
+                        },
+                        parentKey: null);
+                  });
+            },
+            icon: const Icon(Icons.logout),
+          ),
+        ],
+      ),
       floatingActionButton: userProvider.esBasico()
           ? null
           : FloatingActionButton(

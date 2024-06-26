@@ -5,13 +5,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
-import 'package:fitsolutions/providers/user_provider.dart';
 //import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen.dart';
 import 'package:fitsolutions/screens/Home/home_screen_content.dart';
-import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 //import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
@@ -182,35 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ];
                 }
-
                 return Scaffold(
-                  appBar: AppBar(
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                    automaticallyImplyLeading: false,
-                    actions: [
-                      IconButton(
-                        onPressed: () async {
-                          UserProvider userProvider =
-                              context.read<UserProvider>();
-                          await userProvider.signOut();
-                          if (context.mounted) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    const WelcomePage(),
-                              ),
-                            );
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.logout,
-                          color: Colors.white,
-                        ),
-                        iconSize: 36.0,
-                      ),
-                    ],
-                  ),
                   body: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: IndexedStack(

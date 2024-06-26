@@ -426,12 +426,16 @@ FitnessProvider provider = FitnessProvider(fakeFirestore,NotificationService(moc
             docId: 'user1',
             email: 'user1@example.com',
             nombreCompleto: 'User One',
-            telefono: '1234567890'),
+            telefono: '1234567890',
+            fcmToken: '123',
+            rutina: 'fake_rutina'),
         UsuarioBasico(
             docId: 'user2',
             email: 'user2@example.com',
             nombreCompleto: 'User Two',
-            telefono: '0987654321'),
+            telefono: '0987654321',
+            fcmToken: '123',
+            rutina: 'fake_rutina'),
       ];
 
       // Add the mock plan to Firestore

@@ -199,7 +199,7 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                     builder: (BuildContext context) {
                       return ConfirmDialog(
                           title: 'Crear Rutina',
-                          content: 'Desea crear la Rutina?',
+                          content: '¿Crear la Rutina?',
                           onConfirm: () async {
                             await widget.fitnessProvider.addPlan(
                                 widget.nameController.text,
@@ -216,7 +216,7 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                     builder: (BuildContext context) {
                       return ConfirmDialog(
                           title: 'Modificar Rutina',
-                          content: 'Desea modificar la Rutina?',
+                          content: '¿Modificar la Rutina?',
                           onConfirm: () async {
                             await widget.fitnessProvider.updatePlan(
                                 widget.docId!,

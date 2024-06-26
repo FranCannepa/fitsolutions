@@ -1,3 +1,4 @@
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fitsolutions/modelo/models.dart';
@@ -15,7 +16,7 @@ class FormDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Form Details'),
+        title: const Text('Detalles del Formulario'),
       ),
       body: FutureBuilder<FormModel?>(
         future: inscriptionProvider.getFormData(ownerId, userId),
@@ -25,7 +26,7 @@ class FormDetailsScreen extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data == null) {
-            return const Center(child: Text('No se han encontrado Datos'));
+            return const Center(child: NoDataError(message: 'El usuario no ha completado su formulario'));
           }
 
           FormModel formData = snapshot.data!;

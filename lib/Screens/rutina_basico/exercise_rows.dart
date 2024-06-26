@@ -1,3 +1,4 @@
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
@@ -55,64 +56,95 @@ class _ExerciseRowsState extends State<ExerciseRows> {
     final ejercicios =
         await widget.fitnessProvider.getEjerciciosDelDiaList(plan, week, dia);
     return ejercicios.map((ejercicio) {
-      return Card(
-        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
-                  child: Text(ejercicio.nombre, textAlign: TextAlign.left)),
-              Expanded(
-                  child: Text(ejercicio.series.toString(),
-                      textAlign: TextAlign.center)),
-              Expanded(
-                  child: Text(ejercicio.repeticiones.toString(),
-                      textAlign: TextAlign.center)),
-              Expanded(
-                  child: Text(ejercicio.carga.toString(),
-                      textAlign: TextAlign.center)),
-              Expanded(
-                  child: Text(ejercicio.duracion, textAlign: TextAlign.center)),
-              const SizedBox(width: 20),
-              Expanded(
-                  child: Text(ejercicio.pausas!, textAlign: TextAlign.center)),
-              if (!userData.esBasico()) ...[
-                IconButton(
-                  icon: const Icon(Icons.settings),
-                  onPressed: () => {
-                    {
-                      nameController.text = ejercicio.nombre,
-                      descController.text = ejercicio.descripcion,
-                      serieController.text = ejercicio.series.toString(),
-                      repeticionController.text =
-                          ejercicio.repeticiones.toString(),
-                      cargaController.text = ejercicio.carga.toString(),
-                      durationController.text = ejercicio.duracion.toString(),
-                      pausaController.text = ejercicio.pausas.toString(),
-                      openNoteBox(ejercicio.id, widget.fitnessProvider)
-                    }
-                  },
+      return GestureDetector(
+                onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text(ejercicio.nombre),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Descripción: ${ejercicio.descripcion}'),
+                    Text('Series: ${ejercicio.series}'),
+                    Text('Repeticiones: ${ejercicio.repeticiones}'),
+                    Text('Carga: ${ejercicio.carga}'),
+                    Text('Duración: ${ejercicio.duracion}'),
+                    Text('Pausas: ${ejercicio.pausas}'),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () => {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return ConfirmDialog(
-                              title: 'Eliminar Ejercicio',
-                              content: 'Desea eliminar el Ejercicio?',
-                              onConfirm: () async {
-                                await widget.fitnessProvider.deleteEjercicio(
-                                    plan, widget.week, ejercicio.id);
-                              },
-                              parentKey: null);
-                        })
-                  },
-                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cerrar'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        child: Card(
+          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                    child: Text(ejercicio.nombre, textAlign: TextAlign.left)),
+                Expanded(
+                    child: Text(ejercicio.series.toString(),
+                        textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text(ejercicio.repeticiones.toString(),
+                        textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text(ejercicio.carga.toString(),
+                        textAlign: TextAlign.center)),
+                Expanded(
+                    child: Text(ejercicio.duracion, textAlign: TextAlign.center)),
+                const SizedBox(width: 20),
+                Expanded(
+                    child: Text(ejercicio.pausas!, textAlign: TextAlign.center)),
+                if (!userData.esBasico()) ...[
+                  IconButton(
+                    icon: const Icon(Icons.settings),
+                    onPressed: () => {
+                      {
+                        nameController.text = ejercicio.nombre,
+                        descController.text = ejercicio.descripcion,
+                        serieController.text = ejercicio.series.toString(),
+                        repeticionController.text =
+                            ejercicio.repeticiones.toString(),
+                        cargaController.text = ejercicio.carga.toString(),
+                        durationController.text = ejercicio.duracion.toString(),
+                        pausaController.text = ejercicio.pausas.toString(),
+                        openNoteBox(ejercicio.id, widget.fitnessProvider)
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return ConfirmDialog(
+                                title: 'Eliminar Ejercicio',
+                                content: '¿Eliminar el Ejercicio?',
+                                onConfirm: () async {
+                                  await widget.fitnessProvider.deleteEjercicio(
+                                      plan, widget.week, ejercicio.id);
+                                },
+                                parentKey: null);
+                          })
+                    },
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       );
@@ -131,7 +163,7 @@ class _ExerciseRowsState extends State<ExerciseRows> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text('No hay Ejercicios para este dia');
+          return const NoDataError(message: 'No hay Ejercicios para este dia');
         } else {
           return Flexible(
             fit: FlexFit.loose,
