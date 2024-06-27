@@ -128,7 +128,7 @@ class GimnasioProvider with ChangeNotifier {
       prefs.setSubscripcion(docRef.id);
       notifyListeners();
     } catch (e) {
-      print(e);
+      log.d(e);
     }
   }
 

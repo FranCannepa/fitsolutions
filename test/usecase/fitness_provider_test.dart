@@ -1,12 +1,7 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
-import 'package:fitsolutions/providers/notification_service.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 
 
@@ -15,9 +10,8 @@ void main() {
 
 
  TestWidgetsFlutterBinding.ensureInitialized();
-  final MockFlutterLocalNotificationsPlugin mock = MockFlutterLocalNotificationsPlugin();
 
-FitnessProvider provider = FitnessProvider(fakeFirestore,NotificationService(mock));
+FitnessProvider provider = FitnessProvider(fakeFirestore);
   group('Funcionalidad Rutina', () {
     test('Get Rutinas', () async {
       await fakeFirestore.collection('plan').doc('planId').set({
@@ -813,11 +807,3 @@ FitnessProvider provider = FitnessProvider(fakeFirestore,NotificationService(moc
 
   });
 }
-
-class MockMethodChannel extends Mock implements MethodChannel {}
-
-class MockFlutterLocalNotificationsPlugin extends Mock
-    with
-        MockPlatformInterfaceMixin // ignore: prefer_mixin
-    implements
-        FlutterLocalNotificationsPlugin {}

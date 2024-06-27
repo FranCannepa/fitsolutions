@@ -3,9 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class ActividadProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
+  final logger = Logger();
 
   ActividadProvider() {
     FirebaseFirestore.instance
@@ -66,7 +68,7 @@ class ActividadProvider extends ChangeNotifier {
         return [];
       }
     } catch (e) {
-      print('Error fetching actividades: $e');
+      logger.d('Error fetching actividades: $e');
       return [];
     }
   }

@@ -10,9 +10,9 @@ import '../modelo/models.dart';
 class FitnessProvider extends ChangeNotifier {
   Logger log = Logger();
   final FirebaseFirestore _firebase; 
-  final NotificationService _notificationService;
+  final NotificationService _notificationService = NotificationService();
 
-  FitnessProvider(FirebaseFirestore? firestore,this._notificationService) : _firebase = firestore ?? FirebaseFirestore.instance{
+  FitnessProvider(FirebaseFirestore? firestore) : _firebase = firestore ?? FirebaseFirestore.instance{
     _firebase.collection('plan').snapshots().listen((snapshot) {
       notifyListeners();
     });
