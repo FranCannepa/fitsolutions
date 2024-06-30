@@ -19,7 +19,7 @@ class ScreenTitle extends StatelessWidget {
           fontSize: fontSize,
           fontWeight: fontWeight,
           fontFamily: 'Roboto',
-          color: Colors.white),
+          color: Colors.black),
     );
   }
 }

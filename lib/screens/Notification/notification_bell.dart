@@ -7,7 +7,6 @@ import 'package:badges/badges.dart' as badges;
 import 'package:provider/provider.dart';
 
 class NotificationBell extends StatefulWidget {
-
   const NotificationBell({super.key});
 
   @override
@@ -15,7 +14,7 @@ class NotificationBell extends StatefulWidget {
 }
 
 class _NotificationBellState extends State<NotificationBell> {
-    final prefs = SharedPrefsHelper();
+  final prefs = SharedPrefsHelper();
   String? userId;
 
   @override
@@ -24,7 +23,7 @@ class _NotificationBellState extends State<NotificationBell> {
     getUserId();
   }
 
-  void getUserId() async{
+  void getUserId() async {
     final result = await prefs.getUserId();
     setState(() {
       userId = result;
@@ -44,9 +43,8 @@ class _NotificationBellState extends State<NotificationBell> {
           );
         }
 
-        var unreadCount = snapshot.data!
-            .where((notification) => !notification.read)
-            .length;
+        var unreadCount =
+            snapshot.data!.where((notification) => !notification.read).length;
 
         return IconButton(
           icon: badges.Badge(
@@ -55,7 +53,8 @@ class _NotificationBellState extends State<NotificationBell> {
               style: const TextStyle(color: Colors.white),
             ),
             showBadge: unreadCount > 0,
-            child: const Icon(Icons.notifications),
+            child:
+                const Icon(Icons.notifications, size: 30, color: Colors.white),
           ),
           onPressed: () {
             Navigator.push(

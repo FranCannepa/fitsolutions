@@ -11,7 +11,7 @@ class ScreenUpperTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 30, top: 0),
+      padding: const EdgeInsets.only(bottom: 30, top: 30),
       width: double.infinity,
       color: Theme.of(context).colorScheme.secondary,
       child: Row(
@@ -19,7 +19,7 @@ class ScreenUpperTitle extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 10, left: 16.0),
+            padding: const EdgeInsets.only(top: 10, left: 30.0),
             child: Text(
               title,
               style: const TextStyle(

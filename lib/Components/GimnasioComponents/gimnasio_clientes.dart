@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:developer';
 import 'package:fitsolutions/Components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/Components/GimnasioComponents/gimnasio_cliente_card.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';

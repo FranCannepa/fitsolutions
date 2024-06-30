@@ -9,18 +9,17 @@ import 'package:provider/provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 
-
 class HomeScreenContent extends StatelessWidget {
   final ActividadProvider actividadProvider;
   const HomeScreenContent({super.key, required this.actividadProvider});
 
   @override
   Widget build(BuildContext context) {
-    final userProvider =
-        Provider.of<UserData>(context);
+    final userProvider = Provider.of<UserData>(context);
     return Scaffold(
       body: const CalendarioDisplayer(),
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         automaticallyImplyLeading: false,
         actions: [
           const NotificationBell(),
@@ -48,7 +47,7 @@ class HomeScreenContent extends StatelessWidget {
                         parentKey: null);
                   });
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.white, size: 30,),
           ),
         ],
       ),

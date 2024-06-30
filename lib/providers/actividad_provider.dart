@@ -56,8 +56,8 @@ class ActividadProvider extends ChangeNotifier {
         final fetchedActividades = querySnapshot.docs.map((doc) async {
           final actividadData = doc.data();
           actividadData['actividadId'] = doc.id;
+          actividadData['participantes'] = await cantidadParticipantes(doc.id);
           final actividad = Actividad.fromDocument(actividadData);
-          actividad.participantes = await cantidadParticipantes(doc.id);
           return actividad;
         }).toList();
         final completedActividades = await Future.wait(fetchedActividades);
