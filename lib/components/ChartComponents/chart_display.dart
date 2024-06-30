@@ -1,4 +1,3 @@
-import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
 import 'package:fitsolutions/components/ChartComponents/activity_age_distribution_pie_chart.dart';
 import 'package:fitsolutions/components/ChartComponents/activity_bar_chart.dart';
 import 'package:fitsolutions/components/ChartComponents/activity_pie_chart.dart';
@@ -6,7 +5,6 @@ import 'package:fitsolutions/components/ChartComponents/activity_scatter_chart.d
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/chart_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class ChartDisplay extends StatefulWidget {
@@ -35,31 +33,78 @@ class _ChartDisplayState extends State<ChartDisplay> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const ScreenSubTitle(
-                      text: 'Cantidad participantes en cada Actividad'),
-                  const SizedBox(height: 16),
+                  Container(
+                    //margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Text(
+                      'Cantidad de Participantes en cada Actividad',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Container(
                     height: 800,
                     padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(context).colorScheme.tertiaryContainer),
+                        color: Theme.of(context).primaryColor.withOpacity(0.3)),
                     child: ActivityBarChart(activities: activities),
                   ),
-                  const SizedBox(height: 50),
-                  const ScreenSubTitle(text: 'Distribucion Tipos de Actividad'),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
+                  Container(
+                    //margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Text(
+                      'Distribucion de Tipos de Actividad',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Container(
                     height: 200,
                     padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Theme.of(context).colorScheme.tertiaryContainer),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .tertiaryContainer
+                            .withOpacity(0.5)),
                     child: ActivityPieChart(activities: activities),
                   ),
-                  const SizedBox(height: 50),
-                  const ScreenSubTitle(
-                      text: 'Duracion de Actvidiad vs Participantes'),
+                  const SizedBox(height: 20),
+                  Container(
+                    //margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Text(
+                      'Duracion de Actividad contra Participantes',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   Container(
                     height: 800,
                     padding: const EdgeInsets.all(30),
@@ -68,9 +113,24 @@ class _ChartDisplayState extends State<ChartDisplay> {
                         color: Theme.of(context).colorScheme.tertiaryContainer),
                     child: ActivityScatterChart(activities: activities),
                   ),
-                  const ScreenSubTitle(
-                      text: 'Distribucion de Edades por Actividad'),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
+                  Container(
+                    //margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Text(
+                      'Distribucion de Edades por Actividad',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   FutureBuilder<List<UsuarioBasico>>(
                       future: provider.getAllParticipants(),
                       builder: (context, participantSnapshot) {

@@ -33,6 +33,7 @@ class ChartProvider extends ChangeNotifier {
         .collection('actividadParticipante')
         .where('actividadId', isEqualTo: activityId)
         .get();
+    Logger().d('$activityId ${snapshot.size}');
     return snapshot.size;
   }
 

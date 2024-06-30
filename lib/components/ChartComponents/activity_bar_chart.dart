@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../modelo/models.dart';
 
@@ -46,6 +47,7 @@ class ActivityBarChart extends StatelessWidget {
         Expanded(
           child: BarChart(
             BarChartData(
+              barTouchData: barTouchData,
               barGroups: barGroups,
               backgroundColor: Colors.black87,
               gridData: const FlGridData(show: false),
@@ -80,7 +82,15 @@ class ActivityBarChart extends StatelessWidget {
           width: MediaQuery.of(context).size.width - 60.0,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12.0),
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, 3), // changes position of shadow
+              ),
+            ],
             gradient: LinearGradient(
                 colors: [
                   Theme.of(context).primaryColor,
@@ -96,9 +106,9 @@ class ActivityBarChart extends StatelessWidget {
                       Text('Actividad', style: TextStyle(color: Colors.white))),
               DataColumn(
                   label: Center(
-                    child: Text('Participantes',
-                        style: TextStyle(color: Colors.white)),
-                  )),
+                child: Text('Participantes',
+                    style: TextStyle(color: Colors.white)),
+              )),
             ],
             rows: activities.map((activity) {
               return DataRow(cells: [
@@ -114,4 +124,27 @@ class ActivityBarChart extends StatelessWidget {
       ],
     );
   }
+
+  BarTouchData get barTouchData => BarTouchData(
+        enabled: false,
+        touchTooltipData: BarTouchTooltipData(
+          getTooltipColor: (group) => Colors.transparent,
+          tooltipPadding: EdgeInsets.zero,
+          tooltipMargin: 8,
+          getTooltipItem: (
+            BarChartGroupData group,
+            int groupIndex,
+            BarChartRodData rod,
+            int rodIndex,
+          ) {
+            return BarTooltipItem(
+              rod.toY.round().toString(),
+              const TextStyle(
+                color: Colors.blueAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          },
+        ),
+      );
 }

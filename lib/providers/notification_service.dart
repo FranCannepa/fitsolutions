@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
@@ -160,16 +161,22 @@ class NotificationService {
       payload: payload,
     );
   }
+  tz.TZDateTime convertTimestampToTZDateTime(Timestamp timestamp,tz.Location timezone){
+    DateTime utcDateTime = timestamp.toDate().toUtc();
+    Duration toSubstract = const Duration(hours: 1);
+    return tz.TZDateTime.from(utcDateTime, timezone).subtract(toSubstract);
+  }
 
   Future<void> scheduleNotification(
-      String title, String body, String payload) async {
+      String title, String body, Timestamp inicio) async {
     try {
       tz.initializeTimeZones();
       tz.setLocalLocation(tz.getLocation('America/Montevideo'));
+      
       final localTime = tz.local;
-      final scheduledTime = tz.TZDateTime.now(localTime).add(const Duration(seconds: 15));
+      final scheduledTime = convertTimestampToTZDateTime(inicio, localTime);
 
-      log.d('Scheduling notification at $scheduledTime with payload: $payload');
+      log.d('Scheduling notification at $scheduledTime for $scheduledTime');
 
       const AndroidNotificationDetails androidPlatformChannelSpecifics =
           AndroidNotificationDetails(
@@ -193,7 +200,6 @@ class NotificationService {
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        payload: payload,
       );
 
       log.d('Notification scheduled successfully');

@@ -150,7 +150,7 @@ class GimnasioInfo extends StatelessWidget {
                           ),
                         )
                       },
-                      child: const Text('Charts'),
+                      child: const Text('Graficas'),
                     ),
                   ),
                 ],

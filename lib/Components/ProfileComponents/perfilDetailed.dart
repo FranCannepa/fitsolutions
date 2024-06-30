@@ -201,15 +201,6 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                       },
                       child: const Text('Inscripcion'),
                     ),
-                     ElevatedButton(
-                      onPressed: () async => {
-                        NotificationService().scheduleNotification('Schedule', 'Body', 'Payload'),
-                        NotificationService().pendingNotifications(),
-                        NotificationService().showImmediateNotification(),
-                        NotificationService.showPeriodicNotifications(title: 'title', body: 'body', payload: 'payload')
-                      },
-                      child: const Text('Schedule Notfication Test'),
-                    ),
                   ],
                 )
               ],

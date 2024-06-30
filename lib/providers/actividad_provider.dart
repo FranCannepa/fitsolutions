@@ -1,7 +1,9 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
@@ -163,6 +165,10 @@ class ActividadProvider extends ChangeNotifier {
         'participanteId': userId,
       };
       await collectionRef.add(participantData);
+      final activity = await FirebaseFirestore.instance.collection('actividad').doc(actividadId).get();
+      final data = activity.data();
+      final inicio = data!['inicio'];
+      NotificationService().scheduleNotification('Comienzo de Actividad Cercano','Su actividad ${data['nombreActividad']} comezara pronto',inicio);
       notifyListeners();
       return true;
     } catch (e) {

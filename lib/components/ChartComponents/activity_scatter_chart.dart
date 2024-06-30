@@ -57,22 +57,59 @@ class ActivityScatterChart extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        DataTable(
-          columns: const [
-            DataColumn(label: Text('Activity')),
-            DataColumn(label: Text('Participants')),
-            DataColumn(label: Text('Duration')),
-          ],
-          rows: activities.map((activity) {
-            final startHour = activity.inicio.toDate().hour.toDouble();
-            final finalHour = activity.fin.toDate().hour.toDouble();
-            final duration = finalHour - startHour;
-            return DataRow(cells: [
-              DataCell(Text(activity.nombre)),
-              DataCell(Text(activity.participantes.toString())),
-              DataCell(Text(duration.toString())),
-            ]);
-          }).toList(),
+        Container(
+          padding: const EdgeInsets.all(10),
+          width: MediaQuery.of(context).size.width - 60.0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.0),
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, 3), // changes position of shadow
+              ),
+            ],
+            gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.primary
+                ],
+                begin: Alignment.centerRight,
+                end: const Alignment(-1.0, -1.0)), //Gradient
+          ),
+          child: DataTable(
+            columns: const [
+              DataColumn(
+                  label:
+                      Text('Actividad', style: TextStyle(color: Colors.white))),
+              DataColumn(
+                  label: Center(
+                child: Text('Participantes',
+                    style: TextStyle(color: Colors.white)),
+              )),
+              DataColumn(
+                  label: Center(
+                child: Text('Duracion', style: TextStyle(color: Colors.white)),
+              )),
+            ],
+            rows: activities.map((activity) {
+              final startHour = activity.inicio.toDate().hour.toDouble();
+              final finalHour = activity.fin.toDate().hour.toDouble();
+              final duration = finalHour - startHour;
+              return DataRow(cells: [
+                DataCell(Text(activity.nombre,
+                    style: const TextStyle(color: Colors.white))),
+                DataCell(Center(
+                    child: Text(activity.participantes.toString(),
+                        style: const TextStyle(color: Colors.white)))),
+                DataCell(Center(
+                    child: Text(duration.toString(),
+                        style: const TextStyle(color: Colors.white))))
+              ]);
+            }).toList(),
+          ),
         ),
       ],
     );
