@@ -422,14 +422,16 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
             nombreCompleto: 'User One',
             telefono: '1234567890',
             fcmToken: '123',
-            rutina: 'fake_rutina'),
+            rutina: 'fake_rutina',
+            fechaNacimiento: '1998-01-09'),
         UsuarioBasico(
             docId: 'user2',
             email: 'user2@example.com',
             nombreCompleto: 'User Two',
             telefono: '0987654321',
             fcmToken: '123',
-            rutina: 'fake_rutina'),
+            rutina: 'fake_rutina',
+            fechaNacimiento: '1998-01-09'),
       ];
 
       // Add the mock plan to Firestore

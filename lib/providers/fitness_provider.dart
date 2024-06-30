@@ -347,7 +347,8 @@ class FitnessProvider extends ChangeNotifier {
       await deleteWeeksFromPlan(docRef.id);
       await docRef.delete();
       log.d('Plan with ID $docId has been deleted');
-      notifyListeners(); // Uncomment this line if you're using a state management solution
+      //Borra Rutina para cada Usuario
+      notifyListeners(); 
     } catch (e) {
       log.e('Error deleting plan: $e');
     }

@@ -2,6 +2,7 @@ import 'package:fitsolutions/Components/CommonComponents/info_item.dart';
 import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/Components/GimnasioComponents/gimnasio_clientes.dart';
+import 'package:fitsolutions/components/ChartComponents/chart_display.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/Screens/Plan/plan_screen.dart';
 import 'package:flutter/material.dart';
@@ -126,6 +127,30 @@ class GimnasioInfo extends StatelessWidget {
                         )
                       },
                       child: const Text('Inscripciones'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 500),
+                            pageBuilder: (_, __, ___) =>
+                                const ChartDisplay(),
+                            transitionsBuilder: (_, Animation<double> animation,
+                                __, Widget child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        )
+                      },
+                      child: const Text('Charts'),
                     ),
                   ),
                 ],
