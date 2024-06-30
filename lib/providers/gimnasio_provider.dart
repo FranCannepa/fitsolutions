@@ -142,6 +142,7 @@ class GimnasioProvider with ChangeNotifier {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('usuario')
           .where('asociadoId', isEqualTo: gymId)
+          .where('tipo', isEqualTo: 'Basico')
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
