@@ -15,24 +15,28 @@ class ResultDialog extends StatelessWidget {
       title: Text(
         text,
         style: const TextStyle(color: Colors.white),
+        textAlign: TextAlign.center,
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      contentPadding: const EdgeInsets.all(8.0),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+      content: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Expanded(
-                  child: Text(
+              Text(
                 text,
                 style: TextStyle(
                   color: textColor,
                   fontSize: 24.0,
                 ),
-              )),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
-        ],
+        ),
       ),
       actions: [
         TextButton(

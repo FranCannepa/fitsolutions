@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'package:fitsolutions/Components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/Components/DietasComponents/dietaGestor.dart';
-import 'package:fitsolutions/Components/DietasComponents/dieta_card.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/providers/dietas_provider.dart';
@@ -21,7 +19,7 @@ class _DietaAdministradorState extends State<DietaAdministrador> {
     final dietaProvider = context.watch<DietaProvider>();
     return Column(
       children: [
-        const ScreenUpperTitle(title: "Mis Dietas"),
+        const ScreenUpperTitle(title: "Gestor Dietas"),
         Expanded(
             child: Center(
           child: FutureBuilder(

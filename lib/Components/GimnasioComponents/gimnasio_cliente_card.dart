@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 class ClienteCard extends StatelessWidget {
@@ -14,7 +16,6 @@ class ClienteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final age = calculateAge(clienteData['fechaNacimiento']);
-
     return Card(
         color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
         child: Padding(
@@ -28,7 +29,7 @@ class ClienteCard extends StatelessWidget {
                         if (clienteData['profilePic'] != null)
                           CircleAvatar(
                             backgroundImage:
-                                NetworkImage(clienteData['profilePic']),
+                                NetworkImage(clienteData['profilePic'] ?? ''),
                             radius: 40.0,
                           ),
                         const SizedBox(width: 16.0),

@@ -1,5 +1,6 @@
 import 'package:fitsolutions/Components/CommonComponents/input_round_fields.dart';
-import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
+import 'package:fitsolutions/components/CommonComponents/input_row.dart';
+import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
 import 'package:flutter/material.dart';
 
 class DietaAgregarDialog extends StatefulWidget {
@@ -18,10 +19,9 @@ class _DietaAgregarDialogState extends State<DietaAgregarDialog> {
   final TextEditingController nombreController = TextEditingController();
   final TextEditingController maxCarbohidratosController =
       TextEditingController();
+  final TextEditingController maxCaloriasController = TextEditingController();
   String caloriasTotales = '';
-  List<String> comidas = [];
-  final TextEditingController frecuenciaAlimentacionController =
-      TextEditingController();
+  final _comidasController = <TextEditingController>[];
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,28 @@ class _DietaAgregarDialogState extends State<DietaAgregarDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const ScreenSubTitle(text: "Nueva Dieta"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    color: Colors.black,
+                    padding: const EdgeInsets.all(10),
+                    child: const Text(
+                      'Nueva dieta',
+                      style: TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: widget.onClose,
+                  ),
+                ],
+              ),
               RoundedInputField(
                 labelText: 'Nombre de la Dieta',
                 controller: nombreController,
@@ -74,38 +95,33 @@ class _DietaAgregarDialogState extends State<DietaAgregarDialog> {
               ),
               RoundedInputField(
                 labelText: 'Máximos Calorias',
-                controller: maxCarbohidratosController,
+                controller: maxCaloriasController,
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Ingrese un valor para los carbohidratos máximos.';
+                    return 'Ingrese un valor para las calorías máximas.';
                   }
                   return null;
                 },
               ),
-              ElevatedButton(
+              RowInput(
+                comidasController: _comidasController,
+              ),
+              SubmitButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     final Map<String, dynamic> dietaData = {
                       'nombre': nombreController.text,
                       'maxCarbohidratos': maxCarbohidratosController.text,
-                      'caloriasTotales': caloriasTotales,
-                      'comidas': comidas,
-                      'frecuenciaAlimentacion':
-                          frecuenciaAlimentacionController.text,
+                      'caloriasTotales':
+                          maxCaloriasController.text, // Use the correct field
+                      'comidas': _comidasController,
                       'origenDieta': widget.origenDieta,
                     };
+                    // Handle the dietaData as needed
                   }
                 },
-                child: const Text('Crear Dieta'),
-              ),
-              TextButton(
-                onPressed: widget.onClose,
-                child: Text(
-                  "Cancelar",
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.secondary),
-                ),
+                text: "Crear Dieta",
               ),
             ],
           ),

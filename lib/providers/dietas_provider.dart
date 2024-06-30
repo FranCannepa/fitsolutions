@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class DietaProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
   final query = FirebaseFirestore.instance;
+  Logger log = Logger();
 
   Future<Dieta?> getDieta() async {
     final userId = await prefs.getUserId();
@@ -19,6 +23,7 @@ class DietaProvider extends ChangeNotifier {
         final dietaDocSnapshot = await dietaDocRef.get();
         if (dietaDocSnapshot.exists) {
           final dietaData = dietaDocSnapshot.data() as Map<String, dynamic>;
+          dietaData['dietaId'] = dietaId;
           final dieta = Dieta.fromDocument(dietaData);
           return dieta;
         } else {
@@ -36,10 +41,9 @@ class DietaProvider extends ChangeNotifier {
   }
 
   Future<List<Dieta>> getDietas() async {
-    final firestore = FirebaseFirestore.instance;
     final String? origenMembresia = await prefs.getSubscripcion();
     try {
-      final dietQuery = firestore
+      final dietQuery = query
           .collection('dieta')
           .where('origenDieta', isEqualTo: origenMembresia);
       final querySnapshot = await dietQuery.get();
@@ -56,6 +60,64 @@ class DietaProvider extends ChangeNotifier {
     } catch (error) {
       print("Error fetching dietas: $error");
       return [];
+    }
+  }
+
+  Future<bool> agregarDieta(Map<String, dynamic> dietaData) async {
+    try {
+      await query.collection('dieta').add(dietaData);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      log.d(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> actualizarDieta(Map<String, dynamic> dietaData) async {
+    return false;
+  }
+
+  Future<bool> asignarDieta(String dietaId, String clienteId) async {
+    try {
+      final userDocRef =
+          FirebaseFirestore.instance.collection('usuario').doc(clienteId);
+
+      final updateData = {'dietaId': dietaId};
+      await userDocRef.update(updateData);
+
+      return true;
+    } catch (e) {
+      log.d(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> eliminarDieta(String documentId) async {
+    final db = FirebaseFirestore.instance;
+    final batch = db.batch();
+    try {
+      final docRef = db.collection('dieta').doc(documentId);
+
+      batch.delete(docRef);
+
+      final usuariosQuery =
+          db.collection('usuario').where('dietaId', isEqualTo: documentId);
+      await db.runTransaction((transaction) async {
+        final snapshot = await usuariosQuery.get();
+        for (final doc in snapshot.docs) {
+          transaction.update(doc.reference, {'dietaId': FieldValue.delete()});
+        }
+      });
+      await batch.commit();
+      notifyListeners();
+      return true;
+    } on FirebaseException catch (e) {
+      print("Error deleting document: ${e.message}");
+      return false;
+    } catch (e) {
+      print("An unexpected error occurred: ${e.toString()}");
+      return false;
     }
   }
 }
