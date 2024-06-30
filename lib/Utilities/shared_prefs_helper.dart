@@ -1,5 +1,7 @@
 //import 'dart:developer';
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,7 +49,7 @@ class SharedPrefsHelper {
     await prefs.setString(_membresiaId, membresiaId);
   }
 
-    Future<String?> getMembresia() async {
+  Future<String?> getMembresia() async {
     final prefs = await _getInstance();
     return prefs.getString(_membresiaId);
   }
@@ -131,11 +133,11 @@ class SharedPrefsHelper {
       setUserId(userData?['userId']);
       setEmail(userData?['email']);
       if (userTipo == "Basico") {
-        initializeBasico(userData);
+        await initializeBasico(userData);
       } else if (userTipo == "Propietario") {
-        initializePropietario(userData);
+        await initializePropietario(userData);
       } else if (userTipo == "Entrenador") {
-        initializeEntrenador(userData);
+        await initializeEntrenador(userData);
       }
     }
   }
@@ -144,6 +146,23 @@ class SharedPrefsHelper {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('gimnasio')
+          .where('propietarioId', isEqualTo: propietarioId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final docSnapshot = querySnapshot.docs.first;
+        return docSnapshot.id;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String?> getTrainerInfo(String propietarioId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('trainerInfo')
           .where('propietarioId', isEqualTo: propietarioId)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
@@ -173,20 +192,23 @@ class SharedPrefsHelper {
     }
   }
 
-  void initializeBasico(Map<String, dynamic>? userData) {
-    setUserTipo("Basico");
-    setEmail(userData?['email']);
-    setSubscripcion(userData?['asociadoId']);
+  Future<void> initializeBasico(Map<String, dynamic>? userData) async {
+    await setUserTipo("Basico");
+    await setEmail(userData?['email']);
+    setSubscripcion(userData?['asociadoId'] ?? '');
   }
 
-  void initializePropietario(Map<String, dynamic>? userData) async {
+  Future<void> initializePropietario(Map<String, dynamic>? userData) async {
     setUserTipo("Propietario");
     setEmail(userData?['email']);
-    final gymId = await getGimnasioPropietario(userData?['userId']) as String;
+    final gymId = await getGimnasioPropietario(userData?['userId']) ?? '';
     setSubscripcion(gymId);
   }
 
-  void initializeEntrenador(Map<String, dynamic>? userData) {
+  Future<void> initializeEntrenador(Map<String, dynamic>? userData) async {
     setUserTipo("Entrenador");
+    setEmail(userData?['email']);
+    final trainerId = await getTrainerInfo(userData?['userId']) as String;
+    setSubscripcion(trainerId);
   }
 }

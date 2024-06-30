@@ -44,7 +44,26 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const ScreenSubTitle(text: "Nueva Membresia"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  color: Colors.black,
+                  padding: const EdgeInsets.all(10),
+                  child: const Text(
+                    'Nueva Membresia',
+                    style: TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: widget.onClose,
+                ),
+              ],
+            ),
             const SizedBox(height: 16.0),
             RoundedInputField(
               labelText: 'Nombre',
@@ -58,6 +77,7 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
             ),
             const SizedBox(height: 16.0),
             RoundedInputField(
+              keyboardType: TextInputType.number,
               labelText: 'Costo',
               controller: _costoMembresia,
               validator: (value) {
@@ -97,14 +117,6 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
                         resultType: ResultType.error);
                   }
                 }),
-            TextButton(
-              onPressed: widget.onClose,
-              child: Text(
-                "Cancelar",
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              ),
-            ),
           ],
         ),
       ),

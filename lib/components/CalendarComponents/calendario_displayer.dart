@@ -34,7 +34,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
 
   @override
   Widget build(BuildContext context) {
-    final actividadesProvider = context.read<ActividadProvider>();
+    final actividadesProvider = context.watch<ActividadProvider>();
     final UserData userProvider = context.read<UserData>();
     userProvider.initializeData();
     return FutureBuilder<List<Actividad>>(
@@ -47,7 +47,8 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
             child: Column(
               children: [
                 Container(
-                  margin: const EdgeInsets.only(top: 40.0),
+                  color: Theme.of(context).colorScheme.secondary,
+                  padding: const EdgeInsets.only(bottom: 30),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -55,14 +56,14 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                       DiaActual(
                         fecha: fechaSeleccionada,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 20),
                       const ScreenTitle(title: "Actividades"),
                     ],
                   ),
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 15.0),
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -111,8 +112,8 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                 ),
                 if (snapshot.data!.isNotEmpty)
                   Expanded(
-                      child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.5,
+                      child: Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: SingleChildScrollView(
                       child: Column(
                         children: [

@@ -1,8 +1,8 @@
+import 'dart:developer';
+
 import 'package:fitsolutions/Components/DietasComponents/dietaAdministrador.dart';
-import 'package:fitsolutions/Components/DietasComponents/dietaAgregarDialog.dart';
 import 'package:fitsolutions/Components/DietasComponents/dietaDisplayer.dart';
-import 'package:fitsolutions/Components/components.dart';
-import 'package:fitsolutions/Modelo/Screens.dart';
+import 'package:fitsolutions/components/DietasComponents/dieta_form.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,28 +20,22 @@ class _DietasScreenState extends State<DietasScreen> {
     context.read<UserData>().initializeData();
     final UserData userData = context.read<UserData>();
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          userData.esBasico()
-              ? const DietaDisplayer()
-              : const DietaAdministrador(),
-        ],
-      ),
-      bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.dietas,
-      ),
+      body: userData.esBasico()
+          ? const DietaDisplayer()
+          : const DietaAdministrador(),
       floatingActionButton: userData.esBasico()
           ? null
           : FloatingActionButton(
-              onPressed: () => {
-                showDialog(
-                  context: context,
-                  builder: (context) => DietaAgregarDialog(
-                    origenDieta: userData.origenAdministrador,
-                    onClose: () => Navigator.pop(context),
+              heroTag: 'unique1',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DietaForm(
+                      origenDieta: userData.origenAdministrador,
+                    ),
                   ),
-                )
+                );
               },
               child: const Icon(Icons.add),
             ),

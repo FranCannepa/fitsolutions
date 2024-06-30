@@ -15,6 +15,32 @@ class Formatters {
     }
   }
 
+  TimeOfDay timestampToTimeOfDay(Timestamp timestamp) {
+    final DateTime dateTime = timestamp.toDate();
+    return TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
+  }
+
+  DateTime parseTimeFromString(String timeString) {
+    if (RegExp(r'^[0-9]{1,2}:[0-5]{1,2}$').hasMatch(timeString)) {
+      List<String> timeParts = timeString.split(':');
+      int hours = int.parse(timeParts[0]);
+      int minutes = int.parse(timeParts[1]);
+
+      DateTime parsedTime;
+
+      if (timeString.contains('PM')) {
+        hours += 12;
+        parsedTime = DateTime(2024, 6, 19, hours, minutes);
+      } else {
+        parsedTime = DateTime(2024, 6, 19, hours, minutes);
+      }
+
+      return parsedTime;
+    } else {
+      throw FormatException('Invalid time format: $timeString');
+    }
+  }
+
   String formatDateDDMM(DateTime date) {
     final dateFormatter = DateFormat('dd/MM');
     return dateFormatter.format(date);
@@ -42,6 +68,17 @@ class Formatters {
     return years;
   }
 
+  String timeOfDayString(TimeOfDay time) {
+    String hourString = time.hour.toString().padLeft(2, '0');
+    String minuteString = time.minute.toString().padLeft(2, '0');
+    return '$hourString:$minuteString';
+  }
+
+  String formatDateDayMonthShort(DateTime date) {
+    final formatter = DateFormat('d/MM');
+    return formatter.format(date);
+  }
+
   int getTimestampFromTimeOfDayAndDate(TimeOfDay hora, DateTime fecha) {
     return DateTime(fecha.year, fecha.month, fecha.day, hora.hour, hora.minute)
         .millisecondsSinceEpoch;
@@ -54,5 +91,15 @@ class Formatters {
     final hour = hora.hour;
     final minute = hora.minute;
     return DateTime(year, month, day, hour, minute);
+  }
+
+  String to24hs(DateTime time) {
+    final DateFormat formatter = DateFormat('HH:mm');
+    return formatter.format(time);
+  }
+
+  DateTime timeStampToDateTime(int timestamp) {
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    return DateTime(dateTime.year, dateTime.month);
   }
 }

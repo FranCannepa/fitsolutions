@@ -1,8 +1,11 @@
-
-import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
+import 'dart:developer';
+import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
-import 'package:fitsolutions/Screens/Plan/misPlanesActividad.dart';
+import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
+import 'package:fitsolutions/providers/actividad_provider.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ActividadDialog extends StatelessWidget {
   final Actividad actividad;
@@ -13,80 +16,123 @@ class ActividadDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void _showSuccessModal(String mensaje, ResultType resultado) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ResultDialog(text: mensaje, resultType: resultado);
+        },
+      ).then((_) {
+        if (resultado == ResultType.success) {
+          onClose();
+        }
+      });
+    }
+
+    final ActividadProvider actividadProvider =
+        context.read<ActividadProvider>();
+    final UserData userProvider = context.read<UserData>();
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      elevation: 0.0,
-      backgroundColor: Colors.transparent,
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          shape: BoxShape.rectangle,
-          color: Colors.white,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10.0,
-              offset: Offset(0.0, 10.0),
-            ),
-          ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ScreenSubTitle(text: actividad.nombre),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        elevation: 0.0,
+        backgroundColor: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16.0),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10.0,
+                  offset: Offset(0.0, 10.0),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Cupos: ${actividad.cupos}',
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.secondary),
+                    Container(
+                      color: Colors.black,
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        actividad.nombre,
+                        style: const TextStyle(
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
                     ),
-                    Text(
-                      'Participantes: ${actividad.participantes}',
-                      style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.secondary),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: onClose,
                     ),
                   ],
-                )
-              ],
-            ),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MisPlanesActividad(actividadId: actividad.id,)),
-                    );
+                ),
+                FutureBuilder<bool>(
+                  future: actividadProvider.estaInscripto(
+                      userProvider.userId, actividad.id),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final isInscrito = snapshot.data!;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 30.0),
+                            child: SubmitButton(
+                              text:
+                                  isInscrito ? "Darse de baja" : "Inscribirse",
+                              onPressed: () async {
+                                if (isInscrito) {
+                                  final result = await actividadProvider
+                                      .desinscribirseActividad(
+                                          userProvider.userId, actividad.id);
+                                  if (result) {
+                                    _showSuccessModal(
+                                        "Dado de baja exitosamente",
+                                        ResultType.success);
+                                  } else {
+                                    _showSuccessModal("Error al darse de baja",
+                                        ResultType.error);
+                                  }
+                                } else {
+                                  final result =
+                                      await actividadProvider.anotarseActividad(
+                                          userProvider.userId, actividad.id);
+
+                                  if (result) {
+                                    _showSuccessModal("Inscripcion exitosa",
+                                        ResultType.success);
+                                  } else {
+                                    _showSuccessModal("Error al inscribirse",
+                                        ResultType.error);
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    return const CircularProgressIndicator();
                   },
-                  child: const Text("Ver mis planes"),
                 ),
+                const SizedBox(height: 16.0),
               ],
             ),
-            const SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: onClose,
-                  child: const Text('Close'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

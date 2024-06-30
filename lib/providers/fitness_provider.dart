@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
+import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
@@ -6,29 +9,16 @@ import '../modelo/models.dart';
 
 class FitnessProvider extends ChangeNotifier {
   Logger log = Logger();
-  final FirebaseFirestore _firebase;
+  final FirebaseFirestore _firebase; 
+  final NotificationService _notificationService;
 
-  FitnessProvider(FirebaseFirestore? firestore)
-      : _firebase = firestore ?? FirebaseFirestore.instance {
+  FitnessProvider(FirebaseFirestore? firestore,this._notificationService) : _firebase = firestore ?? FirebaseFirestore.instance{
     _firebase.collection('plan').snapshots().listen((snapshot) {
       notifyListeners();
     });
   }
+  
 
-  Future<List<UsuarioBasico>> getUsuariosInscriptos(String rutinaId) async {
-    //This filter should be different.
-    //Here we should filter by users that are members of the gym.
-    //Y que este habiles.
-    CollectionReference userStore = _firebase.collection('usuario');
-    QuerySnapshot userSnapshot =
-        await userStore.where('tipo', isEqualTo: 'Basico').get();
-
-    List<UsuarioBasico> users = userSnapshot.docs.map((userDoc) {
-      return UsuarioBasico.fromDocument(
-          userDoc.id, userDoc.data() as Map<String, dynamic>);
-    }).toList();
-    return users;
-  }
 
   Future<Plan?> getRutinaDeUsuario(String docId) async {
     CollectionReference collectionRef = _firebase.collection('usuario');
@@ -92,7 +82,8 @@ class FitnessProvider extends ChangeNotifier {
 
   //tested
   Future<List<Plan>> getPlanesList() async {
-    final querySnapshot = await _firebase.collection('plan').get();
+    final prefs = SharedPrefsHelper();
+    final querySnapshot = await _firebase.collection('plan').where('ownerId',isEqualTo: await prefs.getUserId()).get();
     List<Plan> planes = [];
 
     for (var doc in querySnapshot.docs) {
@@ -120,7 +111,7 @@ class FitnessProvider extends ChangeNotifier {
     }
     return planes;
   }
-
+  
   //tested
   Future<List<Ejercicio>> getEjerciciosDelDiaList(
       Plan plan, String week, String dia) async {
@@ -141,6 +132,10 @@ class FitnessProvider extends ChangeNotifier {
   Future<void> addUsuarioARutina(
       String planId, List<UsuarioBasico> usuarios) async {
     for (final user in usuarios) {
+      if(user.rutina != ''){
+        await removeUsuarioDeRutina(user.rutina, user.docId);
+      }
+      
       await _firebase
           .collection('plan')
           .doc(planId)
@@ -148,6 +143,13 @@ class FitnessProvider extends ChangeNotifier {
           .doc(user.docId)
           .set(UsuarioBasico.toDocument(user));
       await asigarRutinaToUser(user.docId, planId);
+
+      _notificationService.sendNotification(user.fcmToken, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
+      
+      final provider = NotificationProvider(_firebase);
+      provider.addNotification(user.docId, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina','/ejercicios');
+
+
     }
     notifyListeners();
   }
@@ -204,11 +206,13 @@ class FitnessProvider extends ChangeNotifier {
   //Add Plan
   Future<Plan> addPlan(String name, String description,
       Map<String, dynamic> weight, Map<String, dynamic> height) async {
+        SharedPrefsHelper prefs = SharedPrefsHelper();
     DocumentReference doc = await _firebase.collection('plan').add({
       'name': name,
       'description': description,
       'weight': weight,
-      'height': height
+      'height': height,
+      'ownerId': await prefs.getUserId(),
     });
 
     DocumentSnapshot docSnapshot = await doc.get();
@@ -245,6 +249,14 @@ class FitnessProvider extends ChangeNotifier {
       'pausa': pausa,
       'dia': dia
     });
+    final list = await _firebase.collection('usuario').where('rutina',isEqualTo: plan.planId).get();     
+      
+      final provider = NotificationProvider(_firebase);
+
+    for(var user in list.docs){
+      _notificationService.sendNotification(user.get('fcmToken'), 'NUEVO EJERCICIO', 'Un nuevo ejercicio fue agregado a $weekNumber - $dia');
+      provider.addNotification(user.id, 'NUEVO EJERCICIO', 'Un nuevo ejercicio fue agregado a $weekNumber - $dia','/ejercicios');
+    }
     notifyListeners();
   }
 

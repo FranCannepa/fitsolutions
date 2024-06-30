@@ -28,27 +28,30 @@ class _InputTimePickerState extends State<InputTimePicker> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(5.0),
-      child: OutlinedButton(
-        onPressed: () async {
-          final pickedTime = await showTimePicker(
-            context: context,
-            initialTime: TimeOfDay.now(),
-          );
-          if (pickedTime != null) {
-            setState(() {
-              selectedTime = "${pickedTime.hour}:${pickedTime.minute}";
-              widget.onTimeSelected(pickedTime);
-            });
-          }
-        },
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+      child: Container(
+        width: 150,
+        child: OutlinedButton(
+          onPressed: () async {
+            final pickedTime = await showTimePicker(
+              context: context,
+              initialTime: widget.horaSeleccionada ?? TimeOfDay.now(),
+            );
+            if (pickedTime != null) {
+              setState(() {
+                selectedTime = "${pickedTime.hour}:${pickedTime.minute}";
+                widget.onTimeSelected(pickedTime);
+              });
+            }
+          },
+          style: OutlinedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            side: BorderSide(
+                color: Theme.of(context).colorScheme.primary, width: 2.0),
           ),
-          side: BorderSide(
-              color: Theme.of(context).colorScheme.primary, width: 2.0),
+          child: Text(selectedTime.isEmpty ? widget.labelText : selectedTime),
         ),
-        child: Text(selectedTime.isEmpty ? widget.labelText : selectedTime),
       ),
     );
   }

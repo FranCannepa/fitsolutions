@@ -1,6 +1,6 @@
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
-import 'package:fitsolutions/screens/Plan/actividad_list_rutina.dart';
 import 'package:fitsolutions/screens/Plan/plan_create_dialogue.dart';
 import 'package:fitsolutions/screens/Plan/plan_info_screen.dart';
 import 'package:fitsolutions/screens/Plan/user_list_rutina.dart';
@@ -44,8 +44,7 @@ class _PlanScreenState extends State<PlanScreen> {
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
-              title: const Text('Rutinas'),
-              backgroundColor: Theme.of(context).colorScheme.primary),
+              title: const Text('RUTINAS')),
           floatingActionButton: ElevatedButton(
             onPressed: () => openNoteBox(null, fitnessProvider),
             style: ElevatedButton.styleFrom(
@@ -66,7 +65,7 @@ class _PlanScreenState extends State<PlanScreen> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No plans found.'));
+                  return const Center(child: NoDataError(message: 'Aun no se han creado Rutinas'));
                 } else {
                   final plans = snapshot.data!;
                   return ListView.builder(
@@ -78,29 +77,19 @@ class _PlanScreenState extends State<PlanScreen> {
                           margin: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 5),
                           decoration: BoxDecoration(
-                            color: Colors.orange[100],
+                            color: Theme.of(context).primaryColor,
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: ListTile(
                             title: Text(
                               plan.name.toUpperCase(),
-                              style: const TextStyle(
+                              style:  TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.blueGrey),
+                                  color: Theme.of(context).cardColor),
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                IconButton(
-                                  onPressed: () => showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (_) => ActividadListRutina(
-                                        fitnessProvider: fitnessProvider,
-                                        planId: plan.planId),
-                                  ),
-                                  icon: const Icon(Icons.local_activity),
-                                ),
                                 IconButton(
                                   onPressed: () => showModalBottomSheet(
                                     context: context,
@@ -144,7 +133,7 @@ class _PlanScreenState extends State<PlanScreen> {
                                                 return ConfirmDialog(
                                                     title: 'Borrar Rutina',
                                                     content:
-                                                        'Desea borrar la Rutina?',
+                                                        '¿Borrar la Rutina?',
                                                     onConfirm: () async {
                                                       fitnessProvider
                                                           .deletePlan(

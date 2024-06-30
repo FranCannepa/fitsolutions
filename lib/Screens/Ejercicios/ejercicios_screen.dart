@@ -1,9 +1,8 @@
-//import 'package:fitsolutions/Components/components.dart'; // Assuming ejercicios_card.dart contains EjerciciosCards
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/screens/rutina_basico/workout_schedule.dart';
-//import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,11 +30,10 @@ class EjerciciosScreen extends StatelessWidget {
         } else if (snapshot.hasError) {
           return const Scaffold(
             body: Center(
-              child: Text("El usuario no tiene rutina asignada"),
+              child: NoDataError(message: "No tiene rutinas asignadas"),
             ),
           );
         } else {
-          // Render your UI based on the result of the asynchronous operation
           return WorkoutSchedule(plan: snapshot.data!,leading: false);
         }
       },

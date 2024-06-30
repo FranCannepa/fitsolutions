@@ -1,12 +1,23 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
+import 'package:fitsolutions/providers/notification_service.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
+
 
 void main() {
   FakeFirebaseFirestore fakeFirestore = FakeFirebaseFirestore();
-  FitnessProvider provider = FitnessProvider(fakeFirestore);
 
+
+ TestWidgetsFlutterBinding.ensureInitialized();
+  final MockFlutterLocalNotificationsPlugin mock = MockFlutterLocalNotificationsPlugin();
+
+FitnessProvider provider = FitnessProvider(fakeFirestore,NotificationService(mock));
   group('Funcionalidad Rutina', () {
     test('Get Rutinas', () async {
       await fakeFirestore.collection('plan').doc('planId').set({
@@ -415,12 +426,16 @@ void main() {
             docId: 'user1',
             email: 'user1@example.com',
             nombreCompleto: 'User One',
-            telefono: '1234567890'),
+            telefono: '1234567890',
+            fcmToken: '123',
+            rutina: 'fake_rutina'),
         UsuarioBasico(
             docId: 'user2',
             email: 'user2@example.com',
             nombreCompleto: 'User Two',
-            telefono: '0987654321'),
+            telefono: '0987654321',
+            fcmToken: '123',
+            rutina: 'fake_rutina'),
       ];
 
       // Add the mock plan to Firestore
@@ -798,3 +813,11 @@ void main() {
 
   });
 }
+
+class MockMethodChannel extends Mock implements MethodChannel {}
+
+class MockFlutterLocalNotificationsPlugin extends Mock
+    with
+        MockPlatformInterfaceMixin // ignore: prefer_mixin
+    implements
+        FlutterLocalNotificationsPlugin {}

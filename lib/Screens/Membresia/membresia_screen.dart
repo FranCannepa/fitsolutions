@@ -1,4 +1,5 @@
-import 'package:fitsolutions/Modelo/Screens.dart';
+import 'dart:developer';
+
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/components/components.dart';
@@ -112,9 +113,6 @@ class _MembresiaScreenState extends State<MembresiaScreen> {
           }
           return const Center(child: CircularProgressIndicator());
         },
-      ),
-      bottomNavigationBar: const FooterBottomNavigationBar(
-        initialScreen: ScreenType.membresia,
       ),
     );
   }
