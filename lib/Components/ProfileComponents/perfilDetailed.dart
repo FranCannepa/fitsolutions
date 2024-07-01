@@ -1,7 +1,5 @@
-import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
-import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:flutter/material.dart';
 
