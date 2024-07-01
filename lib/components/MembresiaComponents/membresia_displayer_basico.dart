@@ -19,6 +19,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
   @override
   Widget build(BuildContext context) {
     final UserData userProvider = context.read<UserData>();
+    final PaymentService paymentService = PaymentService();
     paymentService.verifyPayment(context);
     userProvider.initializeData();
     return Scaffold(
