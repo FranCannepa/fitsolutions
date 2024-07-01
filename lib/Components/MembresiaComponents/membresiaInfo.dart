@@ -14,7 +14,7 @@ class MembresiaInfo extends StatelessWidget {
     final PaymentService _paymentService = PaymentService();
 
     void handlePayment(double costo) {
-      _paymentService.createPayment(context, costo, 'cliente1@correo.com');
+      //_paymentService.createPayment(context, costo, 'cliente1@correo.com');
     }
 
     final membersiaProvider = context.read<MembresiaProvider>();

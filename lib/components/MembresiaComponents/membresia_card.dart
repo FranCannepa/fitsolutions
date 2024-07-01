@@ -9,6 +9,8 @@ import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 
 class MembershipCard extends StatelessWidget {
   final Membresia membresia;
@@ -20,6 +22,8 @@ class MembershipCard extends StatelessWidget {
     final UserData userProvider = context.read<UserData>();
     final MembresiaProvider membresiaProvider =
         context.read<MembresiaProvider>();
+    final PaymentService paymentService = PaymentService();
+    final prefs = SharedPrefsHelper();
     return Card(
       shape: RoundedRectangleBorder(
         side: const BorderSide(color: Colors.black, width: 4.0),

@@ -75,6 +75,22 @@ class MembresiaProvider extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, String>> getKeys(String gimnasioId) async {
+    final docSnapshot = await FirebaseFirestore.instance
+      .collection('gimnasio')
+      .doc(gimnasioId)
+      .get();
+
+    if(docSnapshot.exists){
+      final data = docSnapshot.data()!;
+      final publicKey = data['publicKey'] as String;
+      final accessToken = data['accessToken'] as String;
+      return {'publicKey': publicKey, 'accessToken': accessToken};
+    }else{
+      throw Exception("Gimnasio no encontrado");
+    }
+  }
+
   Future<bool> actualizarMembresia(
       Map<String, dynamic> updatedMembresiaData) async {
     try {
