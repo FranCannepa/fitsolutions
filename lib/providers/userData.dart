@@ -17,6 +17,7 @@ class UserData extends ChangeNotifier {
   String email = '';
   String photoUrl = '';
   String gimnasioId = '';
+  String asociadoId = '';
   late String calendarioId = '';
   late String membresiaId;
   late String entrenadorId = '';
@@ -101,20 +102,32 @@ class UserData extends ChangeNotifier {
   }
 
   Future<Membresia?> getMembresia() async {
-    if (membresiaId != '') {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('membresia')
-          .doc(membresiaId)
-          .get();
-      if (querySnapshot.exists) {
-        final data = querySnapshot.data();
-        data?['membresiaId'] = querySnapshot.id;
-        return Membresia.fromDocument(data!);
-      } else {
-        return null;
-      }
+    if(membresiaId == ''){
+      return null;
+    }
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('membresia')
+        .doc(membresiaId)
+        .get();
+    if (querySnapshot.exists) {
+      final data = querySnapshot.data();
+      data?['membresiaId'] = querySnapshot.id;
+      return Membresia.fromDocument(data!);
     } else {
       return null;
+    }
+  }
+
+  Future<void> updateMembresiaId(String membresiaId) async {
+    final String? userId = await getUserId();
+    if (userId != null) {
+      await FirebaseFirestore.instance.collection('usuario').doc(userId).update({
+        'membresiaId': membresiaId,
+      });
+      this.membresiaId = membresiaId;
+      notifyListeners();
+    } else {
+      log.d("No se pudo actualizar la membresia");
     }
   }
 
@@ -171,7 +184,7 @@ class UserData extends ChangeNotifier {
     }
     nombreCompleto = userData?['nombreCompleto'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    gimnasioId = userData?['gimnasioSub'] ?? '';
+    gimnasioId = userData?['asociadoId'] ?? '';
     entrenadorId = userData?['entrenadorSub'] ?? '';
     membresiaId = userData?['membresiaId'] ?? '';
     tipo = "Basico";
