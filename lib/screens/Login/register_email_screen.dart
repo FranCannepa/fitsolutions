@@ -227,7 +227,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                 if (valid &&
                     _passwordController.text == _confirmController.text) {
                   UserCredential userCred = await widget.userProvider.signUp(
-                    _emailController.text,
+                    _emailController.text, 
                     _passwordController.text,
                   );
                   if (context.mounted) {
