@@ -1,5 +1,7 @@
 
 import 'dart:developer';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -239,6 +241,29 @@ class UserData extends ChangeNotifier {
         return null;
       }
     } catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> perfilUpdate(Map<String,dynamic> userData) async{
+    try{
+    final userId = await prefs.getUserId();
+    FirebaseFirestore.instance.collection('usuario').doc(userId).update(userData);
+    notifyListeners();
+    }
+    catch(e){
+      rethrow;
+    }
+  }
+
+  Future<String?> uploadImage(File imageFile) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child('profile_pics/${DateTime.now().millisecondsSinceEpoch}');
+      final uploadTask = storageRef.putFile(imageFile);
+      final snapshot = await uploadTask.whenComplete(() => null);
+      return await snapshot.ref.getDownloadURL();
+    } catch (e) {
+      // Handle errors
       return null;
     }
   }

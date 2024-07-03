@@ -85,7 +85,7 @@ class UserProvider extends ChangeNotifier {
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
-      //await prefs.clearAll();
+      await prefs.clearAll();
       notifyListeners();
     } on FirebaseAuthException catch (e) {
       log.t(e);

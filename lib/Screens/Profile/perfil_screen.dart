@@ -22,7 +22,7 @@ class PerfilScreen extends StatefulWidget {
 class _PerfilScreenState extends State<PerfilScreen> {
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.read<UserData>();
+    final userProvider = context.watch<UserData>();
     return SafeArea(
         child: Scaffold(
       body: SingleChildScrollView(

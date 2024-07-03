@@ -165,15 +165,55 @@ class ActividadProvider extends ChangeNotifier {
         'participanteId': userId,
       };
       await collectionRef.add(participantData);
-      final activity = await FirebaseFirestore.instance.collection('actividad').doc(actividadId).get();
+      final activity = await FirebaseFirestore.instance
+          .collection('actividad')
+          .doc(actividadId)
+          .get();
       final data = activity.data();
       final inicio = data!['inicio'];
-      NotificationService().scheduleNotification('Comienzo de Actividad Cercano','Su actividad ${data['nombreActividad']} comezara pronto',inicio);
+      NotificationService().scheduleNotification(
+          'Comienzo de Actividad Cercano',
+          'Su actividad ${data['nombreActividad']} comezara pronto',
+          inicio);
       notifyListeners();
       return true;
     } catch (e) {
       print('Error registering for activity: $e');
       return false;
+    }
+  }
+
+  Future<List<Actividad>> actividadesDeParticipante() async {
+    final userId = await prefs.getUserId();
+    try {
+      QuerySnapshot participantActivitiesSnapshot = await FirebaseFirestore
+          .instance
+          .collection('actividadParticipante')
+          .where('participanteId', isEqualTo: userId)
+          .get();
+
+      List<String> activityIds = participantActivitiesSnapshot.docs
+          .map((doc) => doc['actividadId'] as String)
+          .toList();
+
+      List<Actividad> activities = [];
+
+      for (String activityId in activityIds) {
+        DocumentSnapshot activityDoc = await FirebaseFirestore.instance
+            .collection('actividad')
+            .doc(activityId)
+            .get();
+        if (activityDoc.exists) {
+          final actividadData = activityDoc.data() as Map<String, dynamic>;
+          actividadData['actividadId'] = activityDoc.id;
+          final actividad = Actividad.fromDocument(actividadData);
+          actividad.participantes = await cantidadParticipantes(activityId);
+          activities.add(actividad);
+        }
+      }
+      return activities;
+    } catch (e) {
+      rethrow;
     }
   }
 }
