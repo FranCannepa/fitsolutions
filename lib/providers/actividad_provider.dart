@@ -1,11 +1,15 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class ActividadProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
+  final logger = Logger();
 
   ActividadProvider() {
     FirebaseFirestore.instance
@@ -66,7 +70,7 @@ class ActividadProvider extends ChangeNotifier {
         return [];
       }
     } catch (e) {
-      print('Error fetching actividades: $e');
+      logger.d('Error fetching actividades: $e');
       return [];
     }
   }
@@ -171,11 +175,55 @@ class ActividadProvider extends ChangeNotifier {
         'participanteId': userId,
       };
       await collectionRef.add(participantData);
+      final activity = await FirebaseFirestore.instance
+          .collection('actividad')
+          .doc(actividadId)
+          .get();
+      final data = activity.data();
+      final inicio = data!['inicio'];
+      NotificationService().scheduleNotification(
+          'Comienzo de Actividad Cercano',
+          'Su actividad ${data['nombreActividad']} comezara pronto',
+          inicio);
       notifyListeners();
       return true;
     } catch (e) {
       print('Error registering for activity: $e');
       return false;
+    }
+  }
+
+  Future<List<Actividad>> actividadesDeParticipante() async {
+    final userId = await prefs.getUserId();
+    try {
+      QuerySnapshot participantActivitiesSnapshot = await FirebaseFirestore
+          .instance
+          .collection('actividadParticipante')
+          .where('participanteId', isEqualTo: userId)
+          .get();
+
+      List<String> activityIds = participantActivitiesSnapshot.docs
+          .map((doc) => doc['actividadId'] as String)
+          .toList();
+
+      List<Actividad> activities = [];
+
+      for (String activityId in activityIds) {
+        DocumentSnapshot activityDoc = await FirebaseFirestore.instance
+            .collection('actividad')
+            .doc(activityId)
+            .get();
+        if (activityDoc.exists) {
+          final actividadData = activityDoc.data() as Map<String, dynamic>;
+          actividadData['actividadId'] = activityDoc.id;
+          final actividad = Actividad.fromDocument(actividadData);
+          actividad.participantes = await cantidadParticipantes(activityId);
+          activities.add(actividad);
+        }
+      }
+      return activities;
+    } catch (e) {
+      rethrow;
     }
   }
 }

@@ -1,8 +1,11 @@
-import 'package:fitsolutions/Components/CommonComponents/screen_sub_title.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/components/ProfileComponents/actividad_dialogue_perfi.dart';
+import 'package:fitsolutions/components/ProfileComponents/editar_dialogue_perfil.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PerfilDetailed extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -15,15 +18,17 @@ class PerfilDetailed extends StatefulWidget {
 class _PerfilDetailedState extends State<PerfilDetailed> {
   @override
   Widget build(BuildContext context) {
+    context.watch<UserData>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const ScreenUpperTitle(title: "Perfil"),
         Container(
             width: double.infinity,
-            // margin: const EdgeInsets.only(top: 30.0),
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+            margin: const EdgeInsets.all(30),
+
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
+            decoration: BoxDecoration(            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),borderRadius: BorderRadius.circular(10)),
             child: Column(
               children: [
                 Row(
@@ -46,29 +51,6 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                                 : null,
                           ),
                           const SizedBox(width: 20.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.userData['nombreCompleto'] ??
-                                    'Usuario de Ejemplo',
-                                style: TextStyle(
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                              ),
-                              // Text(
-                              //   widget.userData['tipo'],
-                              //   style: TextStyle(
-                              //     fontSize: 20.0,
-                              //     color:
-                              //         Theme.of(context).colorScheme.secondary,
-                              //   ),
-                              // ),
-                            ],
-                          ),
                         ],
                       ),
                     ),
@@ -80,6 +62,26 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                        Row(
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 25.0,
+                          ),
+                          const SizedBox(width: 15.0),
+                          Expanded(
+                            child: Text(
+                              '${widget.userData['nombreCompleto'] ?? 'No informada'}',
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w500,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       Row(
                         children: [
                           Icon(
@@ -177,28 +179,89 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                     ],
                   ),
                 ),
-                Row(
+                Wrap(
+                  verticalDirection: VerticalDirection.down,
+                  spacing: 8.0,
                   children: [
-                    ElevatedButton(
-                      onPressed: () => {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            transitionDuration:
-                                const Duration(milliseconds: 500),
-                            pageBuilder: (_, __, ___) =>
-                                const FormInscriptionScreen(),
-                            transitionsBuilder: (_, Animation<double> animation,
-                                __, Widget child) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return  EditProfileDialog(userData: widget.userData);
                             },
-                          ),
-                        )
-                      },
-                      child: const Text('Inscripcion'),
+                          )
+                        },
+                        child: const Text('Editar Perfil'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration:
+                                  const Duration(milliseconds: 500),
+                              pageBuilder: (_, __, ___) =>
+                                  const FormInscriptionScreen(),
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          )
+                        },
+                        child: const Text('Mi Inscripcion'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const ActivitiesDialog();
+                            },
+                          )
+                        },
+                        child: const Text('Mis Actividades'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration:
+                                  const Duration(milliseconds: 500),
+                              pageBuilder: (_, __, ___) =>
+                                  const FormInscriptionScreen(),
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          )
+                        },
+                        child: const Text('Mi Membresia'),
+                      ),
                     ),
                   ],
                 )

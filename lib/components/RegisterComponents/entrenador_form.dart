@@ -1,5 +1,6 @@
 import 'package:fitsolutions/components/components.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class EntrenadorForm extends StatefulWidget {
   final Function(Map<String, dynamic>) registerFunction;
@@ -24,26 +25,44 @@ class _EntrenadorFormState extends State<EntrenadorForm> {
     return Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: Column(children: [
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+          const SizedBox(height: 30),
           const Text(
-            'Formulario de Usuario Entrenador',
+            'Bienvenido entrenador!',
             style: TextStyle(
               fontFamily: 'Sora',
+              color: Colors.white,
               letterSpacing: 0,
               fontWeight: FontWeight.w600,
-              fontSize: 40,
+              fontSize: 35,
             ),
           ),
-          RoundedInputField(
-            labelText: 'Nombre Completo',
-            controller: _fullNameController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Ingrese su nombre completo';
-              }
-              return null;
-            },
+          const SizedBox(height: 30),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextFormField(
+              controller: _fullNameController,
+              decoration: InputDecoration(
+                hintText: 'Nombre Completo',
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon: const Icon(CupertinoIcons.person_solid),
+                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.0)),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange),
+                )
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Ingrese su nombre completo';
+                }
+                return null;
+              },
+            )
           ),
+          const SizedBox(height: 30),
           SubmitButton(
               text: "Ingresar",
               onPressed: () {

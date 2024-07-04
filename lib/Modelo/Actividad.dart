@@ -11,6 +11,7 @@ class Actividad {
   Timestamp fin;
   int cupos;
   int participantes;
+  
   Actividad({
     required this.id,
     required this.propietarioActividadId,
@@ -28,7 +29,7 @@ class Actividad {
         propietarioActividadId: doc['propietarioActividadId'],
         nombre: doc['nombreActividad'],
         cupos: doc['cupos'],
-        participantes: doc['participantes'],
+        participantes: doc['participantes'] ?? 0,
         inicio: doc['inicio'],
         fin: doc['fin'],
         tipo: doc['tipo']);
