@@ -31,17 +31,19 @@ class MembershipCard extends StatelessWidget {
       ),
       margin: const EdgeInsets.all(10),
       child: InkWell(
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => MembresiaDetailed(
-              membresia: membresia,
-              membresiaProvider: membresiaProvider,
-              userProvider: userProvider,
-              onClose: () => Navigator.pop(context),
-            ),
-          );
-        },
+        onTap: userProvider.esBasico()
+            ? () {
+                showDialog(
+                  context: context,
+                  builder: (context) => MembresiaDetailed(
+                    membresia: membresia,
+                    membresiaProvider: membresiaProvider,
+                    userProvider: userProvider,
+                    onClose: () => Navigator.pop(context),
+                  ),
+                );
+              }
+            : null,
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Expanded(

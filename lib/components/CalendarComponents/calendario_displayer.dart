@@ -57,7 +57,14 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                         fecha: fechaSeleccionada,
                       ),
                       const SizedBox(width: 20),
-                      const ScreenTitle(title: "Actividades"),
+                      const Text(
+                        "Actividades",
+                        style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Roboto',
+                            color: Colors.white),
+                      )
                     ],
                   ),
                 ),

@@ -184,7 +184,7 @@ class UserData extends ChangeNotifier {
     }
     nombreCompleto = userData?['nombreCompleto'] ?? '';
     fechaNacimiento = userData?['fechaNacimiento'] ?? '';
-    gimnasioId = userData?['asociadoId'] ?? '';
+    origenAdministrador = userData?['asociadoId'] ?? '';
     entrenadorId = userData?['entrenadorSub'] ?? '';
     membresiaId = userData?['membresiaId'] ?? '';
     tipo = "Basico";

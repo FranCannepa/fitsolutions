@@ -105,15 +105,15 @@ class GimnasioProvider with ChangeNotifier {
         'propietarioId': userId,
         'logoUrl': gymLogoUrl ?? '',
         'horario': {
-          'Monday-Friday': {
+          'Lunes-Viernes': {
             'open': formatTimeOfDay(openHours['Lunes - Viernes']!),
             'close': formatTimeOfDay(closeHours['Lunes - Viernes']!),
           },
-          'Saturday': {
+          'Sabado': {
             'open': formatTimeOfDay(openHours['Sabado']!),
             'close': formatTimeOfDay(closeHours['Sabado']!),
           },
-          'Sunday': {
+          'Domingo': {
             'open': formatTimeOfDay(openHours['Domingo']!),
             'close': formatTimeOfDay(closeHours['Domingo']!),
           },

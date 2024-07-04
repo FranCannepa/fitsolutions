@@ -231,7 +231,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Scroll right to register  ",
+                  "Registro ",
                   style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary),
                 ),
