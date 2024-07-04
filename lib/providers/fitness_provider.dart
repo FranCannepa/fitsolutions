@@ -10,9 +10,9 @@ import '../modelo/models.dart';
 class FitnessProvider extends ChangeNotifier {
   Logger log = Logger();
   final FirebaseFirestore _firebase; 
-  final NotificationService _notificationService;
+  final NotificationService _notificationService = NotificationService();
 
-  FitnessProvider(FirebaseFirestore? firestore,this._notificationService) : _firebase = firestore ?? FirebaseFirestore.instance{
+  FitnessProvider(FirebaseFirestore? firestore) : _firebase = firestore ?? FirebaseFirestore.instance{
     _firebase.collection('plan').snapshots().listen((snapshot) {
       notifyListeners();
     });
@@ -347,7 +347,8 @@ class FitnessProvider extends ChangeNotifier {
       await deleteWeeksFromPlan(docRef.id);
       await docRef.delete();
       log.d('Plan with ID $docId has been deleted');
-      notifyListeners(); // Uncomment this line if you're using a state management solution
+      //Borra Rutina para cada Usuario
+      notifyListeners(); 
     } catch (e) {
       log.e('Error deleting plan: $e');
     }

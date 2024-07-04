@@ -74,6 +74,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
   Widget build(BuildContext context) {
     return Consumer<UserData>(
       builder: (context, value, child) => Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -81,28 +82,49 @@ class _RegistroScreenState extends State<RegistroScreen> {
               !showForm
                   ? Column(
                       children: [
-                        const Text(
-                          'Tipos de Cuenta disponibles',
-                          style: TextStyle(
-                            fontFamily: 'Sora',
-                            letterSpacing: 0,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 30,
-                          ),
-                        ),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 15),
+                          ),
                           onPressed: () =>
                               handleOptionSelected('Quiero entrenar'),
                           child: const Text('Quiero entrenar'),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 20),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 15),
+                          ),
                           onPressed: () =>
                               handleOptionSelected('Soy propietario'),
                           child: const Text('Soy propietario'),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 20),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 15),
+                          ),
                           onPressed: () =>
                               handleOptionSelected('Soy entrenador'),
                           child: const Text('Soy entrenador'),
@@ -116,8 +138,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                         buildForm(),
                         TextButton(
                           onPressed: handleBackButtonPressed,
-                          child:
-                              const Text('Seleccionar otro tipo de registro'),
+                          child: const Text('Atras'),
                         ),
                       ],
                     )

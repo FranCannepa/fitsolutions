@@ -1,6 +1,6 @@
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
-import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class BasicoForm extends StatefulWidget {
   final Function(Map<String, dynamic>) registerFunction;
@@ -58,100 +58,155 @@ class _BasicoFormState extends State<BasicoForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
-        key: _formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: Column(children: [
+      key: _formKey,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 30),
           const Text(
-            'Formulario de Usuario Basico',
+            'Bienvenido!',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Sora',
+              color: Colors.white,
               letterSpacing: 0,
               fontWeight: FontWeight.w600,
-              fontSize: 40,
+              fontSize: 30,
             ),
           ),
-          RoundedInputField(
-            labelText: 'Nombre Completo',
-            controller: _fullNameController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Ingrese su nombre completo';
-              }
-              return null;
-            },
+          const SizedBox(height: 30),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextFormField(
+              controller: _fullNameController,
+              decoration: InputDecoration(
+                hintText: 'Nombre Completo',
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon: const Icon(CupertinoIcons.person_solid),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Ingrese su nombre completo';
+                }
+                return null;
+              },
+            ),
           ),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+          const SizedBox(height: 30),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
             child: TextFormField(
               controller: _dateOfBirthController,
+              decoration: InputDecoration(
+                hintText: 'Fecha de nacimiento',
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon: const Icon(Icons.calendar_today),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange),
+                ),
+              ),
+              readOnly: true,
+              onTap: _selectDate,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Ingrese su fecha de nacimiento';
                 }
                 return null;
               },
+            ),
+          ),
+          const SizedBox(height: 30),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextFormField(
+              controller: _heightController,
               decoration: InputDecoration(
-                  labelText: 'Fecha de nacimiento',
-                  filled: true,
-                  prefixIcon: const Icon(Icons.calendar_today),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide:
-                        const BorderSide(color: Colors.orange, width: 2.0),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange))),
-              readOnly: true,
-              onTap: () {
-                _selectDate();
+                hintText: 'Altura (en cm)',
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon:
+                    const Icon(CupertinoIcons.arrow_up_down_circle_fill),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Ingrese su altura';
+                }
+                try {
+                  double.parse(value);
+                } catch (e) {
+                  return 'Ingrese una altura válida (solo números)';
+                }
+                return null;
               },
             ),
           ),
-          RoundedInputField(
-            labelText: 'Altura (en cm)',
-            controller: _heightController,
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Ingrese su altura';
-              }
-              try {
-                double.parse(value);
-              } catch (e) {
-                return 'Ingrese una altura válida (solo números)';
-              }
-              return null;
-            },
-          ),
-          RoundedInputField(
-            labelText: 'Peso (en kg)',
-            controller: _weightController,
-            keyboardType: TextInputType.number,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Ingrese su peso';
-              }
-              try {
-                double.parse(value);
-              } catch (e) {
-                return 'Ingrese un peso válido (solo números)';
-              }
-              return null;
-            },
-          ),
-          SubmitButton(
-              text: "Ingresar",
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  final userData = collectUserData();
-                  widget.registerFunction(userData);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Errores en el Formulario")),
-                  );
+          const SizedBox(height: 30),
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextFormField(
+              controller: _weightController,
+              decoration: InputDecoration(
+                hintText: 'Peso (en kg)',
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon: const Icon(CupertinoIcons.gauge),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.orange),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Ingrese su peso';
                 }
-              })
-        ]));
+                try {
+                  double.parse(value);
+                } catch (e) {
+                  return 'Ingrese un peso válido (solo números)';
+                }
+                return null;
+              },
+            ),
+          ),
+          const SizedBox(height: 30),
+          SubmitButton(
+            text: 'Ingresar',
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                final userData = collectUserData();
+                widget.registerFunction(userData);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Errores en el Formulario")),
+                );
+              }
+            },
+          ),
+          const SizedBox(height: 30),
+        ],
+      ),
+    );
   }
 }
