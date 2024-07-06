@@ -51,7 +51,7 @@ class _ChartDisplayState extends State<ChartDisplay> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    height: 800,
+                    height: 1000,
                     padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -106,7 +106,7 @@ class _ChartDisplayState extends State<ChartDisplay> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    height: 800,
+                    height: 1000,
                     padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),

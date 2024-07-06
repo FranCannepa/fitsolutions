@@ -4,6 +4,7 @@ import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/screens/Plan/ejercicio_create_dialogue.dart';
 import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
+import 'package:fitsolutions/screens/rutina_basico/ejercicio_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,6 +33,14 @@ class _ExerciseRowsState extends State<ExerciseRows> {
   final TextEditingController repeticionController = TextEditingController();
   final TextEditingController cargaController = TextEditingController();
 
+  final Map<String, bool> _checkedExercises = {};
+
+  void updateExerciseState(
+      String exerciseId, bool completed, String day) async {
+    await widget.fitnessProvider
+        .updateExerciseCompletion(widget.week, exerciseId, completed, day);
+  }
+
   void openNoteBox(String? docId, FitnessProvider fitnessProvider) {
     showDialog(
       context: context,
@@ -51,38 +60,31 @@ class _ExerciseRowsState extends State<ExerciseRows> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    widget.fitnessProvider
+        .initializeCheckBox(widget.week)
+        .then((Map<String, bool> values) {
+      setState(() {
+        _checkedExercises.addAll(values);
+      });
+    });
+  }
+
   Future<List<Widget>> buildEjercicioCards(
       Plan plan, String week, String dia, UserData userData) async {
     final ejercicios =
         await widget.fitnessProvider.getEjerciciosDelDiaList(plan, week, dia);
     return ejercicios.map((ejercicio) {
+      _checkedExercises[ejercicio.id] =
+          _checkedExercises[ejercicio.id] ?? false;
       return GestureDetector(
-                onTap: () {
+        onTap: () {
           showDialog(
             context: context,
             builder: (context) {
-              return AlertDialog(
-                title: Text(ejercicio.nombre),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('Descripción: ${ejercicio.descripcion}'),
-                    Text('Series: ${ejercicio.series}'),
-                    Text('Repeticiones: ${ejercicio.repeticiones}'),
-                    Text('Carga: ${ejercicio.carga}'),
-                    Text('Duración: ${ejercicio.duracion}'),
-                    Text('Pausas: ${ejercicio.pausas}'),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Cerrar'),
-                  ),
-                ],
-              );
+              return EjercicioDialog(ejercicio: ejercicio);
             },
           );
         },
@@ -92,6 +94,17 @@ class _ExerciseRowsState extends State<ExerciseRows> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                if (userData.esBasico()) ...[
+                  Checkbox(
+                    value: _checkedExercises[ejercicio.id],
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _checkedExercises[ejercicio.id] = value!;
+                        updateExerciseState(ejercicio.id, value, widget.day);
+                      });
+                    },
+                  ),
+                ],
                 Expanded(
                     child: Text(ejercicio.nombre, textAlign: TextAlign.left)),
                 Expanded(
@@ -104,10 +117,12 @@ class _ExerciseRowsState extends State<ExerciseRows> {
                     child: Text(ejercicio.carga.toString(),
                         textAlign: TextAlign.center)),
                 Expanded(
-                    child: Text(ejercicio.duracion, textAlign: TextAlign.center)),
+                    child:
+                        Text(ejercicio.duracion, textAlign: TextAlign.center)),
                 const SizedBox(width: 20),
                 Expanded(
-                    child: Text(ejercicio.pausas!, textAlign: TextAlign.center)),
+                    child:
+                        Text(ejercicio.pausas!, textAlign: TextAlign.center)),
                 if (!userData.esBasico()) ...[
                   IconButton(
                     icon: const Icon(Icons.settings),

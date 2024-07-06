@@ -17,7 +17,7 @@ class EjerciciosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<FitnessProvider>();
+    final provider = context.read<FitnessProvider>();
     return FutureBuilder(
       future: getPlanFromUser(provider),
       builder: (context, snapshot) {
@@ -34,7 +34,7 @@ class EjerciciosScreen extends StatelessWidget {
             ),
           );
         } else {
-          return WorkoutSchedule(plan: snapshot.data!,leading: false);
+          return WorkoutSchedule(plan: snapshot.data!, leading: false);
         }
       },
     );

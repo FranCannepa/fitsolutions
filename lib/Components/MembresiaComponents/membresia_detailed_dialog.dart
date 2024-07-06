@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_payment_service.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/components/components.dart';
@@ -108,10 +109,10 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
                         text: "Suscribirse",
                         onPressed: () async {
                           final costo = double.parse(membresia.costo);
-                          final asociadoId = userProvider.origenAdministrador;
-                          final email = userProvider.email;
+                          final asociadoId = await SharedPrefsHelper().getSubscripcion();
+                          final email = await SharedPrefsHelper().getEmail();
                           await paymentService.createPayment(
-                              context, costo, email, membresia.id, asociadoId);
+                              context, costo, email!, membresia.id, asociadoId!);
                         },
                       ),
                     if (userProvider.esBasico())
