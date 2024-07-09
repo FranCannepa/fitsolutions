@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class WorkoutSchedule extends StatefulWidget {
   final Plan plan;
-  final bool leading; 
+  final bool leading;
   const WorkoutSchedule({super.key, required this.plan, required this.leading});
 
   @override
@@ -16,7 +16,8 @@ class _WorkoutScheduleState extends State<WorkoutSchedule> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: WeekSelector(
-      plan: widget.plan,leading: widget.leading,
+      plan: widget.plan,
+      leading: widget.leading,
     ));
   }
 }

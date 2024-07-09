@@ -62,6 +62,21 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
     super.dispose();
   }
 
+  bool _validateRanges() {
+    double? minWeight = double.tryParse(widget.minWeightController.text);
+    double? maxWeight = double.tryParse(widget.maxWeightController.text);
+    double? minHeight = double.tryParse(widget.minHeightController.text);
+    double? maxHeight = double.tryParse(widget.maxHeightController.text);
+
+    if (minWeight != null && maxWeight != null && minWeight > maxWeight) {
+      return false;
+    }
+    if (minHeight != null && maxHeight != null && minHeight > maxHeight) {
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -193,7 +208,9 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                   widget.minWeightController, widget.maxWeightController);
               final height = createRangeMap(
                   widget.minHeightController, widget.maxHeightController);
-              if (_formKey.currentState!.validate() && widget.docId == null) {
+              if (_formKey.currentState!.validate() &&
+                  widget.docId == null &&
+                  _validateRanges()) {
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -210,7 +227,8 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                           },
                           parentKey: _parentKey);
                     });
-              } else if (_formKey.currentState!.validate()) {
+              } else if (_formKey.currentState!.validate() &&
+                  _validateRanges()) {
                 showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -228,6 +246,10 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                           },
                           parentKey: _parentKey);
                     });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Validación fallida, verficiar campos')),
+                );
               }
             },
             child: widget.docId == null

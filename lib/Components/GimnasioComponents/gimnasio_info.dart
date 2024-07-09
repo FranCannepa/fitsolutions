@@ -29,7 +29,47 @@ class GimnasioInfo extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScreenTitle(title: gimnasio.nombreGimnasio),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ScreenTitle(title: gimnasio.nombreGimnasio),
+                  if (gimnasio.logoUrl.isNotEmpty)
+                    Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          gimnasio.logoUrl,
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (BuildContext context, Widget child,
+                              ImageChunkEvent? loadingProgress) {
+                            if (loadingProgress == null) {
+                              return child;
+                            } else {
+                              return SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            (loadingProgress
+                                                    .expectedTotalBytes ??
+                                                1)
+                                        : null,
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               InfoItem(text: gimnasio.direccion, icon: const Icon(Icons.place)),
               InfoItem(text: gimnasio.contacto, icon: const Icon(Icons.call)),
               const SizedBox(width: 25),
@@ -138,8 +178,7 @@ class GimnasioInfo extends StatelessWidget {
                           PageRouteBuilder(
                             transitionDuration:
                                 const Duration(milliseconds: 500),
-                            pageBuilder: (_, __, ___) =>
-                                const ChartDisplay(),
+                            pageBuilder: (_, __, ___) => const ChartDisplay(),
                             transitionsBuilder: (_, Animation<double> animation,
                                 __, Widget child) {
                               return FadeTransition(
@@ -151,6 +190,30 @@ class GimnasioInfo extends StatelessWidget {
                         )
                       },
                       child: const Text('Graficas'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration:
+                                const Duration(milliseconds: 500),
+                            pageBuilder: (_, __, ___) =>
+                                const InscriptionScreen(),
+                            transitionsBuilder: (_, Animation<double> animation,
+                                __, Widget child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        )
+                      },
+                      child: const Text('Habilitar MercadoPago'),
                     ),
                   ),
                 ],

@@ -17,14 +17,17 @@ class ChartProvider extends ChangeNotifier {
   Future<List<Actividad>> getAllActivities() async {
     final id = await prefs.getSubscripcion();
     QuerySnapshot snapshot = await _firebase.collection('actividad').where('propietarioActividadId',isEqualTo: id).get();
-    final list = snapshot.docs.map((doc) async{
-      final actividadData = doc.data() as Map<String, dynamic>;
-      actividadData['actividadId'] = doc.id;
-      final actividad = Actividad.fromDocument(actividadData);
-      actividad.participantes = await getParticipantsCount(doc.id);
-      return actividad;
-    }).toList();
-    return Future.wait(list);
+    if(snapshot.docs.isNotEmpty){
+      final list = snapshot.docs.map((doc) async{
+        final actividadData = doc.data() as Map<String, dynamic>;
+        actividadData['actividadId'] = doc.id;
+        final actividad = Actividad.fromDocument(actividadData);
+        actividad.participantes = await getParticipantsCount(doc.id);
+        return actividad;
+      }).toList();
+      return Future.wait(list);
+    }
+    return [];
   }
 
   // Fetch all participants for a specific activity

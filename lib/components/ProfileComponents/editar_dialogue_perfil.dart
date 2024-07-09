@@ -83,7 +83,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         'altura': int.parse(_heightController.text),
         'peso': double.parse(_weightController.text),
         'fechaNacimiento': _birthdateController.text,
-        if (imageUrl != null) 'profilePic': imageUrl,
+        'profilePic': imageUrl ?? widget.userData['profilePic'],
       };
 
       final result = await provider.perfilUpdate(updatedData);

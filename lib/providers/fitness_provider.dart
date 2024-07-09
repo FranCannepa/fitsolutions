@@ -9,16 +9,15 @@ import '../modelo/models.dart';
 
 class FitnessProvider extends ChangeNotifier {
   Logger log = Logger();
-  final FirebaseFirestore _firebase; 
+  final FirebaseFirestore _firebase;
   final NotificationService _notificationService = NotificationService();
 
-  FitnessProvider(FirebaseFirestore? firestore) : _firebase = firestore ?? FirebaseFirestore.instance{
+  FitnessProvider(FirebaseFirestore? firestore)
+      : _firebase = firestore ?? FirebaseFirestore.instance {
     _firebase.collection('plan').snapshots().listen((snapshot) {
       notifyListeners();
     });
   }
-  
-
 
   Future<Plan?> getRutinaDeUsuario(String docId) async {
     CollectionReference collectionRef = _firebase.collection('usuario');
@@ -83,7 +82,10 @@ class FitnessProvider extends ChangeNotifier {
   //tested
   Future<List<Plan>> getPlanesList() async {
     final prefs = SharedPrefsHelper();
-    final querySnapshot = await _firebase.collection('plan').where('ownerId',isEqualTo: await prefs.getUserId()).get();
+    final querySnapshot = await _firebase
+        .collection('plan')
+        .where('ownerId', isEqualTo: await prefs.getUserId())
+        .get();
     List<Plan> planes = [];
 
     for (var doc in querySnapshot.docs) {
@@ -111,7 +113,7 @@ class FitnessProvider extends ChangeNotifier {
     }
     return planes;
   }
-  
+
   //tested
   Future<List<Ejercicio>> getEjerciciosDelDiaList(
       Plan plan, String week, String dia) async {
@@ -132,10 +134,10 @@ class FitnessProvider extends ChangeNotifier {
   Future<void> addUsuarioARutina(
       String planId, List<UsuarioBasico> usuarios) async {
     for (final user in usuarios) {
-      if(user.rutina != ''){
+      if (user.rutina != '') {
         await removeUsuarioDeRutina(user.rutina, user.docId);
       }
-      
+
       await _firebase
           .collection('plan')
           .doc(planId)
@@ -144,12 +146,12 @@ class FitnessProvider extends ChangeNotifier {
           .set(UsuarioBasico.toDocument(user));
       await asigarRutinaToUser(user.docId, planId);
 
-      _notificationService.sendNotification(user.fcmToken, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
-      
+      _notificationService.sendNotification(
+          user.fcmToken, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina');
+
       final provider = NotificationProvider(_firebase);
-      provider.addNotification(user.docId, 'NUEVA RUTINA', 'Se le fue asignada una nueva rutina','/ejercicios');
-
-
+      provider.addNotification(user.docId, 'NUEVA RUTINA',
+          'Se le fue asignada una nueva rutina', '/ejercicios');
     }
     notifyListeners();
   }
@@ -206,7 +208,7 @@ class FitnessProvider extends ChangeNotifier {
   //Add Plan
   Future<Plan> addPlan(String name, String description,
       Map<String, dynamic> weight, Map<String, dynamic> height) async {
-        SharedPrefsHelper prefs = SharedPrefsHelper();
+    SharedPrefsHelper prefs = SharedPrefsHelper();
     DocumentReference doc = await _firebase.collection('plan').add({
       'name': name,
       'description': description,
@@ -249,13 +251,23 @@ class FitnessProvider extends ChangeNotifier {
       'pausa': pausa,
       'dia': dia
     });
-    final list = await _firebase.collection('usuario').where('rutina',isEqualTo: plan.planId).get();     
-      
-      final provider = NotificationProvider(_firebase);
+    final list = await _firebase
+        .collection('usuario')
+        .where('rutina', isEqualTo: plan.planId)
+        .get();
 
-    for(var user in list.docs){
-      _notificationService.sendNotification(user.get('fcmToken'), 'NUEVO EJERCICIO', 'Un nuevo ejercicio fue agregado a $weekNumber - $dia');
-      provider.addNotification(user.id, 'NUEVO EJERCICIO', 'Un nuevo ejercicio fue agregado a $weekNumber - $dia','/ejercicios');
+    final provider = NotificationProvider(_firebase);
+
+    for (var user in list.docs) {
+      _notificationService.sendNotification(
+          user.get('fcmToken'),
+          'NUEVO EJERCICIO',
+          'Un nuevo ejercicio fue agregado a $weekNumber - $dia');
+      provider.addNotification(
+          user.id,
+          'NUEVO EJERCICIO',
+          'Un nuevo ejercicio fue agregado a $weekNumber - $dia',
+          '/ejercicios');
     }
     notifyListeners();
   }
@@ -348,7 +360,7 @@ class FitnessProvider extends ChangeNotifier {
       await docRef.delete();
       log.d('Plan with ID $docId has been deleted');
       //Borra Rutina para cada Usuario
-      notifyListeners(); 
+      notifyListeners();
     } catch (e) {
       log.e('Error deleting plan: $e');
     }
@@ -379,56 +391,229 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Actividad
+  Future<void> initializeWorkoutState(
+      Plan plan, List<String> daysNames) async {
+    List<Week> weeks = plan.weeks;
+    for (var week in weeks) {
+      final userId = await SharedPrefsHelper().getUserId();
+      final userRef = _firebase.collection('workoutStates').doc(userId);
+      final weekRef = userRef.collection('weeks').doc(week.id);
 
-  Future<void> agregarRutinaActividad(Plan plan, String actividadId) async {
-    try {
-      // Create a new document in the rutinaActividad collection
-      await _firebase.collection('rutinaActividad').add({
-        'rutinaId': plan.planId,
-        'actividadId': actividadId,
-      });
-      log.d('New rutinaActividad document added successfully');
-    } catch (e) {
-      log.e('Error adding rutinaActividad document: $e');
+      // Check if the week document exists
+      final weekSnapshot = await weekRef.get();
+      if (!weekSnapshot.exists) {
+        // If the week document doesn't exist, initialize it with empty data
+        await weekRef.set({});
+        Map<String, dynamic> initialDays = {};
+        bool weekState = true;
+        for (var day in daysNames) {
+          final ejercicios = await getEjerciciosDelDiaList(plan, week.id!, day);
+          for (final ejercicio in ejercicios) {
+            await updateExerciseInFirestore(week.id!, ejercicio, day);
+          }
+          initialDays[day] = ejercicios.isEmpty ? true : false;
+          weekState = weekState && initialDays[day];
+        }
+
+        await weekRef.update({
+          'daysCompleted': initialDays,
+          'weekCompleted': weekState,
+        });
+      } else {
+        // If the week document exists, ensure each day exists in daysCompleted
+        final data = weekSnapshot.data() as Map<String, dynamic>;
+        final daysCompleted = data['daysCompleted'] as Map<String, dynamic>?;
+
+        if (daysCompleted == null) {
+          // If daysCompleted doesn't exist, initialize all days
+          Map<String, dynamic> initialDays = {};
+          for (var day in daysNames) {
+            initialDays[day] = false;
+          }
+
+          await weekRef.update({
+            'daysCompleted': initialDays,
+          });
+        } else {
+          // Initialize any missing days
+          for (var day in daysNames) {
+            if (!daysCompleted.containsKey(day)) {
+              await weekRef.update({
+                'daysCompleted.$day': false,
+              });
+            }
+          }
+        }
+      }
     }
   }
 
-  //This returns todas las actividades que involucran a un plan
-  //planId esta asociado a un usuario en su Document
-  //Entonces como resultado estamos mostrando todas las actividades que un usuario puede realizar con su
-  //rutina asi  gnada.
+  Future<void> updateExerciseCompletion(
+      String weekId, String exerciseId, bool completed, String day) async {
+    final userId = await SharedPrefsHelper().getUserId();
+    final docRef = _firebase
+        .collection('workoutStates')
+        .doc(userId)
+        .collection('weeks')
+        .doc(weekId);
 
-  //Future<List<Actividad>> getActividadesDeRutina(String planId) async{
-  /*
-      // Step 1: Get actividadIds from rutinaActividad collection where planId matches
-      QuerySnapshot rutinaActividadSnapshot = await _firebase
-          .collection('rutinaActividad')
-          .where('planId', isEqualTo: planId)
+    await docRef.set({
+      'exercises': {
+        exerciseId: {'completed': completed, 'day': day}
+      },
+    }, SetOptions(merge: true));
+
+    final docSnapshot = await docRef.get();
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data() as Map<String, dynamic>;
+      final exercises = data['exercises'] as Map<String, dynamic>;
+      final dayExercises =
+          exercises.values.where((exercise) => exercise['day'] == day);
+      if (dayExercises.every((exercise) => exercise['completed'])) {
+        await docRef.update({'daysCompleted.$day': true});
+        checkIfWeekCompleted(userId!, weekId);
+      } else {
+        await docRef.update({'daysCompleted.$day': false});
+        await docRef.update({'weekCompleted': false});
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> checkIfWeekCompleted(String userId, String weekId) async {
+    final weekRef = _firebase
+        .collection('workoutStates')
+        .doc(userId)
+        .collection('weeks')
+        .doc(weekId);
+
+    final docSnapshot = await weekRef.get();
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data() as Map<String, dynamic>;
+      final daysCompletedDynamic =
+          data['daysCompleted'] as Map<String, dynamic>;
+
+      final daysCompleted = daysCompletedDynamic
+          .map((key, value) => MapEntry(key, value as bool));
+
+      if (daysCompleted.values.every((isCompleted) => isCompleted)) {
+        await weekRef.update({'weekCompleted': true});
+      } else {
+        await weekRef.update({'weekCompleted': false});
+      }
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateExerciseInFirestore(
+      String weekId, Ejercicio ejercicio, String day) async {
+    final userId = await SharedPrefsHelper().getUserId();
+    final docRef = _firebase
+        .collection('workoutStates')
+        .doc(userId)
+        .collection('weeks')
+        .doc(weekId);
+
+    final docSnapshot = await docRef.get();
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data() as Map<String, dynamic>;
+      final exercises = data['exercises'] as Map<String, dynamic>? ?? {};
+
+      if (!exercises.containsKey(ejercicio.id)) {
+        // Add the exercise if it doesn't exist
+        await docRef.update({
+          'exercises.${ejercicio.id}': {
+            'completed': false,
+            'day': day,
+          },
+        });
+      }
+      /*if (!(data['daysCompleted'] as Map<String, dynamic>?)!.containsKey(day)) {
+        await docRef.update({
+          'daysCompleted.$day': false,
+        });
+      }*/
+    }
+  }
+
+  Future<Map<String, bool>> initializeCheckBox(String weekId) async {
+    Map<String, bool> checkedExercises = {};
+    final userId = await SharedPrefsHelper().getUserId();
+    final docRef = _firebase
+        .collection('workoutStates')
+        .doc(userId)
+        .collection('weeks')
+        .doc(weekId);
+    final docSnapshot = await docRef.get();
+    final Map<String, dynamic>? workoutState = docSnapshot.data();
+    // Initialize _checkedExercises based on Firestore data
+    if (workoutState != null && workoutState.containsKey('exercises')) {
+      final Map<String, dynamic> exercises = workoutState['exercises'];
+      checkedExercises.clear();
+      exercises.forEach((exerciseId, exerciseData) {
+        if (exerciseData is Map<String, dynamic> &&
+            exerciseData.containsKey('completed')) {
+          checkedExercises[exerciseId] = exerciseData['completed'];
+        }
+      });
+    }
+    return checkedExercises;
+  }
+
+  Future<bool> isWeekCompleted(String weekId) async {
+    try {
+      final userId = await SharedPrefsHelper().getUserId();
+      DocumentSnapshot weekDoc = await FirebaseFirestore.instance
+          .collection('workoutStates')
+          .doc(userId)
+          .collection('weeks')
+          .doc(weekId)
           .get();
 
-      // Extract the actividadIds
-      List<String> actividadIds = rutinaActividadSnapshot.docs.map((doc) {
-        return doc['actividadId'] as String;
-      }).toList();*/
-
-  /*
-      // Step 2: Get the corresponding Actividad documents
-      List<Actividad> actividades = [];
-      for (String actividadId in actividadIds) {
-        DocumentSnapshot actividadDoc = await _firebase
-            .collection('actividad')
-            .doc(actividadId)
-            .get();
-        if (actividadDoc.exists) {
-          actividades.add(Actividad.fromDocument(actividadDoc.id, actividadDoc.data() as Map<String, dynamic>));
+      if (weekDoc.exists) {
+        bool weekCompleted = weekDoc.get('weekCompleted');
+        if (weekCompleted) {
+          return true;
         }
+        return false;
       }
-      return actividades;
+      return false;
     } catch (e) {
-      log.d('Error getting actividades de rutina: $e');
-      return [];
+      log.d(e);
+      return false;
     }
-    */
-  //}
+  }
+
+  Future<bool> isDayCompleted(String weekId, String day) async {
+    try {
+      // Fetch the document corresponding to the week
+      final userId = await SharedPrefsHelper().getUserId();
+      DocumentSnapshot weekDoc = await FirebaseFirestore.instance
+          .collection('workoutStates')
+          .doc(userId)
+          .collection('weeks')
+          .doc(weekId)
+          .get();
+
+      if (weekDoc.exists) {
+        // Retrieve the week document data
+        Map<String, dynamic> weekData = weekDoc.data() as Map<String, dynamic>;
+
+        // Check if the specific day is completed
+        if (weekData.containsKey('daysCompleted')) {
+          Map<String, bool> daysCompleted =
+              Map<String, bool>.from(weekData['daysCompleted']);
+          return daysCompleted[day] ?? false;
+        } else {
+          return false; // If daysCompleted key is missing
+        }
+      } else {
+        return false; // If the document does not exist, treat it as not completed
+      }
+    } catch (e) {
+      // Handle any errors (e.g., Firestore permission issues)
+      log.d('Error checking day completion: $e');
+      return false;
+    }
+  }
 }

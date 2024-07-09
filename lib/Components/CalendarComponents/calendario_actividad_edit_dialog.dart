@@ -76,6 +76,43 @@ class _CalendarioActividadEditDialogState
       } else {}
     }
 
+    String? validateTime(TimeOfDay? horaInicio, TimeOfDay? horaFin) {
+      if (horaInicio != null && horaFin != null) {
+        if (horaInicio.hour > horaFin.hour ||
+            (horaInicio.hour == horaFin.hour &&
+                horaInicio.minute >= horaFin.minute)) {
+          return 'La hora de inicio debe ser antes de la hora de fin.';
+        }
+      }
+      return null;
+    }
+
+    String? validateHoraInicioNotBeforeCurrent(TimeOfDay? horaInicio) {
+      if (horaInicio != null) {
+        final now = TimeOfDay.now();
+        final nowInMinutes = now.hour * 60 + now.minute;
+        final inicioInMinutes = horaInicio.hour * 60 + horaInicio.minute;
+
+        if (inicioInMinutes < nowInMinutes) {
+          return 'La hora de inicio no puede ser antes de la hora actual.';
+        }
+      }
+      return null;
+    }
+
+    String? validateDateNotBeforeCurrent(DateTime? date) {
+      if (date != null) {
+        final today = DateTime.now();
+        final selectedDate = DateTime(date.year, date.month, date.day);
+        final currentDate = DateTime(today.year, today.month, today.day);
+
+        if (selectedDate.isBefore(currentDate)) {
+          return 'La fecha no puede ser en el pasado.';
+        }
+      }
+      return null;
+    }
+
     final ActividadProvider actividadProvider =
         context.read<ActividadProvider>();
 
@@ -149,6 +186,11 @@ class _CalendarioActividadEditDialogState
                           horaInicioUpdated = time;
                         });
                       },
+                      validator: (value) {
+                        return validateHoraInicioNotBeforeCurrent(
+                          horaInicioActividadSeleccionada,
+                        );
+                      },
                     ),
                     InputTimePicker(
                       labelText: Formatters().timeOfDayString(horaFinUpdated),
@@ -158,16 +200,24 @@ class _CalendarioActividadEditDialogState
                           horaFinUpdated = time;
                         });
                       },
+                      validator: (value) {
+                        return validateTime(horaInicioActividadSeleccionada,
+                            horaFinActividadSeleccionada);
+                      },
                     ),
                     InputDatePicker(
-                        labelText:
-                            Formatters().formatDateDayMonthShort(fechaSelected),
-                        fechaSeleccionada: fechaActividad,
-                        onDateSelected: (date) {
-                          setState(() {
-                            fechaSelected = date;
-                          });
-                        }),
+                      labelText:
+                          Formatters().formatDateDayMonthShort(fechaSelected),
+                      fechaSeleccionada: fechaActividad,
+                      onDateSelected: (date) {
+                        setState(() {
+                          fechaSelected = date;
+                        });
+                      },
+                      validator: (value) {
+                        return validateDateNotBeforeCurrent(fechaActividad);
+                      },
+                    ),
                   ],
                 ),
                 Center(

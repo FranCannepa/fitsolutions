@@ -106,143 +106,145 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-        key: _formKeyLogin,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: Column(children: [
-          const LogoWidget(
-            assetPath: "assets/media/main_logo.png",
-            height: 200,
-            width: 200,
-          ),
-          const SizedBox(height: 30),
-          MyTextField(
-              controller: _emailController,
-              hintText: 'Email',
-              obscureText: false,
-              keyboardType: TextInputType.emailAddress,
+    return SingleChildScrollView(
+      child: Form(
+          key: _formKeyLogin,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(children: [
+            const LogoWidget(
+              assetPath: "assets/media/main_logo.png",
+              height: 200,
+              width: 200,
+            ),
+            const SizedBox(height: 30),
+            MyTextField(
+                controller: _emailController,
+                hintText: 'Email',
+                obscureText: false,
+                keyboardType: TextInputType.emailAddress,
+                errorMsg: _errorMsg,
+                prefixIcon: const Icon(CupertinoIcons.mail_solid),
+                validator: (val) {
+                  if (val!.isEmpty) {
+                    return 'Porfavor llenar este campo';
+                  } else if (!RegExp(r'^[\w-\.]+@([\w-]+.)+[\w-]{2,4}$')
+                      .hasMatch(val)) {
+                    return 'Porfavor ingresar un email valido';
+                  }
+                  return null;
+                }),
+            const SizedBox(height: 30),
+            MyTextField(
+              controller: _passwordController,
+              hintText: 'Contraseña',
+              obscureText: !passwordVisibility,
+              keyboardType: TextInputType.visiblePassword,
+              prefixIcon: const Icon(CupertinoIcons.lock_fill),
               errorMsg: _errorMsg,
-              prefixIcon: const Icon(CupertinoIcons.mail_solid),
               validator: (val) {
                 if (val!.isEmpty) {
                   return 'Porfavor llenar este campo';
-                } else if (!RegExp(r'^[\w-\.]+@([\w-]+.)+[\w-]{2,4}$')
-                    .hasMatch(val)) {
-                  return 'Porfavor ingresar un email valido';
                 }
                 return null;
-              }),
-          const SizedBox(height: 30),
-          MyTextField(
-            controller: _passwordController,
-            hintText: 'Contraseña',
-            obscureText: !passwordVisibility,
-            keyboardType: TextInputType.visiblePassword,
-            prefixIcon: const Icon(CupertinoIcons.lock_fill),
-            errorMsg: _errorMsg,
-            validator: (val) {
-              if (val!.isEmpty) {
-                return 'Porfavor llenar este campo';
-              }
-              return null;
-            },
-            suffixIcon: IconButton(
-              onPressed: () {
-                setState(() {
-                  passwordVisibility = !passwordVisibility;
-                  if (passwordVisibility) {
-                    iconPassword = CupertinoIcons.eye_slash_fill;
-                  } else {
-                    iconPassword = CupertinoIcons.eye_fill;
-                  }
-                });
               },
-              icon: Icon(iconPassword),
-            ),
-          ),
-          const SizedBox(height: 40),
-          SubmitButton(
-            text: 'Iniciar Sesion',
-            onPressed: () async {
-              try {
-                await widget.userProvider.signIn(
-                  _emailController.text,
-                  _passwordController.text,
-                );
-                if (widget.userProvider.firstLogin && context.mounted) {
-                  NavigationService.instance.pushNamed('/registro');
-                } else {
-                  NavigationService.instance.pushNamed("/home");
-                }
-              } catch (e) {
-                log.d(e);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Error al intentar Iniciar Sesion")),
-                  );
-                }
-              }
-            },
-          ),
-          InkWell(
-            key: const Key('Restablecer'),
-            splashColor: Colors.transparent,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ForgotPasswordScreen()));
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(0, 24, 0, 24),
-                  child: RichText(
-                      textScaler: MediaQuery.of(context).textScaler,
-                      text: const TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'RESTABLECER CONTRASEÑA',
-                            style: TextStyle(
-                              fontSize: 16,
-                              letterSpacing: 0,
-                            ),
-                          ),
-                        ],
-                      )),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            child: SignInButton(Buttons.google, text: "Continuar con Google",
+              suffixIcon: IconButton(
                 onPressed: () {
-              _handleGoogleSignIn();
-            }),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 90.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Registro ",
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary),
-                ),
-                Icon(
-                  Icons.arrow_forward,
-                  size: 16.0,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ],
+                  setState(() {
+                    passwordVisibility = !passwordVisibility;
+                    if (passwordVisibility) {
+                      iconPassword = CupertinoIcons.eye_slash_fill;
+                    } else {
+                      iconPassword = CupertinoIcons.eye_fill;
+                    }
+                  });
+                },
+                icon: Icon(iconPassword),
+              ),
             ),
-          ),
-        ]));
+            const SizedBox(height: 40),
+            SubmitButton(
+              text: 'Iniciar Sesion',
+              onPressed: () async {
+                try {
+                  await widget.userProvider.signIn(
+                    _emailController.text,
+                    _passwordController.text,
+                  );
+                  if (widget.userProvider.firstLogin && context.mounted) {
+                    NavigationService.instance.pushNamed('/registro');
+                  } else {
+                    NavigationService.instance.pushNamed("/home");
+                  }
+                } catch (e) {
+                  log.d(e);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Error al intentar Iniciar Sesion")),
+                    );
+                  }
+                }
+              },
+            ),
+            InkWell(
+              key: const Key('Restablecer'),
+              splashColor: Colors.transparent,
+              focusColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordScreen()));
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 24, 0, 24),
+                    child: RichText(
+                        textScaler: MediaQuery.of(context).textScaler,
+                        text: const TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'RESTABLECER CONTRASEÑA',
+                              style: TextStyle(
+                                fontSize: 16,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              child: SignInButton(Buttons.google, text: "Continuar con Google",
+                  onPressed: () {
+                _handleGoogleSignIn();
+              }),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 90.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Registro ",
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary),
+                  ),
+                  Icon(
+                    Icons.arrow_forward,
+                    size: 16.0,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ],
+              ),
+            ),
+          ])),
+    );
   }
 }

@@ -1,12 +1,13 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/components/CommonComponents/input_time_picker.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 
 class GymRegistrationForm extends StatefulWidget {
   final GimnasioProvider provider;
@@ -22,8 +23,11 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _streetAddressController =
+      TextEditingController();
+  final TextEditingController _crossStreetController = TextEditingController();
+  final TextEditingController _celularController = TextEditingController();
+  final TextEditingController _telefonoController = TextEditingController();
 
   File? _gymLogo;
   bool? esEntrenador;
@@ -54,23 +58,6 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
     'Domingo': const TimeOfDay(hour: 22, minute: 0),
   };
 
-  Future<void> _selectTime(
-      BuildContext context, String day, bool isOpen) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: isOpen ? _openHours[day]! : _closeHours[day]!,
-    );
-    if (picked != null) {
-      setState(() {
-        if (isOpen) {
-          _openHours[day] = picked;
-        } else {
-          _closeHours[day] = picked;
-        }
-      });
-    }
-  }
-
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
@@ -90,134 +77,236 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
     }
   }
 
+  bool _validateHours() {
+    for (String day in _openHours.keys) {
+      TimeOfDay openTime = _openHours[day]!;
+      TimeOfDay closeTime = _closeHours[day]!;
+      if (openTime.hour > closeTime.hour ||
+          (openTime.hour == closeTime.hour &&
+              openTime.minute >= closeTime.minute)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void _submitForm(BuildContext context, GimnasioProvider provider) async {
     if (_formKey.currentState!.validate()) {
+      if (!_validateHours()) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                  'La hora de apertura debe ser antes de la hora de cierre.')),
+        );
+        return;
+      }
+
       _formKey.currentState!.save();
 
       await _uploadLogo(context, provider);
 
+      String address = _streetAddressController.text;
+      if (_crossStreetController.text.isNotEmpty) {
+        address += ' esquina ${_crossStreetController.text}';
+      }
+
+      String contact = _celularController.text;
+      if (_telefonoController.text.isNotEmpty) {
+        contact += ' / ${_telefonoController.text}';
+      }
+
       await provider.registerGym(
         _nameController.text,
-        _addressController.text,
-        _contactController.text,
+        address,
+        contact,
         _openHours,
         _closeHours,
       );
+
       if (context.mounted) {
         widget.onSubmit();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ginasio registriado exitosamente')),
+          const SnackBar(content: Text('Información registrada exitosamente')),
         );
       }
+    } else {
+      Logger().d('ERROR');
     }
+  }
+
+  String? _validateCrossStreet(String? value) {
+    // Allow empty value for cross street
+    if (value == null || value.isEmpty) {
+      return null; // No error, value is valid
+    }
+    return null;
+  }
+
+  String? _validateApertura(TimeOfDay? value) {
+    // Allow empty value for cross street
+    for (var day in _openHours.keys) {
+      if (_openHours[day] == null) {
+        return 'Seleccionar una hora';
+      }
+    }
+    return null;
+  }
+
+  String? _validatePhoneNumber(String? value) {
+    // Allow empty value for phone number
+    if (value == null || value.isEmpty) {
+      return null; // No error, value is valid
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        child: Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: esEntrenador == true
-                    ? 'Nombre Entrenador'
-                    : 'Nombre Gimnasio',
+      child: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () => _pickImage(),
+                child: Center(
+                  child: _gymLogo != null
+                      ? ClipOval(
+                          child: Image.file(_gymLogo!,
+                              height: 100, width: 100, fit: BoxFit.cover),
+                        )
+                      : Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey[200],
+                          ),
+                          child: const Center(child: Text('Agregar Logo')),
+                        ),
+                ),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return esEntrenador == true
-                      ? 'Ingrese el nombre del entrenador'
-                      : 'Ingrese el nombre del gimnasio';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _addressController,
-              decoration: InputDecoration(
-                labelText: esEntrenador == true
-                    ? 'Direccion Entrenador'
-                    : 'Direccion Gimnasio',
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: esEntrenador == true
+                      ? 'Nombre Entrenador'
+                      : 'Nombre Gimnasio',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return esEntrenador == true
+                        ? 'Ingrese el nombre del entrenador'
+                        : 'Ingrese el nombre del gimnasio';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return esEntrenador == true
-                      ? 'Ingrese la direccion del entrenador'
-                      : 'Ingrese la direccion del gimnasio';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _contactController,
-              decoration: InputDecoration(
-                labelText: esEntrenador == true
-                    ? 'Contacto Entrenador (Telefono/Celular)'
-                    : 'Contacto Gimnasio (Telefono/Celular)',
+              TextFormField(
+                controller: _streetAddressController,
+                decoration: const InputDecoration(
+                  labelText: 'Calle y Numero',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese la calle y número';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Ingrese la informacion de contacto';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () => _pickImage(),
-              child: _gymLogo != null
-                  ? Image.file(_gymLogo!, height: 100)
-                  : Container(
-                      color: Colors.grey[200],
-                      height: 100,
-                      child: const Center(child: Text('Agregar Logo')),
-                    ),
-            ),
-            const SizedBox(height: 16),
-            const Text('Horarios'),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _openHours.keys.map((day) {
-                return Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: Text(day),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: TextButton(
-                        onPressed: () => _selectTime(context, day, true),
-                        child: Text(_openHours[day]!.format(context)),
+              TextFormField(
+                controller: _crossStreetController,
+                decoration: const InputDecoration(
+                  labelText: 'Esquina',
+                ),
+                validator: _validateCrossStreet,
+              ),
+              TextFormField(
+                controller: _celularController,
+                decoration: const InputDecoration(
+                  labelText: 'Celular',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Ingrese el número de celular';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _telefonoController,
+                decoration: const InputDecoration(
+                  labelText: 'Teléfono',
+                ),
+                validator: _validatePhoneNumber,
+              ),
+              const SizedBox(height: 16),
+              const Text('Horarios'),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _openHours.keys.map((day) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(day),
                       ),
-                    ),
-                    const Text(' - '),
-                    Expanded(
-                      flex: 2,
-                      child: TextButton(
-                        onPressed: () => _selectTime(context, day, false),
-                        child: Text(_closeHours[day]!.format(context)),
+                      Expanded(
+                        flex: 2,
+                        child: InputTimePicker(
+                            labelText: 'Apertura',
+                            horaSeleccionada: _openHours[day],
+                            onTimeSelected: (time) {
+                              setState(() {
+                                _openHours[day] = time;
+                              });
+                            },
+                            validator: _validateApertura),
                       ),
-                    ),
-                  ],
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-            Center(
+                      const Text(' - '),
+                      Expanded(
+                        flex: 2,
+                        child: InputTimePicker(
+                          labelText: 'Cierre',
+                          horaSeleccionada: _closeHours[day],
+                          onTimeSelected: (time) {
+                            setState(() {
+                              _closeHours[day] = time;
+                            });
+                          },
+                          validator: (time) {
+                            if (_openHours[day] != null &&
+                                (_closeHours[day]!.hour <
+                                        _openHours[day]!.hour ||
+                                    (_closeHours[day]!.hour ==
+                                            _openHours[day]!.hour &&
+                                        _closeHours[day]!.minute <=
+                                            _openHours[day]!.minute))) {
+                              return 'La hora de cierre debe ser después de la hora de apertura';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+              Center(
                 child: SubmitButton(
-              onPressed: () => _submitForm(context, widget.provider),
-              text: "Registrar",
-            )),
-          ],
+                  onPressed: () => _submitForm(context, widget.provider),
+                  text: "Registrar",
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 }

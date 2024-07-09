@@ -211,7 +211,7 @@ class UserData extends ChangeNotifier {
     userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
-    origenAdministrador = (await prefs.getTrainerInfo(userId))!;
+    origenAdministrador = (await prefs.getTrainerInfo(userId)) ?? '';
     notifyListeners();
   }
 

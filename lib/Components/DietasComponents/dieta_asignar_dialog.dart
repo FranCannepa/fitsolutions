@@ -89,7 +89,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
             const SizedBox(height: 10),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: gimnasioProvider
-                  .getClientesGym(userProvider.origenAdministrador),
+                  .getClientesGym(userProvider.origenAdministrador!),
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                   final users = snapshot.data!;
