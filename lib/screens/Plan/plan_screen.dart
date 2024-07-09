@@ -44,16 +44,21 @@ class _PlanScreenState extends State<PlanScreen> {
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
-              title: const Text('RUTINAS')),
-          floatingActionButton: ElevatedButton(
+              iconTheme: const IconThemeData(
+                color: Colors.white, // Set the back arrow color here
+              ),
+              backgroundColor: Colors.black,
+              title: const Text(
+                'Rutinas',
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  overflow: TextOverflow.ellipsis,  
+                ),
+              )),
+          floatingActionButton: FloatingActionButton(
             onPressed: () => openNoteBox(null, fitnessProvider),
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(20), // Adjust padding as needed
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              elevation: 8, // Add shadow by setting elevation
-              shadowColor: Colors.black.withOpacity(0.8),
-            ), //placeholder
             child:
                 Icon(Icons.add, color: Theme.of(context).colorScheme.secondary),
           ),
@@ -65,9 +70,12 @@ class _PlanScreenState extends State<PlanScreen> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: NoDataError(message: 'Aun no se han creado Rutinas'));
+                  return const Center(
+                      child:
+                          NoDataError(message: 'Aun no se han creado Rutinas'));
                 } else {
                   final plans = snapshot.data!;
+
                   return ListView.builder(
                       itemCount: plans.length,
                       itemBuilder: (context, index) {
@@ -83,7 +91,7 @@ class _PlanScreenState extends State<PlanScreen> {
                           child: ListTile(
                             title: Text(
                               plan.name.toUpperCase(),
-                              style:  TextStyle(
+                              style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Theme.of(context).cardColor),
                             ),

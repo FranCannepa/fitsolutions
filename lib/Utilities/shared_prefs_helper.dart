@@ -208,7 +208,7 @@ class SharedPrefsHelper {
   Future<void> initializeEntrenador(Map<String, dynamic>? userData) async {
     setUserTipo("Entrenador");
     setEmail(userData?['email']);
-    final trainerId = await getTrainerInfo(userData?['userId']) as String;
+    final trainerId = await getTrainerInfo(userData?['userId']) ?? '';
     setSubscripcion(trainerId);
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
@@ -16,7 +15,7 @@ class ActividadDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _showSuccessModal(String mensaje, ResultType resultado) {
+    void showSuccessModal(String mensaje, ResultType resultado) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -97,11 +96,11 @@ class ActividadDialog extends StatelessWidget {
                                       .desinscribirseActividad(
                                           userProvider.userId, actividad.id);
                                   if (result) {
-                                    _showSuccessModal(
+                                    showSuccessModal(
                                         "Dado de baja exitosamente",
                                         ResultType.success);
                                   } else {
-                                    _showSuccessModal("Error al darse de baja",
+                                    showSuccessModal("Error al darse de baja",
                                         ResultType.error);
                                   }
                                 } else {
@@ -110,10 +109,10 @@ class ActividadDialog extends StatelessWidget {
                                           userProvider.userId, actividad.id);
 
                                   if (result) {
-                                    _showSuccessModal("Inscripcion exitosa",
+                                    showSuccessModal("Inscripcion exitosa",
                                         ResultType.success);
                                   } else {
-                                    _showSuccessModal("Error al inscribirse",
+                                    showSuccessModal("Error al inscribirse",
                                         ResultType.error);
                                   }
                                 }
