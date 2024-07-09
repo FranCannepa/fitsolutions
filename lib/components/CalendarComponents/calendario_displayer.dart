@@ -1,8 +1,6 @@
-import 'dart:developer';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_card.dart';
 import 'package:fitsolutions/components/CalendarComponents/calendario_dia_actual.dart';
-import 'package:fitsolutions/components/CommonComponents/inputs_screen.dart';
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
@@ -57,7 +55,7 @@ class _CalendarioDisplayerState extends State<CalendarioDisplayer> {
                         fecha: fechaSeleccionada,
                       ),
                       const SizedBox(width: 20),
-                       const Text(
+                      const Text(
                         "Actividades",
                         style: TextStyle(
                             fontSize: 40,

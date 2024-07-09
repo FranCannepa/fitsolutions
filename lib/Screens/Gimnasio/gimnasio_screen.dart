@@ -1,8 +1,8 @@
 import 'package:fitsolutions/Components/components.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
-//import 'package:fitsolutions/screens/Gimnasio/gym_detail_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_registration_form.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -53,21 +53,19 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         esEntrenador!
-                            ? const Text(
-                                "No tienes informacion de entrenador asociado!",
-                                style: TextStyle(fontSize: 18.0),
-                              )
-                            : const Text(
-                                "No tienes ningun gimnasio asociado!",
-                                style: TextStyle(fontSize: 18.0),
+                            ? const NoDataError(
+                                message:
+                                    "No tienes informacion de entrenador asociado!")
+                            : const NoDataError(
+                                message: "No tienes ningun gimnasio asociado!",
                               ),
                         const SizedBox(height: 16.0),
-                        ElevatedButton(
-                          onPressed: () => setState(() => showGymForm = true),
-                          child: !esEntrenador!
-                              ? const Text("Registrar gimnasio")
-                              : const Text("Registar informacion"),
-                        ),
+                        SubmitButton(
+                            text: !esEntrenador!
+                                ? "Registrar gimnasio"
+                                : "Registar informacion",
+                            onPressed: () =>
+                                setState(() => showGymForm = true)),
                       ],
                     )
                   : GymRegistrationForm(

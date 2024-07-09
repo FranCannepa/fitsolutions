@@ -1,8 +1,6 @@
 import 'package:fitsolutions/Components/DietasComponents/dieta_card.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
-import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class DietaGestor extends StatefulWidget {
   final List<Dieta?> dietas;
@@ -15,8 +13,6 @@ class DietaGestor extends StatefulWidget {
 class _DietaGestorState extends State<DietaGestor> {
   @override
   Widget build(BuildContext context) {
-    final userData = context.read<UserData>();
-    final String origenDieta = userData.origenAdministrador;
     return Center(
       child: Column(
         children: [

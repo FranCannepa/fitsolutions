@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:fitsolutions/Components/CommonComponents/no_data_error.dart';
-import 'package:fitsolutions/Components/DietasComponents/dieta_card.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/components/DietasComponents/dieta_info.dart';

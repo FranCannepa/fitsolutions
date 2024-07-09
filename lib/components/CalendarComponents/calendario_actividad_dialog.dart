@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';

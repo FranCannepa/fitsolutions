@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 class InputDatePicker extends StatefulWidget {
@@ -30,7 +28,7 @@ class _InputDatePickerState extends State<InputDatePicker> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(5.0),
-      child: Container(
+      child: SizedBox(
         width: 150,
         child: OutlinedButton(
           onPressed: () async {
