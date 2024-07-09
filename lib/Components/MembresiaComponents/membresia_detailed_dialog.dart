@@ -5,7 +5,6 @@ import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 
 class MembresiaDetailed extends StatefulWidget {
   final Membresia membresia;
