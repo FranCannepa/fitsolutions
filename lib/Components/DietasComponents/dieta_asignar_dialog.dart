@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';

@@ -114,6 +114,16 @@ class ActividadProvider extends ChangeNotifier {
       final db = FirebaseFirestore.instance;
       final docRef = db.collection('actividad').doc(documentId);
       await docRef.delete();
+
+      final querySnapshot = await db
+          .collection('actividadParticipante')
+          .where('actividadId', isEqualTo: documentId)
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {

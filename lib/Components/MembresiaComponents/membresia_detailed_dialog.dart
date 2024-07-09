@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_payment_service.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
@@ -30,6 +28,7 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
     final Membresia membresia = widget.membresia;
     final UserData userProvider = widget.userProvider;
     final PaymentService paymentService = PaymentService();
+    final prefs = SharedPrefsHelper();
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
@@ -109,10 +108,19 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
                         text: "Suscribirse",
                         onPressed: () async {
                           final costo = double.parse(membresia.costo);
-                          final asociadoId = await SharedPrefsHelper().getSubscripcion();
-                          final email = await SharedPrefsHelper().getEmail();
-                          await paymentService.createPayment(
-                              context, costo, email!, membresia.id, asociadoId!);
+                          final asociadoId = userProvider.origenAdministrador;
+                          final email = await prefs.getEmail() as String;
+                          try {
+                            await paymentService.createPayment(context, costo,
+                                email, membresia.id, asociadoId);
+                            widget.onClose();
+                          } catch (error) {
+                            print('Error creating payment: $error');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Error al realizar el pago')));
+                          }
                         },
                       ),
                     if (userProvider.esBasico())
@@ -130,5 +138,14 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
         ),
       ),
     );
+  }
+}
+
+class WidgetBindingsObserverSample extends NavigatorObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      debugPrint('App resumed after launching URL');
+    }
   }
 }

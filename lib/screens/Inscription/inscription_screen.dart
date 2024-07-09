@@ -52,7 +52,19 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
     if (isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('INSCRIPCIONES'),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          title: const Text(
+            'Inscripciones',
+            style: TextStyle(color: Colors.white, fontSize: 30),
+          ),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -63,7 +75,19 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
     if (hasError || gymId == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('INSCRIPCIONES'),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          title: const Text(
+            'Inscripciones',
+            style: TextStyle(color: Colors.white, fontSize: 30),
+          ),
         ),
         body: const Center(
           child: Text('Error fetching gym ID'),
@@ -75,7 +99,19 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('INSCRIPCIONES'),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          title: const Text(
+            'Inscripciones',
+            style: TextStyle(color: Colors.white, fontSize: 30),
+          ),
         ),
         body: FutureBuilder(
           future: Future.wait([
@@ -92,10 +128,9 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
               List<UsuarioBasico> subscribedUsers = snapshot.data![0];
               List<UsuarioBasico> pendingUsers = snapshot.data![1];
               List<UsuarioBasico> unsubscribedUsers = snapshot.data![2];
-      
+
               return Container(
-                color: Colors.grey[200], // Background color for the screen
-                padding: const EdgeInsets.all(16.0), // General padding
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
                     const SectionTitle(title: 'Inscriptos'),
@@ -160,14 +195,14 @@ class SectionTitle extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
-        color: Colors.blueGrey[700],
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Text(
         title,
         style: const TextStyle(
           fontSize: 18.0,
-          color: Colors.white,
+          color: Colors.black,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -194,10 +229,11 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        side: const BorderSide(color: Colors.black, width: 4.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       elevation: 4.0,
       child: ListTile(
         contentPadding: const EdgeInsets.all(16.0),
@@ -225,20 +261,20 @@ class UserCard extends StatelessWidget {
                 },
               ),
             if (!isSubscribed && onAddToPending == null) ...{
-            IconButton(
-              icon: const Icon(Icons.description),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FormDetailsScreen(
-                      ownerId: gymId,
-                      userId: user.docId,
+              IconButton(
+                icon: const Icon(Icons.description),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FormDetailsScreen(
+                        ownerId: gymId,
+                        userId: user.docId,
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
             },
             if (!isSubscribed && onComplete != null)
               ElevatedButton(

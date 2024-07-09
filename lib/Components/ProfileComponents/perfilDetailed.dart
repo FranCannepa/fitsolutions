@@ -192,7 +192,10 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                             context: context,
                             builder: (context) {
                               return EditProfileDialog(
-                                  userData: widget.userData);
+                                userData: widget.userData,
+                                onClose: (){
+                                  Navigator.pop(context);},
+                              );
                             },
                           )
                         },

@@ -17,7 +17,11 @@ class ClienteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final age = calculateAge(clienteData['fechaNacimiento']);
     return Card(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+        shape: RoundedRectangleBorder(
+          side: const BorderSide(color: Colors.black, width: 4.0),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
