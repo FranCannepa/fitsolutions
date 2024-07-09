@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +8,79 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PaymentService {
-  Future<void> createPayment(BuildContext context, double amount, String email,
+  Future<String?> createURL(BuildContext context, double amount, String email,
       String membresiaId, String asociadoId) async {
-    //final UserData userProvider = context.read<UserData>();
     final MembresiaProvider membresiaProvider =
         context.read<MembresiaProvider>();
-    //final gimnasioId = userProvider.asociadoId;
+
+    try {
+      final keys = await membresiaProvider.getKeys(asociadoId);
+      final publicKey = keys['publicKey'];
+      final accessToken = keys['accessToken'];
+
+      if (publicKey == null || accessToken == null) {
+        throw Exception('Missing API keys');
+      }
+
+      final url =
+          'https://api.mercadopago.com/checkout/preferences?access_token=$accessToken';
+
+      final Map<String, dynamic> requestPayload = {
+        'items': [
+          {
+            'title': 'Membresía de Gimnasio',
+            'description': 'Pago de membresía',
+            'quantity': 1,
+            'currency_id': 'UYU',
+            'unit_price': amount,
+          }
+        ],
+        'payer': {
+          'email': email,
+        },
+        'payment_methods': {
+          'excluded_payment_methods': [],
+          'excluded_payment_types': [],
+          'installments': 1,
+        },
+        'back_urls': {
+          'success': 'com.fitsolutions.fitsolutionsapp://success',
+          'failure': 'com.fitsolutions.fitsolutionsapp://failure',
+          'pending': 'com.fitsolutions.fitsolutionsapp://pending',
+        },
+        'auto_return': 'approved',
+        'notification_url':
+            'https://webhook.site/#!/view/81f9d1c6-f02d-4d92-b0f2-3167b23e69c8/fd608e45-dadb-4327-9202-911960e15fe5/1',
+      };
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(requestPayload),
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        final String initPoint = responseData['init_point'];
+        final String preferenceId = responseData['id'];
+        final Uri pagoUrl = Uri.parse(initPoint);
+
+        return pagoUrl.toString();
+      } else {
+        return null;
+      }
+    } catch (error) {
+      print('Error creating URL: $error');
+      return null;
+    }
+  }
+
+  Future<void> createPayment(BuildContext context, double amount, String email,
+      String membresiaId, String asociadoId) async {
+    final MembresiaProvider membresiaProvider =
+        context.read<MembresiaProvider>();
 
     final keys = await membresiaProvider.getKeys(asociadoId);
     final publicKey = keys['publicKey']!;
@@ -22,7 +88,6 @@ class PaymentService {
 
     final url =
         'https://api.mercadopago.com/checkout/preferences?access_token=$accessToken';
-      
 
     final Map<String, dynamic> requestPayload = {
       'items': [
@@ -43,17 +108,14 @@ class PaymentService {
         'installments': 1,
       },
       'back_urls': {
-        'success': 'myapp://success',
-        'failure': 'myapp://failure',
-        'pending': 'myapp://pending',
+        'success': 'com.fitsolutions.fitsolutionsapp://success',
+        'failure': 'com.fitsolutions.fitsolutionsapp://failure',
+        'pending': 'com.fitsolutions.fitsolutionsapp://pending',
       },
       'auto_return': 'approved',
       'notification_url':
           'https://webhook.site/#!/view/81f9d1c6-f02d-4d92-b0f2-3167b23e69c8/fd608e45-dadb-4327-9202-911960e15fe5/1',
     };
-
-    print('Request Payload: ${json.encode(requestPayload)}');
-
     final response = await http.post(
       Uri.parse(url),
       headers: {
@@ -61,35 +123,22 @@ class PaymentService {
       },
       body: json.encode(requestPayload),
     );
-
-    print(json.encode(requestPayload));
-    print('Response Status Code: ${response.statusCode}');
-    print('Response Body: ${response.body}');
     if (response.statusCode == 201) {
       final responseData = json.decode(response.body);
       final String initPoint = responseData['init_point'];
       final String preferenceId = responseData['id'];
-      //final String status = responseData["status"];
-
-      print('Init Point: $initPoint');
-
       final Uri pagoUrl = Uri.parse(initPoint);
 
-      // Redirigir al usuario al init_point para completar el pago
       if (await canLaunchUrl(pagoUrl)) {
         await launchUrl(pagoUrl);
-
-        //almaceno el id de la membresia y id del pago en sharedpreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('pending_membresia_id', membresiaId);
         await prefs.setString('pending_preference_id', preferenceId);
-        //await prefs.setString('status_membresia', status);
       } else {
         print('No se pudo abrir el enlace de pago: $initPoint');
         throw 'No se pudo abrir el enlace de pago.';
       }
     } else {
-      // Manejar error
       print('Error en el pago: ${response.body}');
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Error en el pago')));
@@ -105,7 +154,6 @@ class PaymentService {
       //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No hay pagos pendientes')));
       return;
     }
-    debugger(); 
 
     final UserData userProvider = context.read<UserData>();
     final MembresiaProvider membresiaProvider =

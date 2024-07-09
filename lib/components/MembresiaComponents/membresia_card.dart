@@ -64,105 +64,114 @@ class MembershipCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (!userProvider.esBasico()) const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        height: 40,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4.0),
-                            color: Colors.black),
-                        child: Row(
+                  if (!userProvider.esBasico())
+                    Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => MembresiaEdit(
-                                          membresia: membresia,
-                                          onClose: () {
-                                            Navigator.pop(context);
-                                          },
-                                        ));
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text(
-                                      'Confirmar eliminación',
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
+                            Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                  color: Colors.black),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
                                     ),
-                                    content: Text(
-                                      '¿Está seguro de que desea eliminar la actividad "${membresia.nombreMembresia}"?',
-                                      style: const TextStyle(
-                                        fontSize: 16.0,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text(
-                                          'Cancelar',
-                                          style: TextStyle(
-                                            fontSize: 16.0,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          final success =
-                                              await membresiaProvider
-                                                  .eliminarMembresia(
-                                                      membresia.id);
-                                          if (success) {
-                                            const ResultDialog(
-                                                text:
-                                                    "Membresia actualizada exitosamente",
-                                                resultType: ResultType.success);
-                                          } else {
-                                            const ResultDialog(
-                                                text:
-                                                    "Error al actualizar membresia",
-                                                resultType: ResultType.error);
-                                          }
-                                          if (context.mounted) {
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                        child: const Text(
-                                          'Eliminar',
-                                          style: TextStyle(
-                                            fontSize: 16.0,
-                                            color: Colors.red,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => MembresiaEdit(
+                                                membresia: membresia,
+                                                onClose: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ));
+                                    },
                                   ),
-                                );
-                              },
+                                  IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text(
+                                            'Confirmar eliminación',
+                                            style: TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          content: Text(
+                                            '¿Está seguro de que desea eliminar la actividad "${membresia.nombreMembresia}"?',
+                                            style: const TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: const Text(
+                                                'Cancelar',
+                                                style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                final success =
+                                                    await membresiaProvider
+                                                        .eliminarMembresia(
+                                                            membresia.id);
+                                                if (success) {
+                                                  const ResultDialog(
+                                                      text:
+                                                          "Membresia actualizada exitosamente",
+                                                      resultType:
+                                                          ResultType.success);
+                                                } else {
+                                                  const ResultDialog(
+                                                      text:
+                                                          "Error al actualizar membresia",
+                                                      resultType:
+                                                          ResultType.error);
+                                                }
+                                                if (context.mounted) {
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                              child: const Text(
+                                                'Eliminar',
+                                                style: TextStyle(
+                                                  fontSize: 16.0,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    )
                 ],
               ),
             ),

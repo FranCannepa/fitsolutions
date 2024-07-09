@@ -26,9 +26,10 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
         Container(
             width: double.infinity,
             margin: const EdgeInsets.all(30),
-
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
-            decoration: BoxDecoration(            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(10)),
             child: Column(
               children: [
                 Row(
@@ -62,7 +63,7 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                        Row(
+                      Row(
                         children: [
                           Icon(
                             Icons.person,
@@ -190,7 +191,11 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                           showDialog(
                             context: context,
                             builder: (context) {
-                              return  EditProfileDialog(userData: widget.userData);
+                              return EditProfileDialog(
+                                userData: widget.userData,
+                                onClose: (){
+                                  Navigator.pop(context);},
+                              );
                             },
                           )
                         },

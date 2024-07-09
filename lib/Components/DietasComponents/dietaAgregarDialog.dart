@@ -113,12 +113,10 @@ class _DietaAgregarDialogState extends State<DietaAgregarDialog> {
                     final Map<String, dynamic> dietaData = {
                       'nombre': nombreController.text,
                       'maxCarbohidratos': maxCarbohidratosController.text,
-                      'caloriasTotales':
-                          maxCaloriasController.text, // Use the correct field
+                      'caloriasTotales': maxCaloriasController.text,
                       'comidas': _comidasController,
                       'origenDieta': widget.origenDieta,
                     };
-                    // Handle the dietaData as needed
                   }
                 },
                 text: "Crear Dieta",

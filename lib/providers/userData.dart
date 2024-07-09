@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -97,6 +96,7 @@ class UserData extends ChangeNotifier {
     final membersias = querySnapshot.docs.map((doc) {
       final data = doc.data();
       data['membresiaId'] = doc.id;
+      notifyListeners();
       return data;
     }).toList();
 
@@ -104,7 +104,7 @@ class UserData extends ChangeNotifier {
   }
 
   Future<Membresia?> getMembresia() async {
-    if(membresiaId == ''){
+    if (membresiaId == '') {
       return null;
     }
     final querySnapshot = await FirebaseFirestore.instance
@@ -114,6 +114,7 @@ class UserData extends ChangeNotifier {
     if (querySnapshot.exists) {
       final data = querySnapshot.data();
       data?['membresiaId'] = querySnapshot.id;
+      notifyListeners();
       return Membresia.fromDocument(data!);
     } else {
       return null;
@@ -123,7 +124,10 @@ class UserData extends ChangeNotifier {
   Future<void> updateMembresiaId(String membresiaId) async {
     final String? userId = await getUserId();
     if (userId != null) {
-      await FirebaseFirestore.instance.collection('usuario').doc(userId).update({
+      await FirebaseFirestore.instance
+          .collection('usuario')
+          .doc(userId)
+          .update({
         'membresiaId': membresiaId,
       });
       this.membresiaId = membresiaId;
@@ -236,6 +240,7 @@ class UserData extends ChangeNotifier {
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         final docSnapshot = querySnapshot.docs.first;
+        notifyListeners();
         return docSnapshot.id;
       } else {
         return null;
@@ -245,25 +250,30 @@ class UserData extends ChangeNotifier {
     }
   }
 
-  Future<void> perfilUpdate(Map<String,dynamic> userData) async{
-    try{
-    final userId = await prefs.getUserId();
-    FirebaseFirestore.instance.collection('usuario').doc(userId).update(userData);
-    notifyListeners();
-    }
-    catch(e){
-      rethrow;
+  Future<bool> perfilUpdate(Map<String, dynamic> userData) async {
+    try {
+      final userId = await prefs.getUserId();
+      await FirebaseFirestore.instance
+          .collection('usuario')
+          .doc(userId)
+          .update(userData);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 
   Future<String?> uploadImage(File imageFile) async {
     try {
-      final storageRef = FirebaseStorage.instance.ref().child('profile_pics/${DateTime.now().millisecondsSinceEpoch}');
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_pics/${DateTime.now().millisecondsSinceEpoch}');
       final uploadTask = storageRef.putFile(imageFile);
       final snapshot = await uploadTask.whenComplete(() => null);
       return await snapshot.ref.getDownloadURL();
     } catch (e) {
-      // Handle errors
       return null;
     }
   }

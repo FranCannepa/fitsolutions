@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_payment_service.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
@@ -6,6 +5,7 @@ import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 
 class MembresiaDetailed extends StatefulWidget {
   final Membresia membresia;
@@ -108,19 +108,20 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
                       SubmitButton(
                         text: "Suscribirse",
                         onPressed: () async {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              return Center(child: CircularProgressIndicator());
-                            },
-                          );
                           final costo = double.parse(membresia.costo);
                           final asociadoId = userProvider.origenAdministrador;
                           final email = await prefs.getEmail() as String;
-                          final result = await paymentService.createPayment(
-                              context, costo, email, membresia.id, asociadoId);
-                          Navigator.pop(context);
+                          try {
+                            await paymentService.createPayment(context, costo,
+                                email, membresia.id, asociadoId);
+                            widget.onClose();
+                          } catch (error) {
+                            print('Error creating payment: $error');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Error al realizar el pago')));
+                          }
                         },
                       ),
                     if (userProvider.esBasico())
@@ -138,5 +139,14 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
         ),
       ),
     );
+  }
+}
+
+class WidgetBindingsObserverSample extends NavigatorObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      debugPrint('App resumed after launching URL');
+    }
   }
 }

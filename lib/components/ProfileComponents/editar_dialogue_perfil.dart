@@ -1,14 +1,17 @@
+import 'dart:developer';
 import 'dart:io';
-
+import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
+import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/providers/userData.dart';
-import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class EditProfileDialog extends StatefulWidget {
   final Map<String, dynamic> userData;
-  const EditProfileDialog({super.key, required this.userData});
+  final VoidCallback onClose;
+  const EditProfileDialog(
+      {super.key, required this.userData, required this.onClose});
 
   @override
   State<EditProfileDialog> createState() => _EditProfileDialogState();
@@ -20,6 +23,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   late TextEditingController _heightController;
   late TextEditingController _weightController;
   late TextEditingController _birthdateController;
+
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
 
@@ -54,7 +58,20 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     }
   }
 
-  void _saveChanges() async{
+  void _showSuccessModal(String mensaje, ResultType resultado) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ResultDialog(text: mensaje, resultType: resultado);
+      },
+    ).then((_) {
+      if (resultado == ResultType.success) {
+        widget.onClose();
+      }
+    });
+  }
+
+  void _saveChanges() async {
     final provider = context.read<UserData>();
     if (_formKey.currentState!.validate()) {
       String? imageUrl;
@@ -66,89 +83,114 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         'altura': int.parse(_heightController.text),
         'peso': double.parse(_weightController.text),
         'fechaNacimiento': _birthdateController.text,
-        'profilePic': imageUrl ?? '',
+        if (imageUrl != null) 'profilePic': imageUrl,
       };
 
-      provider.perfilUpdate(updatedData);
-      Navigator.pop(context);
+      final result = await provider.perfilUpdate(updatedData);
+      if (result) {
+        _showSuccessModal("Perfil Actualizado", ResultType.success);
+      } else {
+        _showSuccessModal("Error al actualizar perfil", ResultType.error);
+      }
     }
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Editar Perfil'),
-      content: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: () => _pickImage(ImageSource.gallery),
-                child: CircleAvatar(
-                  radius: 50.0,
-                  backgroundImage: _imageFile != null
-                      ? FileImage(_imageFile!) as ImageProvider<Object>
-                      : (widget.userData['profilePic'] != null &&
-                              widget.userData['profilePic'].isNotEmpty
-                          ? NetworkImage(widget.userData['profilePic']) as ImageProvider<Object>
-                          : null),
-                  child: _imageFile == null &&
-                          (widget.userData['profilePic'] == null ||
-                              widget.userData['profilePic'].isEmpty)
-                      ? const Icon(Icons.person)
-                      : null,
-                ),
-              ),
-              TextButton(
-                onPressed: () => _pickImage(ImageSource.gallery),
-                child: const Text('Cambiar foto de perfil'),
-              ),
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nombre Completo'),
-                validator: (value) => value!.isEmpty ? 'Campo requerido' : null,
-              ),
-              TextFormField(
-                controller: _heightController,
-                decoration: const InputDecoration(labelText: 'Altura'),
-                validator: (value) => value!.isEmpty ? 'Campo requerido' : null,
-              ),
-              TextFormField(
-                controller: _weightController,
-                decoration: const InputDecoration(labelText: 'Peso'),
-                validator: (value) => value!.isEmpty ? 'Campo requerido' : null,
-              ),
-              TextFormField(
-                controller: _birthdateController,
-                decoration: const InputDecoration(labelText: 'Fecha de Nacimiento'),
-                validator: (value) => value!.isEmpty ? 'Campo requerido' : null,
-              ),
-            ],
-          ),
+    return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar'),
-        ),
-        ElevatedButton(
-          onPressed: () async{
-            showDialog(context: context, builder: (BuildContext context) {
-              return ConfirmDialog(
-                        title: 'Editar Perfil',
-                        content: '¿Desea Editar su Perfil?',
-                        onConfirm: () async {
+        child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+                child: Column(children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    color: Colors.black,
+                    padding: const EdgeInsets.all(10),
+                    child: const Text(
+                      'Editar Perfil',
+                      style: TextStyle(
+                          fontSize: 25.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: widget.onClose,
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      GestureDetector(
+                        onTap: () => _pickImage(ImageSource.gallery),
+                        child: CircleAvatar(
+                          radius: 50.0,
+                          backgroundImage: _imageFile != null
+                              ? FileImage(_imageFile!) as ImageProvider<Object>
+                              : (widget.userData['profilePic'] != null &&
+                                      widget.userData['profilePic'].isNotEmpty
+                                  ? NetworkImage(widget.userData['profilePic'])
+                                      as ImageProvider<Object>
+                                  : null),
+                          child: _imageFile == null &&
+                                  (widget.userData['profilePic'] == null ||
+                                      widget.userData['profilePic'].isEmpty)
+                              ? const Icon(Icons.person)
+                              : null,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => _pickImage(ImageSource.gallery),
+                        child: const Text('Cambiar foto de perfil'),
+                      ),
+                      TextFormField(
+                        controller: _nameController,
+                        decoration:
+                            const InputDecoration(labelText: 'Nombre Completo'),
+                        validator: (value) =>
+                            value!.isEmpty ? 'Campo requerido' : null,
+                      ),
+                      TextFormField(
+                        controller: _heightController,
+                        decoration: const InputDecoration(labelText: 'Altura'),
+                        validator: (value) =>
+                            value!.isEmpty ? 'Campo requerido' : null,
+                      ),
+                      TextFormField(
+                        controller: _weightController,
+                        decoration: const InputDecoration(labelText: 'Peso'),
+                        validator: (value) =>
+                            value!.isEmpty ? 'Campo requerido' : null,
+                      ),
+                      TextFormField(
+                        controller: _birthdateController,
+                        decoration: const InputDecoration(
+                            labelText: 'Fecha de Nacimiento'),
+                        validator: (value) =>
+                            value!.isEmpty ? 'Campo requerido' : null,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      SubmitButton(
+                        text: "Guardar",
+                        onPressed: () async {
                           _saveChanges();
                         },
-                        parentKey: null);
-            });
-          },
-          child: const Text('Guardar'),
-        ),
-      ],
-    );
+                      )
+                    ]),
+                  )),
+            ]))));
   }
 }

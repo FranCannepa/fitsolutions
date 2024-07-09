@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:fitsolutions/components/CommonComponents/input_row.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
