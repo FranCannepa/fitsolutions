@@ -32,6 +32,19 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
     };
   }
 
+  void _showSuccessModal(String mensaje, ResultType resultado) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ResultDialog(text: mensaje, resultType: resultado);
+      },
+    ).then((_) {
+      if (resultado == ResultType.success) {
+        widget.onClose();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final membresiaProvider = context.read<MembresiaProvider>();
@@ -70,7 +83,9 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
               controller: _nombreMembresia,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Ingrese el nombre de la membresia';
+                  return 'El nombre de la membresia es obligatorio.';
+                } else if (value.length < 3) {
+                  return 'El nombre debe tener al menos 3 caracteres.';
                 }
                 return null;
               },
@@ -82,7 +97,16 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
               controller: _costoMembresia,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Ingrese el costo de la membresia';
+                  return 'El costo de la membresia es obligatorio.';
+                } else {
+                  try {
+                    final double costo = double.parse(value);
+                    if (costo <= 0) {
+                      return 'El costo debe ser un número positivo.';
+                    }
+                  } on FormatException {
+                    return 'El costo debe ser un número válido.';
+                  }
                 }
                 return null;
               },
@@ -93,7 +117,7 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
               controller: _descripcionMembresia,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Ingrese una descripcion de la membresia';
+                  return 'La descripción de la membresia es obligatoria.';
                 }
                 return null;
               },
@@ -107,14 +131,11 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
                   final success =
                       await membresiaProvider.registrarMembresia(membresiaData);
                   if (success) {
-                    const ResultDialog(
-                        text: "Membresia creada exitosamente",
-                        resultType: ResultType.success);
-                    widget.onClose();
+                    _showSuccessModal(
+                        "Membresia creada exitosamente", ResultType.success);
                   } else {
-                    const ResultDialog(
-                        text: "Error al crear membresia",
-                        resultType: ResultType.error);
+                    _showSuccessModal(
+                        "Error al crear la membresia", ResultType.error);
                   }
                 }),
           ],

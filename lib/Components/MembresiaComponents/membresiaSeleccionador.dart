@@ -1,4 +1,5 @@
 import 'package:fitsolutions/Components/MembresiaComponents/membresia_card.dart';
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:flutter/material.dart';
@@ -19,21 +20,34 @@ class _MembresiaSeleccionadorState extends State<SeleccionarMembresia> {
         const ScreenUpperTitle(
           title: "Membresias",
         ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
+        if (widget.membresias.isNotEmpty)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ...widget.membresias.map(
+                      (membresia) => MembershipCard(membresia: membresia),
+                    ),
+                    const SizedBox(height: 4.0),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else
+          const Expanded(
+            child: Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ...widget.membresias.map(
-                    (membresia) => MembershipCard(membresia: membresia),
-                  ),
-                  const SizedBox(height: 4.0),
+                  NoDataError(message: "Su gimnasio no tiene membresias"),
                 ],
               ),
             ),
           ),
-        ),
       ],
     );
   }

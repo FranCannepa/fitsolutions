@@ -9,6 +9,9 @@ class MembresiaProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
   Future<List<Membresia>> getMembresiasOrigen() async {
     final String? origenMembresia = await prefs.getSubscripcion();
+    if (origenMembresia == null) {
+      return [];
+    }
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('membresia')
@@ -66,6 +69,7 @@ class MembresiaProvider extends ChangeNotifier {
       final db = FirebaseFirestore.instance;
       final docRef = db.collection('membresia').doc();
       await docRef.set(membresiaData);
+      notifyListeners();
       return true;
     } on FirebaseException catch (e) {
       return false;
