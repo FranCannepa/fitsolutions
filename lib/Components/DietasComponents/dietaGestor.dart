@@ -16,15 +16,17 @@ class _DietaGestorState extends State<DietaGestor> {
     return Center(
       child: Column(
         children: [
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: widget.dietas.length,
-            itemBuilder: (context, index) {
-              final dieta = widget.dietas[index] as Dieta;
-              return DietaCard(dieta: dieta);
-            },
+          Expanded(
+            child: ListView.builder(
+              shrinkWrap: false, 
+              itemCount: widget.dietas.length,
+              itemBuilder: (context, index) {
+                final dieta = widget.dietas[index] as Dieta;
+                return DietaCard(dieta: dieta);
+              },
+            ),
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 16.0), 
         ],
       ),
     );

@@ -24,7 +24,7 @@ class MembresiaScreen extends StatefulWidget {
 class _MembresiaScreenState extends State<MembresiaScreen> {
   @override
   Widget build(BuildContext context) {
-    final MembresiaProvider provider = context.read<MembresiaProvider>();
+    final MembresiaProvider provider = context.watch<MembresiaProvider>();
     final UserData userData = context.read<UserData>();
     return Scaffold(
       body: FutureBuilder(

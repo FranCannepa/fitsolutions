@@ -1,8 +1,10 @@
 import 'package:fitsolutions/Components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
-import 'package:fitsolutions/components/MembresiaComponents/membresia_card.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MembresiaDisplayerPropietario extends StatefulWidget {
   final List<Membresia> membresias;
@@ -16,9 +18,9 @@ class MembresiaDisplayerPropietario extends StatefulWidget {
 class _MembresiaDisplayerPropietarioState
     extends State<MembresiaDisplayerPropietario> {
   List<Membresia> membresiaData = [];
-  late String gymId;
   @override
   Widget build(BuildContext context) {
+    final UserData userProvider = context.read<UserData>();
     return Scaffold(
       body: Column(
         children: [
@@ -56,6 +58,21 @@ class _MembresiaDisplayerPropietarioState
                   ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'unique1',
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => MembresiaFormDialog(
+              onClose: () {
+                Navigator.pop(context);
+              },
+              origenMembresia: userProvider.origenAdministrador,
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
