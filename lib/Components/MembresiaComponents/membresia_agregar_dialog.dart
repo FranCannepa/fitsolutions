@@ -128,16 +128,15 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
                 onPressed: () async {
                   final Map<String, dynamic> membresiaData =
                       collectMembresiaData();
-                  debugger();
-                  // final success =
-                  //     await membresiaProvider.registrarMembresia(membresiaData);
-                  // if (success) {
-                  //   _showSuccessModal(
-                  //       "Membresia creada exitosamente", ResultType.success);
-                  // } else {
-                  //   _showSuccessModal(
-                  //       "Error al crear la membresia", ResultType.error);
-                  // }
+                  final success =
+                      await membresiaProvider.registrarMembresia(membresiaData);
+                  if (success) {
+                    _showSuccessModal(
+                        "Membresia creada exitosamente", ResultType.success);
+                  } else {
+                    _showSuccessModal(
+                        "Error al crear la membresia", ResultType.error);
+                  }
                 }),
           ],
         ),

@@ -69,6 +69,7 @@ class MembresiaProvider extends ChangeNotifier {
       final db = FirebaseFirestore.instance;
       final docRef = db.collection('membresia').doc();
       await docRef.set(membresiaData);
+      notifyListeners();
       return true;
     } on FirebaseException catch (e) {
       return false;
