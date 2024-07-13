@@ -87,24 +87,33 @@ class MyApp extends StatelessWidget {
         home: FutureBuilder<bool>(
           future: SharedPrefsHelper().getLoggedIn(),
           builder: (context, snapshot) {
-            final userProvider = context.read<UserData>();
-            if (snapshot.hasData && snapshot.data == true) {
-              SharedPrefsHelper().initializeData();
-              userProvider.initializeData();
-              return const HomeScreen();
-            }
-            if (snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error loading data'));
+            } else if (snapshot.hasData) {
               final isLoggedIn = snapshot.data!;
-              if (isLoggedIn) {
-                SharedPrefsHelper().initializeData();
-                userProvider.initializeData();
-              }
+              final userProvider = context.read<UserData>();
               final auth = context.read<UserProvider>();
-              if (isLoggedIn && auth.firstLogin) {
-                userProvider.firstLogin(auth.user!);
-                return const RegistroScreen();
-              }
-              return isLoggedIn ? const HomeScreen() : const WelcomePage();
+
+              return FutureBuilder<void>(
+                future: _initializeData(isLoggedIn, userProvider, auth),
+                builder: (context, initSnapshot) {
+                  if (initSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (initSnapshot.hasError) {
+                    return const Center(child: Text('Error initializing data'));
+                  } else {
+                    if (isLoggedIn && auth.firstLogin) {
+                      userProvider.firstLogin(auth.user!);
+                      return const RegistroScreen();
+                    }
+                    return isLoggedIn
+                        ? const HomeScreen()
+                        : const WelcomePage();
+                  }
+                },
+              );
             }
             return const Center(child: CircularProgressIndicator());
           },
@@ -127,6 +136,14 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+Future<void> _initializeData(
+    bool isLoggedIn, UserData userProvider, UserProvider auth) async {
+  if (isLoggedIn) {
+    await SharedPrefsHelper().initializeData();
+    await userProvider.initializeData();
   }
 }
 

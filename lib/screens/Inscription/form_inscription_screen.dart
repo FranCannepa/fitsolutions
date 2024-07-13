@@ -82,7 +82,20 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
     final inscriptionProvider = context.watch<InscriptionProvider>();
 
     return Scaffold(
-        appBar: AppBar(title: const Text('Formulario de Inscripcion')),
+                  appBar: AppBar(
+              iconTheme: const IconThemeData(
+                color: Colors.white, // Set the back arrow color here
+              ),
+              backgroundColor: Colors.black,
+              title: const Text(
+                'Formulario de Inscripcion',
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  overflow: TextOverflow.ellipsis,  
+                ),
+              )),
         body: FutureBuilder<FormModel?>(
             future: inscriptionProvider.getFormByUserId(_userId!),
             builder: (context, snapshot) {
@@ -120,7 +133,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                     ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your CI';
+                        return 'Debe completar este campo';
                       }
                       return null;
                     },
@@ -165,7 +178,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                             labelText: 'Fecha de Nacimiento'),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your birth date';
+                            return 'Debe completar este campo';
                           }
                           return null;
                         },
@@ -178,7 +191,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                     controller: _sociedadController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your society';
+                        return 'Debe completar este campo';
                       }
                       return null;
                     },
@@ -189,7 +202,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                     controller: _emergenciaController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter emergency info';
+                        return 'Debe completar este campo';
                       }
                       return null;
                     },
@@ -201,7 +214,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                     maxLines: 5,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter any injuries';
+                        return 'Debe completar este campo';
                       }
                       return null;
                     },
@@ -216,7 +229,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                     ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter emergency contact number';
+                        return 'Debe completar este campo';
                       }
                       return null;
                     },

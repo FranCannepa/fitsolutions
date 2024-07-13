@@ -6,18 +6,6 @@ import 'package:logger/logger.dart';
 class ActivityScatterChart extends StatelessWidget {
   final List<Actividad> activities;
   const ActivityScatterChart({super.key, required this.activities});
-  /*
-  titlesData: FlTitlesData(
-      leftTitles: SideTitles(showTitles: true),
-      bottomTitles: SideTitles(
-        showTitles: true,
-        getTitles: (value) {
-          final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-          return '${date.day}/${date.month}';
-        },
-      ),
-    ),
-  */
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -61,8 +49,9 @@ class ActivityScatterChart extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           width: MediaQuery.of(context).size.width - 60.0,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.0),
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(5.0),
+            color: Colors.white,
+            border: Border.all(color: Colors.black, width: 3.0),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
@@ -71,28 +60,27 @@ class ActivityScatterChart extends StatelessWidget {
                 offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
-            gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).colorScheme.primary
-                ],
-                begin: Alignment.centerRight,
-                end: const Alignment(-1.0, -1.0)), //Gradient
           ),
           child: DataTable(
             columns: const [
               DataColumn(
-                  label:
-                      Text('Actividad', style: TextStyle(color: Colors.white))),
+                  label: Text('Actividad',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15))),
               DataColumn(
-                  label: Center(
-                child: Text('Participantes',
-                    style: TextStyle(color: Colors.white)),
-              )),
+                  label: Text('Participantes',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15))),
               DataColumn(
-                  label: Center(
-                child: Text('Duracion', style: TextStyle(color: Colors.white)),
-              )),
+                  label: Text('Duracion/Horas',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15))),
             ],
             rows: activities.map((activity) {
               final startHour = activity.inicio.toDate().hour.toDouble();
@@ -100,13 +88,13 @@ class ActivityScatterChart extends StatelessWidget {
               final duration = finalHour - startHour;
               return DataRow(cells: [
                 DataCell(Text(activity.nombre,
-                    style: const TextStyle(color: Colors.white))),
-                DataCell(Center(
-                    child: Text(activity.participantes.toString(),
-                        style: const TextStyle(color: Colors.white)))),
-                DataCell(Center(
-                    child: Text(duration.toString(),
-                        style: const TextStyle(color: Colors.white))))
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ))),
+                DataCell(Text(activity.participantes.toString(),
+                    style: const TextStyle(color: Colors.black))),
+                DataCell(Text(duration.toString(),
+                    style: const TextStyle(color: Colors.black))),
               ]);
             }).toList(),
           ),

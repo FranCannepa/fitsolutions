@@ -125,7 +125,8 @@ class GimnasioProvider with ChangeNotifier {
         collection = 'trainerInfo';
       }
       final docRef = await _firebase.collection(collection).add(gymData);
-      prefs.setSubscripcion(docRef.id);
+      await prefs.setSubscripcion(docRef.id);
+      
       notifyListeners();
     } catch (e) {
       log.d(e);

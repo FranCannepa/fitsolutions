@@ -41,11 +41,6 @@ class _CalendarioActividadEditDialogState
         TextEditingController(text: widget.actividad.tipo);
     final cuposActividadController =
         TextEditingController(text: widget.actividad.cupos.toString());
-    late DateTime fechaActividad = DateTime.now();
-    late TimeOfDay horaInicioActividadSeleccionada =
-        Formatters().timestampToTimeOfDay(widget.actividad.inicio);
-    late TimeOfDay horaFinActividadSeleccionada =
-        Formatters().timestampToTimeOfDay(widget.actividad.fin);
 
     void _showSuccessModal(String mensaje, ResultType resultado) {
       showDialog(
@@ -180,7 +175,7 @@ class _CalendarioActividadEditDialogState
                     InputTimePicker(
                       labelText:
                           Formatters().timeOfDayString(horaInicioUpdated),
-                      horaSeleccionada: horaInicioActividadSeleccionada,
+                      horaSeleccionada: horaInicioUpdated,
                       onTimeSelected: (time) {
                         setState(() {
                           horaInicioUpdated = time;
@@ -188,34 +183,34 @@ class _CalendarioActividadEditDialogState
                       },
                       validator: (value) {
                         return validateHoraInicioNotBeforeCurrent(
-                          horaInicioActividadSeleccionada,
+                          horaInicioUpdated,
                         );
                       },
                     ),
                     InputTimePicker(
                       labelText: Formatters().timeOfDayString(horaFinUpdated),
-                      horaSeleccionada: horaFinActividadSeleccionada,
+                      horaSeleccionada: horaFinUpdated,
                       onTimeSelected: (time) {
                         setState(() {
                           horaFinUpdated = time;
                         });
                       },
                       validator: (value) {
-                        return validateTime(horaInicioActividadSeleccionada,
-                            horaFinActividadSeleccionada);
+                        return validateTime(horaInicioUpdated,
+                            horaFinUpdated);
                       },
                     ),
                     InputDatePicker(
                       labelText:
                           Formatters().formatDateDayMonthShort(fechaSelected),
-                      fechaSeleccionada: fechaActividad,
+                      fechaSeleccionada: fechaSelected,
                       onDateSelected: (date) {
                         setState(() {
                           fechaSelected = date;
                         });
                       },
                       validator: (value) {
-                        return validateDateNotBeforeCurrent(fechaActividad);
+                        return validateDateNotBeforeCurrent(fechaSelected);
                       },
                     ),
                   ],
@@ -239,7 +234,7 @@ class _CalendarioActividadEditDialogState
                                   "Error al actualizar", ResultType.error);
                             }
                           } else {
-                            _showSuccessModal("Campos Vacios", ResultType.info);
+                            _showSuccessModal("Errores en el Formulario", ResultType.info);
                           }
                         },
                         text: "Guardar",

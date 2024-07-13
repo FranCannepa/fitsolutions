@@ -29,6 +29,7 @@ class CalendarioAgregarActividadDialog extends StatefulWidget {
 class _CalendarioAgregarActividadDialogState
     extends State<CalendarioAgregarActividadDialog> {
   final _formKey = GlobalKey<FormState>();
+
   final nombreActividadController = TextEditingController();
   final tipoActividadController = TextEditingController(text: "Definida");
   final cuposActividadController = TextEditingController();
@@ -208,20 +209,23 @@ class _CalendarioAgregarActividadDialogState
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        InputTimePicker(
-                          labelText: "Hora Inicio",
-                          horaSeleccionada: horaInicioActividadSeleccionada,
-                          onTimeSelected: (time) {
-                            setState(() {
-                              horaInicioActividadSeleccionada = time;
-                            });
-                          },
-                          validator: (value) {
-                            return validateHoraInicioNotBeforeCurrent(
-                                horaInicioActividadSeleccionada);
-                          },
-                        ),
-                        InputTimePicker(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InputTimePicker(
+                              labelText: 'Hora Inicio',
+                              horaSeleccionada: horaInicioActividadSeleccionada,
+                              onTimeSelected: (time) {
+                                setState(() {
+                                  horaInicioActividadSeleccionada = time;
+                                });
+                              },
+                              validator: (value) {
+                                return validateHoraInicioNotBeforeCurrent(
+                                    horaInicioActividadSeleccionada);
+                              },
+                            ),
+                          InputTimePicker(
                           labelText: "Hora Fin",
                           horaSeleccionada: horaFinActividadSeleccionada,
                           onTimeSelected: (time) {
@@ -234,6 +238,9 @@ class _CalendarioAgregarActividadDialogState
                                 horaFinActividadSeleccionada);
                           },
                         ),
+                          ],
+                        ),
+
                         InputDatePicker(
                           labelText: "Fecha",
                           fechaSeleccionada: fechaActividad,

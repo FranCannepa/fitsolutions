@@ -20,7 +20,20 @@ class _ChartDisplayState extends State<ChartDisplay> {
   Widget build(BuildContext context) {
     final provider = context.watch<ChartProvider>();
     return Scaffold(
-      appBar: AppBar(title: const Text('METRICAS DEL GIMNASIO')),
+      appBar: AppBar(
+          iconTheme: const IconThemeData(
+            color: Colors.white, // Set the back arrow color here
+          ),
+          backgroundColor: Colors.black,
+          title: const Text(
+            'Graficas',
+            style: TextStyle(
+              fontSize: 25.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              overflow: TextOverflow.ellipsis,
+            ),
+          )),
       body: FutureBuilder<List<Actividad>>(
         future: provider.getAllActivities(),
         builder: (context, snapshot) {
@@ -40,6 +53,7 @@ class _ChartDisplayState extends State<ChartDisplay> {
                       padding: const EdgeInsets.all(20.0),
                       decoration: BoxDecoration(
                         color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        border: Border.all(color: Colors.grey, width: 3.0),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Text(
@@ -53,12 +67,13 @@ class _ChartDisplayState extends State<ChartDisplay> {
                     ),
                     const SizedBox(height: 20),
                     Container(
-                      height: 1000,
+                      height: MediaQuery.of(context).size.height - 200,
                       padding: const EdgeInsets.all(30),
                       decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 3.0),
                           borderRadius: BorderRadius.circular(20),
                           color:
-                              Theme.of(context).primaryColor.withOpacity(0.3)),
+                              Theme.of(context).primaryColor.withOpacity(0.1)),
                       child: ActivityBarChart(activities: activities),
                     ),
                     const SizedBox(height: 20),
@@ -87,7 +102,7 @@ class _ChartDisplayState extends State<ChartDisplay> {
                           color: Theme.of(context)
                               .colorScheme
                               .tertiaryContainer
-                              .withOpacity(0.5)),
+                              .withOpacity(0.1)),
                       child: ActivityPieChart(activities: activities),
                     ),
                     const SizedBox(height: 20),
@@ -109,12 +124,14 @@ class _ChartDisplayState extends State<ChartDisplay> {
                     ),
                     const SizedBox(height: 20),
                     Container(
-                      height: 1000,
+                      height: MediaQuery.of(context).size.height - 200,
                       padding: const EdgeInsets.all(30),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color:
-                              Theme.of(context).colorScheme.tertiaryContainer),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.1)),
                       child: ActivityScatterChart(activities: activities),
                     ),
                     const SizedBox(height: 20),
@@ -153,7 +170,8 @@ class _ChartDisplayState extends State<ChartDisplay> {
                                 borderRadius: BorderRadius.circular(20),
                                 color: Theme.of(context)
                                     .colorScheme
-                                    .tertiaryContainer),
+                                    .primary
+                                    .withOpacity(0.1)),
                             child: AgeDistributionPieChart(
                                 ageCategories: ageCategories),
                           );

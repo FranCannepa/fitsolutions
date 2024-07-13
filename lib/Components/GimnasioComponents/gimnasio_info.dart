@@ -5,6 +5,7 @@ import 'package:fitsolutions/Components/GimnasioComponents/gimnasio_clientes.dar
 import 'package:fitsolutions/components/ChartComponents/chart_display.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/Screens/Plan/plan_screen.dart';
+import 'package:fitsolutions/providers/mercadopago_login.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 
@@ -202,7 +203,7 @@ class GimnasioInfo extends StatelessWidget {
                             transitionDuration:
                                 const Duration(milliseconds: 500),
                             pageBuilder: (_, __, ___) =>
-                                const InscriptionScreen(),
+                                 const MercadoPagoLoginPage(),
                             transitionsBuilder: (_, Animation<double> animation,
                                 __, Widget child) {
                               return FadeTransition(

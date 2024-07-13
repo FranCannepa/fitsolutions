@@ -178,7 +178,13 @@ class _ExerciseRowsState extends State<ExerciseRows> {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const NoDataError(message: 'No hay Ejercicios para este dia');
+          return const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+             NoDataError(message: 'No hay Ejercicios para este dia'),
+            ],
+          );
         } else {
           return Flexible(
             fit: FlexFit.loose,

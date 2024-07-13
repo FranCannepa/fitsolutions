@@ -199,8 +199,7 @@ class FitnessProvider extends ChangeNotifier {
         .collection('week')
         .add({'number': number});
     DocumentSnapshot docSnap = await doc.get();
-    Week newWeek =
-        Week.fromDocument(doc.id, docSnap.data() as Map<String, dynamic>, []);
+    Week newWeek =Week.fromDocument(doc.id, docSnap.data() as Map<String, dynamic>, []);
     plan.addWeek(newWeek);
     notifyListeners();
   }
@@ -393,6 +392,10 @@ class FitnessProvider extends ChangeNotifier {
 
   Future<void> initializeWorkoutState(
       Plan plan, List<String> daysNames) async {
+
+    final userType = await SharedPrefsHelper().getUserTipo();
+    if(userType != 'Basico') return;
+
     List<Week> weeks = plan.weeks;
     for (var week in weeks) {
       final userId = await SharedPrefsHelper().getUserId();

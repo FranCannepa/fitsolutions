@@ -17,7 +17,8 @@ class HeaderRow extends StatelessWidget {
 
       child: Row(
         children: [
-          const SizedBox(width: 60), // For the checkbox
+          if(userData.esBasico() == true) const SizedBox(width: 60),
+          if(userData.esBasico() == false) const SizedBox(width: 10), // For the checkbox
           const Expanded(child: Text('', textAlign: TextAlign.center)),
           const Expanded(child: Text('SER', textAlign: TextAlign.center)),
           const Expanded(child: Text('REP', textAlign: TextAlign.center)),
@@ -29,7 +30,7 @@ class HeaderRow extends StatelessWidget {
               child: Row(children: [Icon(Icons.timer, size: 18), Text('P')])),
           if (!userData.esBasico()) ...[
             const Expanded(child: Text('', textAlign: TextAlign.center)),
-            const Expanded(child: Text('', textAlign: TextAlign.center)),
+            const SizedBox(width: 30)
           ]
         ],
       ),

@@ -30,7 +30,7 @@ class _MembresiaDisplayerPropietarioState
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        NoDataError(message: "Su gimnasio no tiene membresias"),
+                        NoDataError(message: "No cuenta con membresias"),
                       ],
                     ),
                   )

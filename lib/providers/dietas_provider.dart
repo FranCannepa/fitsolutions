@@ -43,18 +43,20 @@ class DietaProvider extends ChangeNotifier {
   Future<List<Dieta>> getDietas() async {
     final String? origenMembresia = await prefs.getSubscripcion();
     try {
-      final dietQuery = query
-          .collection('dieta')
-          .where('origenDieta', isEqualTo: origenMembresia);
-      final querySnapshot = await dietQuery.get();
       final List<Dieta> dietas = [];
-      for (var doc in querySnapshot.docs) {
-        final dietaData = doc.data();
-        final dieta = Dieta.fromDocument({
-          ...dietaData,
-          "dietaId": doc.id,
-        });
-        dietas.add(dieta);
+      if(origenMembresia != null){
+        final dietQuery = query
+            .collection('dieta')
+            .where('origenDieta', isEqualTo: origenMembresia);
+        final querySnapshot = await dietQuery.get();
+        for (var doc in querySnapshot.docs) {
+          final dietaData = doc.data();
+          final dieta = Dieta.fromDocument({
+            ...dietaData,
+            "dietaId": doc.id,
+          });
+          dietas.add(dieta);
+        }
       }
       return dietas;
     } catch (error) {

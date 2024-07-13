@@ -124,7 +124,7 @@ class SharedPrefsHelper {
     return await prefs.remove(key);
   }
 
-  void initializeData() async {
+  Future<void> initializeData() async {
     setLoggedIn(true);
     String? userEmail = await getEmail();
     if (userEmail != null) {

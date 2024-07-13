@@ -29,28 +29,44 @@ class _WeekSelectorState extends State<WeekSelector> {
   final TextEditingController cargaController = TextEditingController();
 
   void openNoteBox(String? docId, FitnessProvider fitnessProvider) {
-    showDialog(
-      context: context,
-      builder: (context) => EjercicioCreateDialogue(
-          fitnessProvider: fitnessProvider,
-          docId: docId,
-          plan: widget.plan,
-          week: widget.plan.idFromWeek(_selectedWeekIndex),
-          nameController: nameController,
-          descController: descController,
-          durationController: durationController,
-          pausaController: pausaController,
-          serieController: repeticionController,
-          repeticionController: serieController,
-          cargaController: cargaController,
-          dia: daysNames[_selectedDayIndex]),
-    );
+    if (_selectedWeekIndex != -1) {
+      showDialog(
+        context: context,
+        builder: (context) => EjercicioCreateDialogue(
+            fitnessProvider: fitnessProvider,
+            docId: docId,
+            plan: widget.plan,
+            week: widget.plan.idFromWeek(_selectedWeekIndex!),
+            nameController: nameController,
+            descController: descController,
+            durationController: durationController,
+            pausaController: pausaController,
+            serieController: repeticionController,
+            repeticionController: serieController,
+            cargaController: cargaController,
+            dia: daysNames[_selectedDayIndex]),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('No existen semanas'),
+          content:
+              const Text('Debe crear una semana para poder agregar ejercicios'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   bool isWeekCompleted = false; // Track week completion status
   bool isDayCompleted = false; // Track day completion status
-
-  int _selectedWeekIndex = 0;
+  int? _selectedWeekIndex;
   int _selectedDayIndex = 0;
   bool? esBasico = true;
   Logger log = Logger();
@@ -63,12 +79,16 @@ class _WeekSelectorState extends State<WeekSelector> {
     esUserBasico();
     _initializationFuture = initializeWorkout();
     setInitialSelectedWeek();
+    setState(() {
+      _selectedWeekIndex = widget.plan.weekCount() - 1;
+    });
   }
 
   Future<void> initializeWorkout() async {
     await context
         .read<FitnessProvider>()
         .initializeWorkoutState(widget.plan, daysNames);
+    Logger().d('INIT');
   }
 
   Future<bool> checkWeekCompletion(int weekIndex) async {
@@ -117,12 +137,20 @@ class _WeekSelectorState extends State<WeekSelector> {
     'Sabado'
   ];
 
-  void _addWeek(FitnessProvider fProv) {
-    fProv.addWeek(widget.plan.weekCount() + 1, widget.plan);
+  void _addWeek(FitnessProvider fProv) async {
+    await fProv.addWeek(widget.plan.weekCount() + 1, widget.plan);
+    setState(() {
+      _selectedWeekIndex = widget.plan.weekCount() - 1;
+    });
   }
 
-  void _removeWeek(FitnessProvider fProv) {
-    fProv.deleteWeek(widget.plan);
+  void _removeWeek(FitnessProvider fProv) async {
+    if (_selectedWeekIndex != -1) {
+      await fProv.deleteWeek(widget.plan);
+      setState(() {
+        _selectedWeekIndex = widget.plan.weekCount() - 1;
+      });
+    }
   }
 
   @override
@@ -149,10 +177,20 @@ class _WeekSelectorState extends State<WeekSelector> {
         } else {
           return Scaffold(
             appBar: esBasico == false
-                ? AppBar(
-                    title: const Text('Rutina'),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    automaticallyImplyLeading: widget.leading)
+                ?      AppBar(
+              iconTheme: const IconThemeData(
+                color: Colors.white, // Set the back arrow color here
+              ),
+              backgroundColor: Colors.black,
+              title:  Text(
+                widget.plan.name,
+                style: const TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  overflow: TextOverflow.ellipsis,  
+                ),
+              ))
                 : null,
             body: Column(
               children: [
@@ -219,7 +257,9 @@ class _WeekSelectorState extends State<WeekSelector> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: widget.plan.weeks.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  bool weekCompleted = snapshot.data![index];
+                                  bool weekCompleted = snapshot.data!.length == widget.plan.weeks.length
+                                      ? snapshot.data![index]
+                                      : false;
                                   return GestureDetector(
                                     onTap: () async {
                                       setState(() {
@@ -275,7 +315,7 @@ class _WeekSelectorState extends State<WeekSelector> {
                             itemBuilder: (BuildContext context, int dayIndex) {
                               return FutureBuilder<bool>(
                                 future: checkDayCompletion(
-                                    _selectedWeekIndex, dayIndex),
+                                    _selectedWeekIndex!, dayIndex),
                                 builder: (BuildContext context,
                                     AsyncSnapshot<bool> snapshot) {
                                   if (!snapshot.hasData) {
@@ -328,10 +368,11 @@ class _WeekSelectorState extends State<WeekSelector> {
                           ),
                         ),
                       const HeaderRow(),
-                      if (widget.plan.weekCount() > 0)
+                      if (widget.plan.weekCount() > 0 &&
+                          _selectedWeekIndex != -1)
                         ExerciseRows(
                             plan: widget.plan,
-                            week: widget.plan.idFromWeek(_selectedWeekIndex),
+                            week: widget.plan.idFromWeek(_selectedWeekIndex!),
                             day: daysNames[_selectedDayIndex],
                             fitnessProvider: provider)
                     ],
@@ -340,16 +381,8 @@ class _WeekSelectorState extends State<WeekSelector> {
               ],
             ),
             floatingActionButton: !userData.esBasico()
-                ? ElevatedButton(
+                ? FloatingActionButton(
                     onPressed: () => openNoteBox(null, provider),
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding:
-                          const EdgeInsets.all(20), // Adjust padding as needed
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      elevation: 8, // Add shadow by setting elevation
-                      shadowColor: Colors.black.withOpacity(0.8),
-                    ), //placeholder
                     child: Icon(Icons.add,
                         color: Theme.of(context).colorScheme.secondary),
                   )

@@ -3,6 +3,7 @@ import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_registration_form.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -28,12 +29,16 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
 
   Future<void> esTrainer() async {
     final prefs = SharedPrefsHelper();
-    esEntrenador = await prefs.esEntrenador();
+    final result = await prefs.esEntrenador();
+    setState(() {
+      esEntrenador = result;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final gimnasioProvider = context.read<GimnasioProvider>();
+    final esParticular = context.read<UserData>().esParticular();
     return Scaffold(
       body: Center(
         child: FutureBuilder<Gimnasio?>(
@@ -52,7 +57,7 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        esEntrenador!
+                        esParticular
                             ? const NoDataError(
                                 message:
                                     "No tienes informacion de entrenador asociado!")

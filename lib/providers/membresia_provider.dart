@@ -9,25 +9,28 @@ class MembresiaProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
   Future<List<Membresia>> getMembresiasOrigen() async {
     final String? origenMembresia = await prefs.getSubscripcion();
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('membresia')
-          .where('origenMembresia', isEqualTo: origenMembresia)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        final fetchedMembresias = querySnapshot.docs.map((doc) {
-          final data = doc.data();
-          data['membresiaId'] = doc.id;
-          return Membresia.fromDocument(data);
-        }).toList();
-        return fetchedMembresias;
-      } else {
+    if (origenMembresia != null) {
+      try {
+        final querySnapshot = await FirebaseFirestore.instance
+            .collection('membresia')
+            .where('origenMembresia', isEqualTo: origenMembresia)
+            .get();
+        if (querySnapshot.docs.isNotEmpty) {
+          final fetchedMembresias = querySnapshot.docs.map((doc) {
+            final data = doc.data();
+            data['membresiaId'] = doc.id;
+            return Membresia.fromDocument(data);
+          }).toList();
+          return fetchedMembresias;
+        } else {
+          return [];
+        }
+      } catch (e) {
+        print('Error fetching membresias: $e');
         return [];
       }
-    } catch (e) {
-      print('Error fetching membresias: $e');
-      return [];
     }
+    return [];
   }
 
   Future<Map<String, dynamic>?> getOrigenMembresia(String documentId) async {

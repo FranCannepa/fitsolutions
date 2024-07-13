@@ -87,10 +87,10 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
               prefixIcon: const Icon(CupertinoIcons.mail_solid),
               validator: (val) {
                 if (val!.isEmpty) {
-                  return 'Please fill in this field';
+                  return 'Porfavor completa este campo';
                 } else if (!RegExp(r'^[\w-\.]+@([\w-]+.)+[\w-]{2,4}$')
                     .hasMatch(val)) {
-                  return 'Please enter a valid email';
+                  return 'Ingresar un email con formato valido';
                 }
                 return null;
               }),
