@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:fitsolutions/providers/purchases_provider.dart';
 
 class MembresiaDisplayerBasico extends StatefulWidget {
   final List<Membresia> membresias;
@@ -49,13 +50,23 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     if (lastHandledLink == link) {
       return;
     }
+
     Uri uri = Uri.parse(link);
+    print(uri);
+    final String userId = UserData().userId;
     String? status = uri.queryParameters['status'];
+    String? payment_id = uri.queryParameters['payment_id'];
     await prefs.setString('last_handled_link', link);
     final String? membresiaId = prefs.getString('pending_membresia_id');
+    final PurchasesProvider purchasesProvider = context.read<PurchasesProvider>();
     late ResultType result;
     late String resultMsg;
+    int statusCode = 4;
+
+    final DateTime purchaseDate = DateTime.now();
+
     if (status == 'approved') {
+      statusCode = 1;
       final UserData userProvider = context.read<UserData>();
       if (membresiaId != null) {
         await userProvider.updateMembresiaId(membresiaId);
@@ -65,6 +76,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
       result = ResultType.success;
       resultMsg = "Pago Satisfactorio";
     } else if (status == 'pending') {
+      statusCode = 2;
       String? payment_id = uri.queryParameters['payment_id'];
       final prefs = await SharedPreferences.getInstance();
       if (payment_id != null) {
@@ -72,9 +84,18 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
       }
       result = ResultType.warning;
     } else if (status == 'failure' || status == 'rejected') {
+      statusCode = 3;
       result = ResultType.error;
       resultMsg = "Pago Fallido!";
     }
+
+    await purchasesProvider.addPurchase({
+      'productId': membresiaId,
+      'purchaseDate': purchaseDate,
+      'status': statusCode,
+      'transactionId': payment_id,
+      'usuarioId': userId
+    });
 
     showDialog(
       context: context,
