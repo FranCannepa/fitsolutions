@@ -53,7 +53,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
 
     Uri uri = Uri.parse(link);
     print(uri);
-    final String userId = UserData().userId;
+
     String? status = uri.queryParameters['status'];
     String? payment_id = uri.queryParameters['payment_id'];
     await prefs.setString('last_handled_link', link);
@@ -64,10 +64,12 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     int statusCode = 4;
 
     final DateTime purchaseDate = DateTime.now();
+    final UserData userProvider = context.read<UserData>();
+
+    final String? userId = await userProvider.getUserId();
 
     if (status == 'approved') {
       statusCode = 1;
-      final UserData userProvider = context.read<UserData>();
       if (membresiaId != null) {
         await userProvider.updateMembresiaId(membresiaId);
       }
