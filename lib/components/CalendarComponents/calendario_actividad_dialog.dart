@@ -59,15 +59,18 @@ class ActividadDialog extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      color: Colors.black,
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        actividad.nombre,
-                        style: const TextStyle(
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                    Flexible(
+                      child: Container(
+                        color: Colors.black,
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          actividad.nombre,
+                          style: const TextStyle(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                     IconButton(

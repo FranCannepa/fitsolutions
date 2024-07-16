@@ -55,6 +55,14 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
       return null;
     }
   }
+  
+  Future<void> _initializeData(
+      bool isLoggedIn, UserData userProvider, UserProvider auth) async {
+    if (isLoggedIn) {
+      await SharedPrefsHelper().initializeData();
+      await userProvider.initializeData();
+    }
+  }
 
   void _handleGoogleSignIn() async {
     final userProvider = context.read<UserData>();
@@ -249,13 +257,6 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
           ])),
     );
   }
-  
-Future<void> _initializeData(
-    bool isLoggedIn, UserData userProvider, UserProvider auth) async {
-  if (isLoggedIn) {
-    await SharedPrefsHelper().initializeData();
-    await userProvider.initializeData();
-  }
-}
+
 
 }
