@@ -8,28 +8,46 @@ import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MembresiaEdit extends StatelessWidget {
+class MembresiaEdit extends StatefulWidget {
   final Membresia membresia;
   final VoidCallback onClose;
   const MembresiaEdit(
       {super.key, required this.membresia, required this.onClose});
 
   @override
+  State<MembresiaEdit> createState() => _MembresiaEditState();
+}
+
+class _MembresiaEditState extends State<MembresiaEdit> {
+  void _showSuccessModal(String mensaje, ResultType resultado) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ResultDialog(text: mensaje, resultType: resultado);
+      },
+    ).then((_) {
+      if (resultado == ResultType.success) {
+        widget.onClose();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
-    final _nombreMembresia =
-        TextEditingController(text: membresia.nombreMembresia);
-    final _costoMembresia =
-        TextEditingController(text: membresia.costo.toString());
-    final _descripcionMembresia =
-        TextEditingController(text: membresia.descripcion);
+    final formKey = GlobalKey<FormState>();
+    final nombreMembresia =
+        TextEditingController(text: widget.membresia.nombreMembresia);
+    final costoMembresia =
+        TextEditingController(text: widget.membresia.costo.toString());
+    final descripcionMembresia =
+        TextEditingController(text: widget.membresia.descripcion);
 
     Map<String, dynamic> collectMembresiaData() {
       return {
-        'nombreMembresia': _nombreMembresia.text,
-        'costo': _costoMembresia.text,
-        'descripcion': _descripcionMembresia.text,
-        'origenMembresia': membresia.id
+        'nombreMembresia': nombreMembresia.text,
+        'costo': costoMembresia.text,
+        'descripcion': descripcionMembresia.text,
+        'origenMembresia': widget.membresia.id
       };
     }
 
@@ -43,7 +61,7 @@ class MembresiaEdit extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -64,7 +82,7 @@ class MembresiaEdit extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
-                    onPressed: onClose,
+                    onPressed: widget.onClose,
                   ),
                 ],
               ),
@@ -74,7 +92,7 @@ class MembresiaEdit extends StatelessWidget {
                 children: [
                   RoundedInputField(
                     labelText: "Nombre",
-                    controller: _nombreMembresia,
+                    controller: nombreMembresia,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Ingrese el nombre de la membresia';
@@ -84,7 +102,7 @@ class MembresiaEdit extends StatelessWidget {
                   ),
                   RoundedInputField(
                     labelText: "Costo",
-                    controller: _costoMembresia,
+                    controller: costoMembresia,
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -100,7 +118,7 @@ class MembresiaEdit extends StatelessWidget {
                   RoundedInputField(
                     maxLines: 4,
                     labelText: '',
-                    controller: _descripcionMembresia,
+                    controller: descripcionMembresia,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Ingrese una descripcion de la membresia';
@@ -113,24 +131,20 @@ class MembresiaEdit extends StatelessWidget {
               SubmitButton(
                 text: "Actualizar",
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
+                  if (formKey.currentState!.validate()) {
                     final Map<String, dynamic> membresiaData =
                         collectMembresiaData();
                     final success = await membresiaProvider
                         .actualizarMembresia(membresiaData);
                     if (success) {
-                      return const ResultDialog(
-                          text: "Membresia actualizada exitosamente",
-                          resultType: ResultType.success);
+                      _showSuccessModal("Membresia Editada", ResultType.success);
+                      formKey.currentState!.reset();
                     } else {
-                      const ResultDialog(
-                          text: "Error al actualizar membresia",
-                          resultType: ResultType.error);
+                      _showSuccessModal("Error al editar", ResultType.error);
                     }
                   } else {
-                    return const ResultDialog(
-                        text: "Campos con errores",
-                        resultType: ResultType.warning);
+                    _showSuccessModal(
+                        "Errores en el formulario", ResultType.info);
                   }
                 },
               ),

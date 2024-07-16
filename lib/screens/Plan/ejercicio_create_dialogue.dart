@@ -115,7 +115,7 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'El campo no puede ser vacio';
+                        return 'El campo no puede ser vacio,\nescribir 0 si no corresponde';
                       }
                       if (double.tryParse(value) == null) {
                         return 'Debe ser un número válido';
@@ -134,7 +134,7 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'El campo no puede ser vacio';
+                    return 'El campo no puede ser vacio, escribir 0 si no corresponde';
                   }
                   if (double.tryParse(value) == null) {
                     return 'Debe ser un número válido';

@@ -83,6 +83,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
         await prefs.setLoggedIn(true);
 
         // Navigate to home
+        await _initializeData(true, context.read<UserData>(), context.read<UserProvider>());
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
@@ -170,6 +171,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                     _emailController.text,
                     _passwordController.text,
                   );
+                  await _initializeData(true, context.read<UserData>(), context.read<UserProvider>());
                   if (widget.userProvider.firstLogin && context.mounted) {
                     NavigationService.instance.pushNamed('/registro');
                   } else {
@@ -247,4 +249,13 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
           ])),
     );
   }
+  
+Future<void> _initializeData(
+    bool isLoggedIn, UserData userProvider, UserProvider auth) async {
+  if (isLoggedIn) {
+    await SharedPrefsHelper().initializeData();
+    await userProvider.initializeData();
+  }
+}
+
 }

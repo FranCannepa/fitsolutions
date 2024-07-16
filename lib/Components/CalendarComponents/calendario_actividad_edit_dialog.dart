@@ -34,7 +34,7 @@ class _CalendarioActividadEditDialogState
   Widget build(BuildContext context) {
     Map<String, dynamic> actividadData = {};
 
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final nombreActividadController =
         TextEditingController(text: widget.actividad.nombre);
     final tipoActividadController =
@@ -42,7 +42,7 @@ class _CalendarioActividadEditDialogState
     final cuposActividadController =
         TextEditingController(text: widget.actividad.cupos.toString());
 
-    void _showSuccessModal(String mensaje, ResultType resultado) {
+    void showSuccessModal(String mensaje, ResultType resultado) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -56,8 +56,8 @@ class _CalendarioActividadEditDialogState
     }
 
     void summarizeData() {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.save();
+      if (formKey.currentState!.validate()) {
+        formKey.currentState!.save();
         actividadData['id'] = widget.actividad.id;
         actividadData['tipo'] = tipoActividadController.text;
         actividadData['nombreActividad'] = nombreActividadController.text;
@@ -132,7 +132,7 @@ class _CalendarioActividadEditDialogState
           ],
         ),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -221,20 +221,20 @@ class _CalendarioActividadEditDialogState
                     children: [
                       SubmitButton(
                         onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
+                          if (formKey.currentState!.validate()) {
                             summarizeData();
                             final result = await actividadProvider
                                 .actualizarActividad(actividadData);
                             if (result) {
-                              _showSuccessModal(
+                              showSuccessModal(
                                   "Actividad actualizada", ResultType.success);
-                              _formKey.currentState!.reset();
+                              formKey.currentState!.reset();
                             } else {
-                              _showSuccessModal(
+                              showSuccessModal(
                                   "Error al actualizar", ResultType.error);
                             }
                           } else {
-                            _showSuccessModal("Errores en el Formulario", ResultType.info);
+                            showSuccessModal("Errores en el Formulario", ResultType.info);
                           }
                         },
                         text: "Guardar",

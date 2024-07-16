@@ -17,6 +17,8 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
   String? gymId;
   bool hasError = false;
   bool isLoading = true;
+  TextEditingController searchController = TextEditingController();
+  String searchQuery = '';
 
   @override
   void initState() {
@@ -45,6 +47,12 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
         isLoading = false;
       });
     }
+  }
+
+  void _filterUsers() {
+    setState(() {
+      searchQuery = searchController.text;
+    });
   }
 
   @override
@@ -129,48 +137,67 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
               List<UsuarioBasico> pendingUsers = snapshot.data![1];
               List<UsuarioBasico> unsubscribedUsers = snapshot.data![2];
 
-              return Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    const SectionTitle(title: 'Inscriptos'),
-                    ...subscribedUsers.map((user) => UserCard(
-                          user: user,
-                          gymId: gymId!,
-                          isSubscribed: true,
-                        )),
-                    const SectionTitle(title: 'Inscripciones pendientes'),
-                    ...pendingUsers.map((user) => UserCard(
-                          user: user,
-                          gymId: gymId!,
-                          isSubscribed: false,
-                          onComplete: () async {
-                            if (context.mounted) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EvaluationFormScreen(
-                                    gymId: gymId!,
-                                    userId: user.docId,
+              // Filter users based on the search query
+              List<UsuarioBasico> filteredSubscribedUsers = subscribedUsers.where((user) => user.email.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+              List<UsuarioBasico> filteredPendingUsers = pendingUsers.where((user) => user.email.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+              List<UsuarioBasico> filteredUnsubscribedUsers = unsubscribedUsers.where((user) => user.email.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+
+              return SingleChildScrollView(
+                child: Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      // Add the search bar here
+                      TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          labelText: 'Buscar por correo electrónico',
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: _filterUsers,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const SectionTitle(title: 'Inscriptos'),
+                      ...filteredSubscribedUsers.map((user) => UserCard(
+                            user: user,
+                            gymId: gymId!,
+                            isSubscribed: true,
+                          )),
+                      const SectionTitle(title: 'Inscripciones pendientes'),
+                      ...filteredPendingUsers.map((user) => UserCard(
+                            user: user,
+                            gymId: gymId!,
+                            isSubscribed: false,
+                            onComplete: () async {
+                              if (context.mounted) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EvaluationFormScreen(
+                                      gymId: gymId!,
+                                      userId: user.docId,
+                                    ),
                                   ),
-                                ),
-                              );
-                            }
-                          },
-                        )),
-                    const SectionTitle(title: 'No Inscriptos'),
-                    ...unsubscribedUsers.map((user) => UserCard(
-                          user: user,
-                          gymId: gymId!,
-                          isSubscribed: false,
-                          onAddToPending: () async {
-                            await inscriptionProvider.addUserToPending(
-                                gymId!, user.docId);
-                            await inscriptionProvider.addFormRequest(
-                                gymId!, user.docId);
-                          },
-                        )),
-                  ],
+                                );
+                              }
+                            },
+                          )),
+                      const SectionTitle(title: 'No Inscriptos'),
+                      ...filteredUnsubscribedUsers.map((user) => UserCard(
+                            user: user,
+                            gymId: gymId!,
+                            isSubscribed: false,
+                            onAddToPending: () async {
+                              await inscriptionProvider.addUserToPending(
+                                  gymId!, user.docId);
+                              await inscriptionProvider.addFormRequest(
+                                  gymId!, user.docId);
+                            },
+                          )),
+                    ],
+                  ),
                 ),
               );
             } else {
@@ -260,7 +287,7 @@ class UserCard extends StatelessWidget {
                   );
                 },
               ),
-            if (!isSubscribed && onAddToPending == null) ...{
+            if (onAddToPending == null)
               IconButton(
                 icon: const Icon(Icons.description),
                 onPressed: () {
@@ -275,7 +302,6 @@ class UserCard extends StatelessWidget {
                   );
                 },
               ),
-            },
             if (!isSubscribed && onComplete != null)
               ElevatedButton(
                 onPressed: onComplete,

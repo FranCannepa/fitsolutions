@@ -11,10 +11,19 @@ class DietaForm extends StatefulWidget {
   const DietaForm({super.key, required this.origenDieta});
 
   @override
-  _DietaFromState createState() => _DietaFromState();
+  State<DietaForm> createState() => _DietaFromState();
 }
 
 class _DietaFromState extends State<DietaForm> {
+  String kcalValue = '';
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController maxCaloriasController = TextEditingController();
+  final comidasController = <TextEditingController>[];
+  final List<TextEditingController> dayControllers = [];
+  final List<TextEditingController> mealTypeControllers = [];
+  final List<TextEditingController> kcalControllers = [];
+
   void _showSuccessModal(String mensaje, ResultType resultado) {
     showDialog(
       context: context,
@@ -29,15 +38,18 @@ class _DietaFromState extends State<DietaForm> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    maxCaloriasController.addListener(() {
+      setState(() {
+        kcalValue = maxCaloriasController.text;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-    final TextEditingController nombreController = TextEditingController();
-    final TextEditingController maxCarbohidratosController =
-        TextEditingController();
-    final TextEditingController maxCaloriasController = TextEditingController();
-    final _comidasController = <TextEditingController>[];
-
     final DietaProvider dietaProvider = context.read<DietaProvider>();
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +70,7 @@ class _DietaFromState extends State<DietaForm> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: Column(
             children: [
               RoundedInputField(
@@ -71,6 +83,7 @@ class _DietaFromState extends State<DietaForm> {
                   return null;
                 },
               ),
+              /*
               RoundedInputField(
                 labelText: 'Máximos Carbohidratos',
                 controller: maxCarbohidratosController,
@@ -81,7 +94,7 @@ class _DietaFromState extends State<DietaForm> {
                   }
                   return null;
                 },
-              ),
+              ),*/
               RoundedInputField(
                 labelText: 'Máximos Calorias',
                 controller: maxCaloriasController,
@@ -89,6 +102,13 @@ class _DietaFromState extends State<DietaForm> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese un valor para las calorías máximas.';
+                  }
+                  int? maxCal = int.tryParse(value);
+                  if (maxCal == null) {
+                    return 'El valor debe ser numerico';
+                  }
+                  if (maxCal <= 0) {
+                    return 'El valor debe ser un numero positio';
                   }
                   return null;
                 },
@@ -108,22 +128,30 @@ class _DietaFromState extends State<DietaForm> {
                 ),
               ),
               RowInput(
-                comidasController: _comidasController,
+                comidasController: comidasController,
+                maxCaloriasController: maxCaloriasController,
+                dayControllers: dayControllers,
+                mealTypeControllers: mealTypeControllers,
+                kcalControllers: kcalControllers,
               ),
               Container(
                 margin: const EdgeInsets.only(top: 30),
                 child: SubmitButton(
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
+                    if (formKey.currentState!.validate()) {
                       final comidas = [];
-                      for (int i = 0; i < _comidasController.length; i++) {
-                        if (_comidasController[i].text != "") {
-                          comidas.add(_comidasController[i].text);
+                      for (int i = 0; i < comidasController.length; i++) {
+                        if (comidasController[i].text != "") {
+                          comidas.add({
+                            'comida': comidasController[i].text,
+                            'dia': dayControllers[i].text,
+                            'meal': mealTypeControllers[i].text,
+                            'kcal': kcalControllers[i].text
+                          });
                         }
                       }
                       final Map<String, dynamic> dietaData = {
                         'nombreDieta': nombreController.text,
-                        'topeCarbohidratos': maxCarbohidratosController.text,
                         'topeCalorias': maxCaloriasController.text,
                         'comidas': comidas,
                         'origenDieta': widget.origenDieta,
@@ -137,6 +165,9 @@ class _DietaFromState extends State<DietaForm> {
                         _showSuccessModal(
                             "Error al crear dieta", ResultType.error);
                       }
+                    } else {
+                      _showSuccessModal(
+                          "Errores en el formulario", ResultType.warning);
                     }
                   },
                   text: "Crear Dieta",

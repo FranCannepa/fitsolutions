@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
@@ -27,15 +25,15 @@ class DietaProvider extends ChangeNotifier {
           final dieta = Dieta.fromDocument(dietaData);
           return dieta;
         } else {
-          print("Dieta document not found for user ID: $userId");
+          Logger().d("Dieta document not found for user ID: $userId");
           return null;
         }
       } else {
-        print("User data does not contain 'dietaId' key");
+         Logger().d("User data does not contain 'dietaId' key");
         return null;
       }
     } else {
-      print("User document not found for user ID: $userId");
+       Logger().d("User document not found for user ID: $userId");
       return null;
     }
   }
@@ -44,7 +42,7 @@ class DietaProvider extends ChangeNotifier {
     final String? origenMembresia = await prefs.getSubscripcion();
     try {
       final List<Dieta> dietas = [];
-      if(origenMembresia != null){
+      if (origenMembresia != null) {
         final dietQuery = query
             .collection('dieta')
             .where('origenDieta', isEqualTo: origenMembresia);
@@ -60,7 +58,7 @@ class DietaProvider extends ChangeNotifier {
       }
       return dietas;
     } catch (error) {
-      print("Error fetching dietas: $error");
+      Logger().d("Error fetching dietas: $error");
       return [];
     }
   }
@@ -76,8 +74,15 @@ class DietaProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> actualizarDieta(Map<String, dynamic> dietaData) async {
-    return false;
+  Future<bool> actualizarDieta(Map<String, dynamic> dietaData, String dietaId) async {
+    try {
+      await query.collection('dieta').doc(dietaId).update(dietaData);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      log.d(e.toString());
+      return false;
+    }
   }
 
   Future<bool> asignarDieta(String dietaId, String clienteId) async {
@@ -115,10 +120,10 @@ class DietaProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
-      print("Error deleting document: ${e.message}");
+      Logger().d("Error deleting document: ${e.message}");
       return false;
     } catch (e) {
-      print("An unexpected error occurred: ${e.toString()}");
+      Logger().d("An unexpected error occurred: ${e.toString()}");
       return false;
     }
   }

@@ -48,7 +48,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Future<bool>? isLoggedIn() async {
+  Future<bool> isLoggedIn() async {
     return await SharedPrefsHelper().getLoggedIn();
   }
 
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         ],
         theme: lightTheme,
         home: FutureBuilder<bool>(
-          future: SharedPrefsHelper().getLoggedIn(),
+          future: isLoggedIn(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -151,3 +151,4 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   //print('Handling a background message: ${message.messageId}');
 }
+

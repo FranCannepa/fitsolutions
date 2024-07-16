@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
@@ -83,6 +81,7 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
+      Logger().d(e);
       rethrow;
     }
   }
@@ -102,9 +101,10 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
+      Logger().d(e);
       rethrow;
     } catch (e) {
-      print(e.toString());
+      Logger().d(e);
       return false;
     }
   }
@@ -127,10 +127,10 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
-      print("Error deleting document: ${e.message}");
+      Logger().d(e);
       return false;
     } catch (e) {
-      print("An unexpected error occurred: ${e.toString()}");
+      Logger().d(e);
       return false;
     }
   }
@@ -161,7 +161,7 @@ class ActividadProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print('Error unsubscribing from activity: $e');
+      Logger().d(e);
       return false;
     }
   }
@@ -188,7 +188,7 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print('Error registering for activity: $e');
+      Logger().d(e);
       return false;
     }
   }

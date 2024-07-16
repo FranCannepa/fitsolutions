@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fitsolutions/Components/DietasComponents/dietaAdministrador.dart';
 import 'package:fitsolutions/Components/DietasComponents/dietaDisplayer.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
@@ -21,6 +19,8 @@ late final dietaOrigen;
 void initState() {
   dietaOrigen = SharedPrefsHelper().getSubscripcion();
 }
+
+
 
 class _DietasScreenState extends State<DietasScreen> {
   @override

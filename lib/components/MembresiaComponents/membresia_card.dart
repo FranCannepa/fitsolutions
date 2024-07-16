@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresia_detailed_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';

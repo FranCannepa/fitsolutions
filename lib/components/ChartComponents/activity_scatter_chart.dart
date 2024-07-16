@@ -47,6 +47,7 @@ class ActivityScatterChart extends StatelessWidget {
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(10),
+          height: MediaQuery.of(context).size.height - 400,
           width: MediaQuery.of(context).size.width - 60.0,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5.0),
@@ -61,42 +62,46 @@ class ActivityScatterChart extends StatelessWidget {
               ),
             ],
           ),
-          child: DataTable(
-            columns: const [
-              DataColumn(
-                  label: Text('Actividad',
-                      style: TextStyle(
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              child: DataTable(
+                columns: const [
+                  DataColumn(
+                      label: Text('Actividad',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15))),
+                  DataColumn(
+                      label: Text('Participantes',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15))),
+                  DataColumn(
+                      label: Text('Duracion/Horas',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15))),
+                ],
+                rows: activities.map((activity) {
+                  final startHour = activity.inicio.toDate().hour.toDouble();
+                  final finalHour = activity.fin.toDate().hour.toDouble();
+                  final duration = finalHour - startHour;
+                  return DataRow(cells: [
+                    DataCell(Text(activity.nombre,
+                        style: const TextStyle(
                           color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15))),
-              DataColumn(
-                  label: Text('Participantes',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15))),
-              DataColumn(
-                  label: Text('Duracion/Horas',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15))),
-            ],
-            rows: activities.map((activity) {
-              final startHour = activity.inicio.toDate().hour.toDouble();
-              final finalHour = activity.fin.toDate().hour.toDouble();
-              final duration = finalHour - startHour;
-              return DataRow(cells: [
-                DataCell(Text(activity.nombre,
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ))),
-                DataCell(Text(activity.participantes.toString(),
-                    style: const TextStyle(color: Colors.black))),
-                DataCell(Text(duration.toString(),
-                    style: const TextStyle(color: Colors.black))),
-              ]);
-            }).toList(),
+                        ))),
+                    DataCell(Text(activity.participantes.toString(),
+                        style: const TextStyle(color: Colors.black))),
+                    DataCell(Text(duration.toString(),
+                        style: const TextStyle(color: Colors.black))),
+                  ]);
+                }).toList(),
+              ),
+            ),
           ),
         ),
       ],

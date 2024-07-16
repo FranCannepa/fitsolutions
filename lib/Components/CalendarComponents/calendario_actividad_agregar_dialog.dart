@@ -82,8 +82,8 @@ class _CalendarioAgregarActividadDialogState
       final now = TimeOfDay.now();
       final nowInMinutes = now.hour * 60 + now.minute;
       final inicioInMinutes = horaInicio.hour * 60 + horaInicio.minute;
-
-      if (inicioInMinutes < nowInMinutes) {
+      final today = DateTime.now();
+      if (inicioInMinutes < nowInMinutes && (fechaActividad.day == today.day || fechaActividad.isBefore(today))) {
         return 'La hora de inicio no puede ser antes de la hora actual.';
       }
     }

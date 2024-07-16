@@ -14,41 +14,55 @@ class FormDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final inscriptionProvider = context.watch<InscriptionProvider>();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalles del Formulario'),
-      ),
-      body: FutureBuilder<FormModel?>(
-        future: inscriptionProvider.getFormData(ownerId, userId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data == null) {
-            return const Center(child: NoDataError(message: 'El usuario no ha completado su formulario'));
-          }
-
-          FormModel formData = snapshot.data!;
-
-          return Container(
-            color: Colors.grey[200], // Background color for the screen
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView(
-                children: [
-                  _buildInfoCard('CI', formData.ci),
-                  _buildInfoCard('Fecha de Nacimiento', formData.fechaNacimiento),
-                  _buildInfoCard('Sociedad', formData.sociedad),
-                  _buildInfoCard('Emergencia', formData.emergencia),
-                  _buildInfoCard('Lesiones', formData.lesiones),
-                  _buildInfoCard('Número de Emergencia', formData.numeroEmergencia),
-                  _buildObjectivesCard('Objetivos', formData.objetivos),
-                ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 30,
               ),
+              onPressed: () => Navigator.pop(context),
             ),
-          );
-        },
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            title: const Text(
+              'Detalles de Inscripcion',
+              style: TextStyle(color: Colors.white, fontSize: 30),
+            ),
+          ),
+        body: FutureBuilder<FormModel?>(
+          future: inscriptionProvider.getFormData(ownerId, userId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data == null) {
+              return const Center(child: NoDataError(message: 'El usuario no ha completado su formulario'));
+            }
+      
+            FormModel formData = snapshot.data!;
+      
+            return Container(
+              color: Colors.grey[200], // Background color for the screen
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListView(
+                  children: [
+                    _buildInfoCard('CI', formData.ci),
+                    _buildInfoCard('Fecha de Nacimiento', formData.fechaNacimiento),
+                    _buildInfoCard('Sociedad', formData.sociedad),
+                    _buildInfoCard('Emergencia', formData.emergencia),
+                    _buildInfoCard('Lesiones', formData.lesiones),
+                    _buildInfoCard('Número de Emergencia', formData.numeroEmergencia),
+                    _buildObjectivesCard('Objetivos', formData.objetivos),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -57,7 +71,8 @@ class FormDetailsScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        side: const BorderSide(color: Colors.black, width: 4.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 4.0,
       child: ListTile(
@@ -84,7 +99,8 @@ class FormDetailsScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        side: const BorderSide(color: Colors.black, width: 4.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 4.0,
       child: Padding(

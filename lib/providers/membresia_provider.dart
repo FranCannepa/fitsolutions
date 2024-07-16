@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
@@ -69,6 +67,7 @@ class MembresiaProvider extends ChangeNotifier {
       final db = FirebaseFirestore.instance;
       final docRef = db.collection('membresia').doc();
       await docRef.set(membresiaData);
+      notifyListeners();
       return true;
     } on FirebaseException catch (e) {
       return false;
@@ -102,8 +101,8 @@ class MembresiaProvider extends ChangeNotifier {
       if (membresiaId == null) {
         throw Exception('Missing "membresiaId" field in updatedMembresiaData');
       }
-      final docRef =
-          FirebaseFirestore.instance.collection('membresia').doc(membresiaId);
+      FirebaseFirestore.instance.collection('membresia').doc(membresiaId).update(updatedMembresiaData);
+      notifyListeners();
       return true;
     } on FirebaseException catch (e) {
       print("Error updating document: ${e.message}");

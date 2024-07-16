@@ -25,6 +25,10 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
   final List<String> _selectedObjectives = [];
 
   final TextEditingController _ciController = TextEditingController();
+  final TextEditingController _streetAddressController =
+      TextEditingController();
+  final TextEditingController _crossStreetController = TextEditingController();
+  final TextEditingController _celularController = TextEditingController();
   final TextEditingController _fechaNacimientoController =
       TextEditingController();
   final TextEditingController _sociedadController = TextEditingController();
@@ -70,6 +74,14 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
     });
   }
 
+  String? _validateCrossStreet(String? value) {
+    // Allow empty value for cross street
+    if (value == null || value.isEmpty) {
+      return null; // No error, value is valid
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final Logger log = Logger();
@@ -82,20 +94,20 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
     final inscriptionProvider = context.watch<InscriptionProvider>();
 
     return Scaffold(
-                  appBar: AppBar(
-              iconTheme: const IconThemeData(
-                color: Colors.white, // Set the back arrow color here
+        appBar: AppBar(
+            iconTheme: const IconThemeData(
+              color: Colors.white, // Set the back arrow color here
+            ),
+            backgroundColor: Colors.black,
+            title: const Text(
+              'Formulario de Inscripcion',
+              style: TextStyle(
+                fontSize: 25.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                overflow: TextOverflow.ellipsis,
               ),
-              backgroundColor: Colors.black,
-              title: const Text(
-                'Formulario de Inscripcion',
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  overflow: TextOverflow.ellipsis,  
-                ),
-              )),
+            )),
         body: FutureBuilder<FormModel?>(
             future: inscriptionProvider.getFormByUserId(_userId!),
             builder: (context, snapshot) {
@@ -105,7 +117,9 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                 log.e(snapshot.data);
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData) {
-                return const Center(child: NoDataError(message: 'No hay formulario disponible'));
+                return const Center(
+                    child:
+                        NoDataError(message: 'No hay formulario disponible'));
               }
 
               var form = snapshot.data!;
@@ -118,7 +132,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                 _lesionesController.text = form.lesiones;
                 _numeroEmergenciaController.text = form.numeroEmergencia;
                 _selectedObjectives.addAll(form.objetivos);
-                _isReadOnly =form.readOnly; 
+                _isReadOnly = form.readOnly;
               }
 
               return Form(
@@ -136,6 +150,45 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                         return 'Debe completar este campo';
                       }
                       return null;
+                    },
+                    enabled: !_isReadOnly, // Set enabled property
+                  ),
+                  TextFormField(
+                    controller: _streetAddressController,
+                    decoration: const InputDecoration(
+                      labelText: 'Calle y Numero',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Ingrese la calle y número';
+                      }
+                      return null;
+                    },
+                    enabled: !_isReadOnly, // Set enabled property
+                  ),
+                  TextFormField(
+                    controller: _crossStreetController,
+                    decoration: const InputDecoration(
+                      labelText: 'Esquina',
+                    ),
+                    validator: _validateCrossStreet,
+                    enabled: !_isReadOnly, // Set enabled property
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: _celularController,
+                    decoration: const InputDecoration(
+                      labelText: 'Celular',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Ingrese el número de celular';
+                      }
+                      if (RegExp(r'^\d{9}$').hasMatch(value)) {
+                        return null; // No error, value is valid
+                      } else {
+                        return 'Ingrese un número de teléfono uruguayo válido (9 dígitos)';
+                      }
                     },
                     enabled: !_isReadOnly, // Set enabled property
                   ),
@@ -179,6 +232,10 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Debe completar este campo';
+                          }
+                          if (_selectedDate.isAfter(DateTime.now()) ||
+                              _selectedDate.isAtSameMomentAs(DateTime.now())) {
+                            return 'La fecha no puede ser hoy o en el futuro';
                           }
                           return null;
                         },
@@ -229,9 +286,8 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                     ],
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Debe completar este campo';
+                        return 'Ingrese el número de celular';
                       }
-                      return null;
                     },
                     enabled: !_isReadOnly, // Set enabled property
                   ),
@@ -268,8 +324,15 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                         : () async {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
+                              String address = _streetAddressController.text;
+                              if (_crossStreetController.text.isNotEmpty) {
+                                address +=
+                                    ' esquina ${_crossStreetController.text}';
+                              }
                               Map<String, dynamic> formData = {
                                 'ci': _ciController.text,
+                                'direccion': address,
+                                'celular': _celularController.text,
                                 'fechaNacimiento':
                                     _fechaNacimientoController.text,
                                 'sociedad': _sociedadController.text,
@@ -289,7 +352,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                                 });
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                        content: Text('Form submitted')));
+                                        content: Text('Formulario Completado')));
                               }
                             }
                           },

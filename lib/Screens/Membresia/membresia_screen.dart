@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:fitsolutions/components/components.dart';
@@ -24,7 +22,7 @@ class MembresiaScreen extends StatefulWidget {
 class _MembresiaScreenState extends State<MembresiaScreen> {
   @override
   Widget build(BuildContext context) {
-    final MembresiaProvider provider = context.read<MembresiaProvider>();
+    final MembresiaProvider provider = context.watch<MembresiaProvider>();
     final UserData userData = context.read<UserData>();
     return Scaffold(
       body: FutureBuilder(

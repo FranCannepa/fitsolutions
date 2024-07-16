@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 
 import '../../modelo/models.dart';
 
@@ -80,6 +78,7 @@ class ActivityBarChart extends StatelessWidget {
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(10),
+          height: MediaQuery.of(context).size.height - 400,
           width: MediaQuery.of(context).size.width - 60.0,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5.0),
@@ -94,31 +93,36 @@ class ActivityBarChart extends StatelessWidget {
               ),
             ],
           ),
-          child: DataTable(
-            columns: const [
-              DataColumn(
-                  label: Text('Actividad',
-                      style: TextStyle(
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: DataTable(
+                columns: const [
+                  DataColumn(
+                      label: Text('Actividad',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20))),
+                  DataColumn(
+                      label: Text('Participantes',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20))),
+                ],
+                rows: activities.map((activity) {
+                  return DataRow(cells: [
+                    DataCell(Text(activity.nombre,
+                        style: const TextStyle(
                           color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20))),
-              DataColumn(
-                  label: Text('Participantes',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20))),
-            ],
-            rows: activities.map((activity) {
-              return DataRow(cells: [
-                DataCell(Text(activity.nombre,
-                    style: const TextStyle(
-                      color: Colors.black,
-                    ))),
-                DataCell(Text(activity.participantes.toString(),
-                    style: const TextStyle(color: Colors.black))),
-              ]);
-            }).toList(),
+                        ))),
+                    DataCell(Text(activity.participantes.toString(),
+                        style: const TextStyle(color: Colors.black))),
+                  ]);
+                }).toList(),
+              ),
+            ),
           ),
         ),
       ],

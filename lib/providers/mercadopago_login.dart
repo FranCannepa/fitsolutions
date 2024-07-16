@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'package:logger/logger.dart';
 
-const String CLIENT_ID = '491143852095789';
-const String CLIENT_SECRET = 'Ev29l3aTidRxxoQwC9hDeAPEGc47l92G';
-const String REDIRECT_URI = 'https://anichart.net/Summer-2024';
-const String AUTHORIZATION_ENDPOINT = 'https://auth.mercadopago.com.uy/authorization';
-const String TOKEN_ENDPOINT = 'https://api.mercadopago.com/oauth/token';
+const String clientId = '491143852095789';
+const String clientSecret = 'Ev29l3aTidRxxoQwC9hDeAPEGc47l92G';
+const String redirectUri = 'https://anichart.net/Summer-2024';
+const String authorizationEndpoint =
+    'https://auth.mercadopago.com.uy/authorization';
+const String tokenEndpoint = 'https://api.mercadopago.com/oauth/token';
 
 const FlutterAppAuth appAuth = FlutterAppAuth();
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
@@ -20,14 +19,15 @@ class MercadoPagoLoginPage extends StatelessWidget {
 
   Future<void> login(BuildContext context) async {
     try {
-      final AuthorizationTokenResponse? result = await appAuth.authorizeAndExchangeCode(
+      final AuthorizationTokenResponse? result =
+          await appAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(
-          CLIENT_ID,
-          REDIRECT_URI,
-          clientSecret: CLIENT_SECRET,
+          clientId,
+          redirectUri,
+          clientSecret: clientSecret,
           serviceConfiguration: const AuthorizationServiceConfiguration(
-            authorizationEndpoint: AUTHORIZATION_ENDPOINT,
-            tokenEndpoint: TOKEN_ENDPOINT,
+            authorizationEndpoint: authorizationEndpoint,
+            tokenEndpoint: tokenEndpoint,
           ),
           scopes: ['offline_access'],
         ),
@@ -42,25 +42,30 @@ class MercadoPagoLoginPage extends StatelessWidget {
 
         // Save tokens in Firestore or your backend database
         saveCredentialsToFirestore(accessToken, refreshToken);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful')),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login successful')),
+          );
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login failed')),
-        );
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login failed')),
+          );
+        }
       }
     } catch (e) {
       Logger().d(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
     }
   }
 
-  Future<void> saveCredentialsToFirestore(String accessToken, String refreshToken) async {
+  Future<void> saveCredentialsToFirestore(
+      String accessToken, String refreshToken) async {
     // Implement saving to Firestore or your backend database
   }
 

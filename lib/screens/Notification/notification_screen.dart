@@ -15,19 +15,20 @@ class NotificationScreen extends StatelessWidget {
     final provider = context.watch<NotificationProvider>();
     return Scaffold(
       appBar: AppBar(
-          iconTheme: const IconThemeData(
-            color: Colors.white, // Set the back arrow color here
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 30,
           ),
-          backgroundColor: Colors.black,
-          title: const Text(
-            'Notificationes',
-            style: TextStyle(
-              fontSize: 25.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              overflow: TextOverflow.ellipsis,
-            ),
-          )),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        title: const Text(
+          'Notificaciones',
+          style: TextStyle(color: Colors.white, fontSize: 25),
+        ),
+      ),
       body: StreamBuilder<List<NotificationModel>>(
         stream: provider.getUserNotifications(userId),
         builder: (context, snapshot) {
@@ -85,6 +86,7 @@ class NotificationScreen extends StatelessWidget {
                           vertical: 8.0, horizontal: 16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
+                        side: const BorderSide(color: Colors.black, width: 3.0),
                       ),
                       elevation: 4,
                       child: ListTile(
