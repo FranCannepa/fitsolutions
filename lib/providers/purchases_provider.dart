@@ -27,6 +27,28 @@ class PurchasesProvider extends ChangeNotifier {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getPurchasesByGym(String gymId) async {
+    try {
+      final membresiasSnapshot = await _db
+          .collection('membresia')
+          .where('origenMembresia', isEqualTo: gymId)
+          .get();
+
+      final membresiaIds =
+          membresiasSnapshot.docs.map((doc) => doc.id).toList();
+
+      final purchasesSnapshot = await _db
+          .collection('purchases')
+          .where('productId', whereIn: membresiaIds)
+          .get();
+
+      return purchasesSnapshot.docs.map((doc) => doc.data()).toList();
+    } catch (e) {
+      print('Error fetching purchases by gym: $e');
+      return [];
+    }
+  }
+
   Future<bool> updatePurchaseStatus(String purchaseId, int newStatus) async {
     try {
       final docRef = _db.collection('purchases').doc(purchaseId);
@@ -48,6 +70,23 @@ class PurchasesProvider extends ChangeNotifier {
     } catch (e) {
       print('Error deleting purchase: $e');
       return false;
+    }
+  }
+
+  Future<String> getStatusName(String statusId) async {
+    try {
+      final querySnapshot = await _db
+          .collection('statusIds')
+          .where('id', isEqualTo: statusId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.data()['nombre'] ?? 'Unknown status';
+      } else {
+        return 'Unknown status';
+      }
+    } catch (e) {
+      print('Error fetching status name: $e');
+      return 'Error retrieving status';
     }
   }
 }

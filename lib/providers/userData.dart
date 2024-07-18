@@ -70,6 +70,24 @@ class UserData extends ChangeNotifier {
     }
   }
 
+  Future<String?> getUserNameById(String userId) async {
+  try {
+    final docRef = FirebaseFirestore.instance.collection('usuario').doc(userId);
+    final docSnapshot = await docRef.get();
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data();
+      return data?['nombreCompleto'] as String?;
+    } else {
+      print("No se encontro usuario con ID: $userId");
+      return null;
+    }
+  } catch (e) {
+    log.d("Error fetching nombre usuario: $e");
+    return null;
+  }
+}
+
+
   Future<Map<String, dynamic>?> getUserProfile() async {
     final String? userId = await SharedPrefsHelper().getUserId();
     try {
