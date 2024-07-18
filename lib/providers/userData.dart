@@ -7,6 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:fitsolutions/providers/membresia_provider.dart';
+import 'package:provider/provider.dart';
+
 
 class UserData extends ChangeNotifier {
   String nombreCompleto = '';
@@ -139,21 +142,44 @@ class UserData extends ChangeNotifier {
     }
   }
 
-  Future<void> updateMembresiaId(String membresiaId) async {
-    final String? userId = await getUserId();
-    if (userId != null) {
-      await FirebaseFirestore.instance
-          .collection('usuario')
-          .doc(userId)
-          .update({
+  Future<void> updateMembresiaId(BuildContext context, String membresiaId) async {
+  final String? userId = await getUserId();
+  if (userId != null && membresiaId != null) {
+    // Obtengo la membresia
+    final membresiaProvider = Provider.of<MembresiaProvider>(context, listen: false);
+    final membresiaData = await membresiaProvider.getMembresiaDetails(membresiaId);
+
+    if (membresiaData != null) {
+      // Mantengo todavia el asignamiento de la membresiaId al usuario por las dudas
+      await FirebaseFirestore.instance.collection('usuario').doc(userId).update({
         'membresiaId': membresiaId,
       });
       this.membresiaId = membresiaId;
+
+      // Calculo la fecha de expiracion y los cupos restantes
+      int duracion = membresiaData['duracion'] ?? 365;
+      DateTime fechaCompra = DateTime.now();
+      DateTime fechaExpiracion = fechaCompra.add(Duration(days: duracion));
+      int cuposRestantes = membresiaData['cupos'] ?? 0;
+
+      // Agrego la membresia a la tabla usuarioMembresia
+      await FirebaseFirestore.instance.collection('usuarioMembresia').add({
+        'usuarioId': userId,
+        'membresiaId': membresiaId,
+        'fechaCompra': fechaCompra,
+        'fechaExpiracion': fechaExpiracion,
+        'cuposRestantes': cuposRestantes,
+        'estado': 'activa',
+      });
+
       notifyListeners();
     } else {
-      log.d("No se pudo actualizar la membresia");
+      print("Membresía no encontrada o datos incompletos para ID: $membresiaId");
     }
+  } else {
+    print("No se pudo actualizar la membresía o el ID de usuario es nulo");
   }
+}
 
   bool esPropietarioGym() {
     return gimnasioIdPropietario != '';

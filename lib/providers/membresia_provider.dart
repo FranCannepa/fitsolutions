@@ -33,6 +33,16 @@ class MembresiaProvider extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>?> getMembresiaDetails(String membresiaId) async {
+  try {
+    final docSnapshot = await FirebaseFirestore.instance.collection('membresia').doc(membresiaId).get();
+    return docSnapshot.exists ? docSnapshot.data() : null;
+  } catch (e) {
+    print("Error al obtener los detalles de la membresía: $e");
+    return null;
+  }
+}
+
   Future<String?> getMembershipName(String membershipId) async {
   try {
     final docRef = FirebaseFirestore.instance.collection('membresia').doc(membershipId);

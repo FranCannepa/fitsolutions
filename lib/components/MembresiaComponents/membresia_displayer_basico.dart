@@ -71,7 +71,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     if (status == 'approved') {
       statusCode = 1;
       if (membresiaId != null) {
-        await userProvider.updateMembresiaId(membresiaId);
+        await userProvider.updateMembresiaId(context, membresiaId);
       }
       await await prefs.remove('pending_membresia_id');
       await prefs.remove('pending_payment_id');
