@@ -93,7 +93,7 @@ class ActividadDialog extends StatelessWidget {
                               onPressed: () async {
                                 if (isInscrito) {
                                   final result = await actividadProvider
-                                      .desinscribirseActividad(
+                                      .desinscribirseActividad(context,
                                           userProvider.userId, actividad.id);
                                   if (result) {
                                     showSuccessModal(
@@ -105,7 +105,7 @@ class ActividadDialog extends StatelessWidget {
                                   }
                                 } else {
                                   final result =
-                                      await actividadProvider.anotarseActividad(
+                                      await actividadProvider.anotarseActividad(context,
                                           userProvider.userId, actividad.id);
 
                                   if (result) {

@@ -158,4 +158,26 @@ class MembresiaProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<DocumentSnapshot?> obtenerMembresiaActiva(String usuarioId) async {
+    try {
+      final db = FirebaseFirestore.instance;
+      var snapshot = await db
+          .collection('usuarioMembresia')
+          .where('usuarioId', isEqualTo: usuarioId)
+          .where('fechaExpiracion', isGreaterThan: DateTime.now())
+          .where('cuposRestantes', isGreaterThan: 0)
+          .orderBy('fechaExpiracion', descending: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first;
+      }
+    } catch (e) {
+      print('Error al obtener la membresía activa: $e');
+    }
+    return null;
+  }
+
 }
