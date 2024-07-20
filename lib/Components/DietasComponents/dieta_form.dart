@@ -3,6 +3,7 @@ import 'package:fitsolutions/components/CommonComponents/input_row.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/providers/dietas_provider.dart';
+import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -156,18 +157,29 @@ class _DietaFromState extends State<DietaForm> {
                         'comidas': comidas,
                         'origenDieta': widget.origenDieta,
                       };
-                      final result =
-                          await dietaProvider.agregarDieta(dietaData);
-                      if (result) {
-                        _showSuccessModal(
-                            "Dieta creada exitosamente", ResultType.success);
-                      } else {
-                        _showSuccessModal(
-                            "Error al crear dieta", ResultType.error);
-                      }
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return ConfirmDialog(
+                              title: 'Crear Dieta',
+                              content: '¿Desea Crear Dieta?',
+                              onConfirm: () async {
+                                final result =
+                                    await dietaProvider.agregarDieta(dietaData);
+                                if (result) {
+                                  _showSuccessModal("Dieta creada exitosamente",
+                                      ResultType.success);
+                                } else {
+                                  _showSuccessModal(
+                                      "Error al crear dieta", ResultType.error);
+                                }
+                              },
+                              parentKey: null,
+                            );
+                          });
                     } else {
                       _showSuccessModal(
-                          "Errores en el formulario", ResultType.warning);
+                          "Errores en el formulario", ResultType.error);
                     }
                   },
                   text: "Crear Dieta",

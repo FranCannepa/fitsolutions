@@ -132,7 +132,9 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
         );
       }
     } else {
-      Logger().d('ERROR');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('El formulario cuenta con errores verificar')),
+        );
     }
   }
 

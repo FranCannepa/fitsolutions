@@ -6,7 +6,7 @@ import 'package:logger/logger.dart';
 
 const String clientId = '491143852095789';
 const String clientSecret = 'Ev29l3aTidRxxoQwC9hDeAPEGc47l92G';
-const String redirectUri = 'https://anichart.net/Summer-2024';
+const String redirectUri = 'com.fitsolutions.fitsolutionsapp://callback';
 const String authorizationEndpoint =
     'https://auth.mercadopago.com.uy/authorization';
 const String tokenEndpoint = 'https://api.mercadopago.com/oauth/token';

@@ -1,9 +1,8 @@
 import 'package:fitsolutions/Components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
-import 'package:fitsolutions/components/MembresiaComponents/membresia_card.dart';
-import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +19,37 @@ class MembresiaDisplayerPropietario extends StatefulWidget {
 class _MembresiaDisplayerPropietarioState
     extends State<MembresiaDisplayerPropietario> {
   List<Membresia> membresiaData = [];
-  late String gymId;
+  String? gymId;
+
+  @override
+  void initState() {
+    super.initState();
+    getGymOrigen();
+  }
+
+  void getGymOrigen() async {
+    gymId = await SharedPrefsHelper().getSubscripcion();
+  }
+
+  void _showMyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Registro no completado'),
+          content: const Text(
+              'Complete su registro completando sus datos de Entrenador o Gimnasio'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userData = context.read<UserData>();
@@ -64,21 +93,27 @@ class _MembresiaDisplayerPropietarioState
       ),
       floatingActionButton: userData.esBasico()
           ? null
-          : FloatingActionButton(
-              heroTag: 'unique5',
-              onPressed: () => {
-                showDialog(
-                  context: context,
-                  builder: (context) => MembresiaFormDialog(
-                    onClose: () => Navigator.pop(context),
-                    origenMembresia: userData.origenAdministrador == ''
-                        ? gymId
-                        : userData.origenAdministrador,
-                  ),
+          : gymId != null && gymId != '' 
+              ? FloatingActionButton(
+                  heroTag: 'unique5',
+                  onPressed: () => {
+                    showDialog(
+                      context: context,
+                      builder: (context) => MembresiaFormDialog(
+                        onClose: () => Navigator.pop(context),
+                        origenMembresia: userData.origenAdministrador == ''
+                            ? gymId!
+                            : userData.origenAdministrador,
+                      ),
+                    )
+                  },
+                  child: const Icon(Icons.add),
                 )
-              },
-              child: const Icon(Icons.add),
-            ),
+              : FloatingActionButton(
+                  heroTag: 'unique5',
+                  onPressed: () => _showMyDialog(context),
+                  child: const Icon(Icons.add),
+                ),
     );
   }
 }

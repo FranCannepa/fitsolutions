@@ -128,13 +128,13 @@ class _WeekSelectorState extends State<WeekSelector> {
 
   final List<String> days = ['1', '2', '3', '4', '5', '6', '7'];
   final List<String> daysNames = [
-    'Domingo',
-    'Lunes',
-    'Martes',
-    'Miercoles',
-    'Jueves',
-    'Viernes',
-    'Sabado'
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7'
   ];
 
   void _addWeek(FitnessProvider fProv) async {
@@ -285,17 +285,9 @@ class _WeekSelectorState extends State<WeekSelector> {
                                       ),
                                       child: Text(
                                         (index + 1).toString(),
-                                        style: TextStyle(
-                                          color: weekCompleted
-                                              ? Colors.white
-                                              : (index == _selectedWeekIndex
-                                                  ? Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary
-                                                  : Theme.of(context)
-                                                      .colorScheme
-                                                      .primary),
-                                        ),
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
                                       ),
                                     ),
                                   );
@@ -303,30 +295,63 @@ class _WeekSelectorState extends State<WeekSelector> {
                               );
                             }),
                       ),
-                      const SizedBox(height: 10),
-                      const Text('Dias:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      if (widget.plan.weekCount() > 0)
-                        SizedBox(
-                          height: 50, // Adjust height according to your design
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: days.length,
-                            itemBuilder: (BuildContext context, int dayIndex) {
-                              return FutureBuilder<bool>(
-                                future: checkDayCompletion(
-                                    _selectedWeekIndex!, dayIndex),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<bool> snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  }
-                                  bool dayCompleted = snapshot.data!;
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          const Text('Dia:',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 32)),
+                          const Spacer(),
+                          if (!userData.esBasico()) ...[
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  openNoteBox(null, provider);
+                                });
+                              },
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(Icons.add),
+                                ),
+                              ),
+                            )
+                          ]
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 50, // Adjust height according to your design
+                        child: FutureBuilder<List<bool>>(
+                            future: Future.wait(List.generate(
+                                days.length,
+                                (index) => checkDayCompletion(
+                                    _selectedWeekIndex!, index))),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<bool>> snapshot) {
+                              if (!snapshot.hasData) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                              return ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: days.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  bool dayCompleted = snapshot.data!.length == days.length
+                                      ? snapshot.data![index]
+                                      : false;
                                   return GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        _selectedDayIndex = dayIndex;
+                                        _selectedDayIndex = index;
+                                        // Reset day completion status when switching days
+                                        isDayCompleted = dayCompleted;
                                       });
                                     },
                                     child: Container(
@@ -336,7 +361,7 @@ class _WeekSelectorState extends State<WeekSelector> {
                                       decoration: BoxDecoration(
                                         color: dayCompleted
                                             ? Colors.green
-                                            : (dayIndex == _selectedDayIndex
+                                            : (index == _selectedDayIndex
                                                 ? Theme.of(context)
                                                     .colorScheme
                                                     .primary
@@ -347,46 +372,31 @@ class _WeekSelectorState extends State<WeekSelector> {
                                             BorderRadius.circular(4.0),
                                       ),
                                       child: Text(
-                                        days[dayIndex],
-                                        style: TextStyle(
-                                          color: dayCompleted
-                                              ? Colors.white
-                                              : (dayIndex == _selectedDayIndex
-                                                  ? Theme.of(context)
-                                                      .colorScheme
-                                                      .secondary
-                                                  : Theme.of(context)
-                                                      .colorScheme
-                                                      .primary),
-                                        ),
+                                        daysNames[index],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white),
                                       ),
                                     ),
                                   );
                                 },
                               );
-                            },
-                          ),
-                        ),
-                      const HeaderRow(),
-                      if (widget.plan.weekCount() > 0 &&
-                          _selectedWeekIndex != -1)
-                        ExerciseRows(
-                            plan: widget.plan,
-                            week: widget.plan.idFromWeek(_selectedWeekIndex!),
-                            day: daysNames[_selectedDayIndex],
-                            fitnessProvider: provider)
+                            }),
+                      ),
                     ],
+                  ),
+                ),
+                const HeaderRow(),
+                Expanded(
+                  child: ExerciseRows(
+                    plan: widget.plan,
+                    week: widget.plan.idFromWeek(_selectedWeekIndex!),
+                    day: days[_selectedDayIndex],
+                    fitnessProvider: provider,
                   ),
                 ),
               ],
             ),
-            floatingActionButton: !userData.esBasico()
-                ? FloatingActionButton(
-                    onPressed: () => openNoteBox(null, provider),
-                    child: Icon(Icons.add,
-                        color: Theme.of(context).colorScheme.secondary),
-                  )
-                : null,
           );
         }
       },

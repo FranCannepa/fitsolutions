@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
+import 'package:fitsolutions/providers/fitness_provider.dart';
 //import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';

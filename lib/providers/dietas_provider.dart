@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
@@ -8,6 +10,53 @@ class DietaProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
   final query = FirebaseFirestore.instance;
   Logger log = Logger();
+  StreamSubscription<DocumentSnapshot>? _usuarioSubscription;
+  StreamSubscription<DocumentSnapshot>? _dietaSubscription;
+
+  DietaProvider() {
+    _initializeListener();
+  }
+
+  void _initializeListener() async {
+    final userId = await prefs.getUserId();
+    if (userId != null) {
+      _usuarioSubscription = query.collection('usuario').doc(userId).snapshots().listen((snapshot) {
+        if (snapshot.exists) {
+          final userData = snapshot.data() as Map<String, dynamic>;
+          if (userData.containsKey('dietaId')) {
+            final dietaId = userData['dietaId'] as String;
+            _listenToDietaChanges(dietaId);
+          } else {
+            _cancelDietaSubscription();
+          }
+          notifyListeners();
+        }
+      });
+    }
+  }
+
+  void _listenToDietaChanges(String dietaId) {
+    _cancelDietaSubscription();
+    _dietaSubscription =
+        query.collection('dieta').doc(dietaId).snapshots().listen((snapshot) {
+      if (snapshot.exists) {
+        notifyListeners();
+      }
+    });
+  }
+
+  void _cancelDietaSubscription() {
+    if (_dietaSubscription != null) {
+      _dietaSubscription!.cancel();
+      _dietaSubscription = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _usuarioSubscription?.cancel();
+    super.dispose();
+  }
 
   Future<Dieta?> getDieta() async {
     final userId = await prefs.getUserId();
@@ -29,11 +78,11 @@ class DietaProvider extends ChangeNotifier {
           return null;
         }
       } else {
-         Logger().d("User data does not contain 'dietaId' key");
+        Logger().d("User data does not contain 'dietaId' key");
         return null;
       }
     } else {
-       Logger().d("User document not found for user ID: $userId");
+      Logger().d("User document not found for user ID: $userId");
       return null;
     }
   }
@@ -74,7 +123,8 @@ class DietaProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> actualizarDieta(Map<String, dynamic> dietaData, String dietaId) async {
+  Future<bool> actualizarDieta(
+      Map<String, dynamic> dietaData, String dietaId) async {
     try {
       await query.collection('dieta').doc(dietaId).update(dietaData);
       notifyListeners();

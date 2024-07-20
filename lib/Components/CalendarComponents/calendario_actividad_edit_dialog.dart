@@ -234,7 +234,7 @@ class _CalendarioActividadEditDialogState
                                   "Error al actualizar", ResultType.error);
                             }
                           } else {
-                            showSuccessModal("Errores en el Formulario", ResultType.info);
+                            showSuccessModal("Errores en el Formulario", ResultType.error);
                           }
                         },
                         text: "Guardar",

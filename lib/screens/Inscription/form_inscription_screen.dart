@@ -126,6 +126,9 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
               // Initialize text controllers with form data if available
               if (form.ci != '') {
                 _ciController.text = form.ci;
+                _streetAddressController.text = form.direccion.split('esquina')[0];
+                _crossStreetController.text = form.direccion.split('esquina')[1];
+                _celularController.text = form.celular;
                 _fechaNacimientoController.text = form.fechaNacimiento;
                 _sociedadController.text = form.sociedad;
                 _emergenciaController.text = form.emergencia;

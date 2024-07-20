@@ -51,6 +51,8 @@ class FormDetailsScreen extends StatelessWidget {
                 child: ListView(
                   children: [
                     _buildInfoCard('CI', formData.ci),
+                    _buildInfoCard('Direccion',formData.direccion),
+                    _buildInfoCard('Contacto',formData.celular),
                     _buildInfoCard('Fecha de Nacimiento', formData.fechaNacimiento),
                     _buildInfoCard('Sociedad', formData.sociedad),
                     _buildInfoCard('Emergencia', formData.emergencia),

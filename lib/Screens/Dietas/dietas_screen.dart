@@ -13,19 +13,44 @@ class DietasScreen extends StatefulWidget {
   State<DietasScreen> createState() => _DietasScreenState();
 }
 
-late final dietaOrigen;
-
-@override
-void initState() {
-  dietaOrigen = SharedPrefsHelper().getSubscripcion();
-}
-
+String? dietaOrigen;
 
 
 class _DietasScreenState extends State<DietasScreen> {
+  
+  @override
+  void initState() {
+    super.initState();
+    getDietaOrigen();
+  }
+
+  void getDietaOrigen() async {
+    final fetchDietaOrigen = await SharedPrefsHelper().getSubscripcion();
+    setState((){
+      dietaOrigen = fetchDietaOrigen;
+    });
+  }
+
+  void _showMyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: const Text('Registro no completado'),
+            content: const Text('Complete su registro completando sus datos de Entrenador o Gimnasio'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    context.read<UserData>().initializeData();
     final UserData userData = context.read<UserData>();
     return Scaffold(
       body: userData.esBasico()
@@ -33,22 +58,28 @@ class _DietasScreenState extends State<DietasScreen> {
           : const DietaAdministrador(),
       floatingActionButton: userData.esBasico()
           ? null
-          : FloatingActionButton(
-              heroTag: 'unique1',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DietaForm(
-                      origenDieta: userData.origenAdministrador == ''
-                          ? dietaOrigen
-                          : userData.origenAdministrador,
-                    ),
-                  ),
-                );
-              },
-              child: const Icon(Icons.add),
-            ),
+          : dietaOrigen != null && dietaOrigen != ''  ?
+               FloatingActionButton(
+                  heroTag: 'unique1',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DietaForm(
+                          origenDieta: userData.origenAdministrador == ''
+                              ? dietaOrigen!
+                              : userData.origenAdministrador,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Icon(Icons.add),
+                )
+              : FloatingActionButton(
+                  heroTag: 'unique1',
+                  onPressed: () => _showMyDialog(context),
+                  child: const Icon(Icons.add),
+                ),
     );
   }
 }

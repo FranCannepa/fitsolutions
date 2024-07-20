@@ -7,7 +7,7 @@ class ActivitiesDialog extends StatefulWidget {
   const ActivitiesDialog({super.key});
 
   @override
-  _ActivitiesDialogState createState() => _ActivitiesDialogState();
+  State<ActivitiesDialog> createState() => _ActivitiesDialogState();
 }
 
 class _ActivitiesDialogState extends State<ActivitiesDialog> {
@@ -69,7 +69,7 @@ class _ActivitiesDialogState extends State<ActivitiesDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
+                Column(
                   children: [
                     TextButton(
                       onPressed: () async {
@@ -92,6 +92,7 @@ class _ActivitiesDialogState extends State<ActivitiesDialog> {
                         'Fecha ${_selectedDate!.toLocal().toString().split(' ')[0]}'
                       ),
                   ],
+                  
                 ),
                 Expanded(
                   child: ListView.builder(

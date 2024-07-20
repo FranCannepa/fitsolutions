@@ -30,6 +30,36 @@ class ChartProvider extends ChangeNotifier {
     return [];
   }
 
+    Future<List<Actividad>> getAllActivitiesByDate({required int month, required int year}) async {
+    try{
+    final id = await prefs.getSubscripcion();
+    final startOfMonth = DateTime(year, month, 1);
+    final endOfMonth = DateTime(year, month + 1, 1).subtract(const Duration(days: 1));
+
+    QuerySnapshot snapshot = await _firebase.collection('actividad')
+        .where('propietarioActividadId', isEqualTo: id)
+        .where('fin', isGreaterThanOrEqualTo: startOfMonth)
+        .where('inicio', isLessThanOrEqualTo: endOfMonth)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final list = snapshot.docs.map((doc) async {
+        final actividadData = doc.data() as Map<String, dynamic>;
+        actividadData['actividadId'] = doc.id;
+        final actividad = Actividad.fromDocument(actividadData);
+        actividad.participantes = await getParticipantsCount(doc.id);
+        return actividad;
+      }).toList();
+      return Future.wait(list);
+    }
+    return [];
+    }
+    catch(e){
+      Logger().e(e);
+      return [];
+    }
+  }
+
   // Fetch all participants for a specific activity
   Future<int> getParticipantsCount(String activityId) async {
     QuerySnapshot snapshot = await _firebase

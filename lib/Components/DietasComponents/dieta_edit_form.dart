@@ -4,6 +4,7 @@ import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/components/CommonComponents/input_row.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/providers/dietas_provider.dart';
+import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -159,15 +160,26 @@ class _DietaEditFormState extends State<DietaEditForm> {
                         'comidas': comidas,
                         'origenDieta': dieta.origenDieta,
                       };
-                      final result = await dietaProvider.actualizarDieta(
-                          dietaData, dieta.id);
-                      if (result) {
-                        _showSuccessModal("Dieta actualizada exitosamente",
-                            ResultType.success);
-                      } else {
-                        _showSuccessModal(
-                            "Error al actualizar dieta", ResultType.error);
-                      }
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return ConfirmDialog(
+                              title: 'Editar Dieta',
+                              content: '¿Desea Modificar Dieta?',
+                              onConfirm: () async {
+                                final result =
+                                    await dietaProvider.actualizarDieta(dietaData,dieta.id);
+                                if (result) {
+                                  _showSuccessModal("Dieta modificada exitosamente",
+                                      ResultType.success);
+                                } else {
+                                  _showSuccessModal(
+                                      "Error al crear dieta", ResultType.error);
+                                }
+                              },
+                              parentKey: null,
+                            );
+                          });
                     } else {
                       _showSuccessModal(
                           "Errores en el formulario", ResultType.warning);

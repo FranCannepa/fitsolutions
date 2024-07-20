@@ -20,11 +20,14 @@ class InfoItem extends StatelessWidget {
       children: [
         if (icon != null) icon!, 
         const SizedBox(width: 10),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: fontSize,
-            fontFamily: fontFamily,
+        Flexible(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: fontSize,
+              fontFamily: fontFamily,
+            ),
+            overflow: TextOverflow.clip,
           ),
         ),
       ],

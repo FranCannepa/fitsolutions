@@ -14,8 +14,9 @@ class UserProvider extends ChangeNotifier {
 
   //UserProvider({FirebaseAuth? firebaseAuth}) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-  UserProvider({FirebaseAuth? firebaseAuth,FirebaseFirestore? firestore})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance, _firestore = firestore ?? FirebaseFirestore.instance{
+  UserProvider({FirebaseAuth? firebaseAuth, FirebaseFirestore? firestore})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance {
     _firebaseAuth.authStateChanges().listen((User? user) {
       _user = user;
       log.d('USUARIO AUTHENTICATED $isAuthenticated');
@@ -35,9 +36,12 @@ class UserProvider extends ChangeNotifier {
           email: email, password: password);
 
       // Fetch user data from Firestore
-      QuerySnapshot querySnapshot =
-          await _firestore.collection('usuario').where('email', isEqualTo: email).limit(1).get();
-      if(querySnapshot.size > 0){
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('usuario')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+      if (querySnapshot.size > 0) {
         DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
         Map<String, dynamic> docData =
             documentSnapshot.data() as Map<String, dynamic>;
@@ -45,8 +49,7 @@ class UserProvider extends ChangeNotifier {
         await prefs.setEmail(docData['email']);
         await prefs.setUserId(documentSnapshot.id);
         await prefs.setLoggedIn(true);
-      }
-      else{
+      } else {
         _firstLogin = true;
         await prefs.setEmail(email);
         await prefs.setLoggedIn(true);
@@ -62,12 +65,11 @@ class UserProvider extends ChangeNotifier {
       UserCredential userCred = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
       _firstLogin = true;
-      
       return userCred;
     } on FirebaseAuthException catch (e) {
       log.d('EXCEPTO $e');
       rethrow;
-    } catch(e){
+    } catch (e) {
       log.d('EXCEPTO $e');
       rethrow;
     }

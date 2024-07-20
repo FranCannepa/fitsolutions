@@ -112,7 +112,7 @@ class _CalendarioAgregarActividadDialogState
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
-        }else if(snapshot.data == null){
+        }else if(snapshot.data == null || snapshot.data == ''){
             return AlertDialog(
             title: const Text('Registro no completado'),
             content: const Text('Complete su registro completando sus datos de Entrenador o Gimnasio'),
@@ -274,7 +274,7 @@ class _CalendarioAgregarActividadDialogState
                                       "Error al crear", ResultType.error);
                                 }
                               } else {
-                                _showSuccessModal("Errores en el formulario", ResultType.info);
+                                _showSuccessModal("Errores en el formulario", ResultType.error);
                               }
                             },
                             text: "Agregar",

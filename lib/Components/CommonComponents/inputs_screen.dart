@@ -13,13 +13,16 @@ class ScreenTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: TextStyle(
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          fontFamily: 'Roboto',
-          color: Colors.black),
+    return Flexible(
+      child: Text(
+        title,
+        style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            fontFamily: 'Roboto',
+            color: Colors.black),
+            overflow: TextOverflow.clip,
+      ),
     );
   }
 }

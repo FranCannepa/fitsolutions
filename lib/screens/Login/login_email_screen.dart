@@ -55,13 +55,10 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
       return null;
     }
   }
-  
-  Future<void> _initializeData(
-      bool isLoggedIn, UserData userProvider, UserProvider auth) async {
-    if (isLoggedIn) {
-      await SharedPrefsHelper().initializeData();
-      await userProvider.initializeData();
-    }
+
+  Future<void> _initializeData(UserData userProvider, UserProvider auth) async {
+    await SharedPrefsHelper().initializeData();
+    await userProvider.initializeData();
   }
 
   void _handleGoogleSignIn() async {
@@ -91,7 +88,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
         await prefs.setLoggedIn(true);
 
         // Navigate to home
-        await _initializeData(true, context.read<UserData>(), context.read<UserProvider>());
+        await _initializeData(context.read<UserData>(), context.read<UserProvider>());
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
@@ -179,10 +176,11 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                     _emailController.text,
                     _passwordController.text,
                   );
-                  await _initializeData(true, context.read<UserData>(), context.read<UserProvider>());
+                 
                   if (widget.userProvider.firstLogin && context.mounted) {
                     NavigationService.instance.pushNamed('/registro');
                   } else {
+                     await _initializeData(context.read<UserData>(), context.read<UserProvider>());
                     NavigationService.instance.pushNamed("/home");
                   }
                 } catch (e) {
@@ -231,7 +229,8 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               ),
             ),
             SizedBox(
-              child: SignInButton(Buttons.google, text: "Continuar con Google",
+               width: double.infinity, // Adjust the width as needed
+              child: SignInButton(Buttons.google, text: "Iniciar con Google",
                   onPressed: () {
                 _handleGoogleSignIn();
               }),
@@ -257,6 +256,4 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
           ])),
     );
   }
-
-
 }

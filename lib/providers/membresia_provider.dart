@@ -7,7 +7,7 @@ class MembresiaProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
   Future<List<Membresia>> getMembresiasOrigen() async {
     final String? origenMembresia = await prefs.getSubscripcion();
-    if (origenMembresia != null) {
+    if (origenMembresia != null && origenMembresia != '') {
       try {
         final querySnapshot = await FirebaseFirestore.instance
             .collection('membresia')
@@ -101,7 +101,10 @@ class MembresiaProvider extends ChangeNotifier {
       if (membresiaId == null) {
         throw Exception('Missing "membresiaId" field in updatedMembresiaData');
       }
-      FirebaseFirestore.instance.collection('membresia').doc(membresiaId).update(updatedMembresiaData);
+      FirebaseFirestore.instance
+          .collection('membresia')
+          .doc(membresiaId)
+          .update(updatedMembresiaData);
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {

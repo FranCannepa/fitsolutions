@@ -72,6 +72,23 @@ class _ExerciseRowsState extends State<ExerciseRows> {
     });
   }
 
+  @override
+  void didUpdateWidget(covariant ExerciseRows oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.day != widget.day) {
+      setState(() {
+        _checkedExercises.clear();
+      });
+      widget.fitnessProvider
+          .initializeCheckBox(widget.week)
+          .then((Map<String, bool> values) {
+        setState(() {
+          _checkedExercises.addAll(values);
+        });
+      });
+    }
+  }
+
   Future<List<Widget>> buildEjercicioCards(
       Plan plan, String week, String dia, UserData userData) async {
     final ejercicios =
@@ -174,27 +191,23 @@ class _ExerciseRowsState extends State<ExerciseRows> {
           buildEjercicioCards(widget.plan, widget.week, widget.day, userData),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-             NoDataError(message: 'No hay Ejercicios para este dia'),
-            ],
+          return const Center(
+            child:  NoDataError(
+              message: 'DIA LIBRE/SIN EJERCICIOS', 
+            ),
           );
         } else {
-          return Flexible(
-            fit: FlexFit.loose,
-            child: ListView(
-              shrinkWrap: true,
-              children: snapshot.data!,
-            ),
+          return ListView(
+            padding: const EdgeInsets.all(8.0),
+            children: snapshot.data!,
           );
         }
       },
     );
   }
 }
+
