@@ -168,6 +168,10 @@ class ActividadProvider extends ChangeNotifier {
 
   Future<bool> anotarseActividad(String userId, String actividadId) async {
     try {
+            final activity = await FirebaseFirestore.instance
+          .collection('actividad')
+          .doc(actividadId)
+          .get();
       final collectionRef =
           FirebaseFirestore.instance.collection('actividadParticipante');
       final participantData = {
@@ -175,10 +179,7 @@ class ActividadProvider extends ChangeNotifier {
         'participanteId': userId,
       };
       await collectionRef.add(participantData);
-      final activity = await FirebaseFirestore.instance
-          .collection('actividad')
-          .doc(actividadId)
-          .get();
+
       final data = activity.data();
       final inicio = data!['inicio'];
       NotificationService().scheduleNotification(

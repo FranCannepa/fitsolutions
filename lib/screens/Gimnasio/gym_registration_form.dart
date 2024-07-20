@@ -8,7 +8,6 @@ import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class GymRegistrationForm extends StatefulWidget {
@@ -132,9 +131,10 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
         );
       }
     } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('El formulario cuenta con errores verificar')),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('El formulario cuenta con errores verificar')),
+      );
     }
   }
 
@@ -252,7 +252,7 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
                 },
               ),
               TextFormField(
-                 keyboardType: TextInputType.number,
+                keyboardType: TextInputType.number,
                 controller: _telefonoController,
                 decoration: const InputDecoration(
                   labelText: 'Teléfono',

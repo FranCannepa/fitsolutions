@@ -88,7 +88,9 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
         await prefs.setLoggedIn(true);
 
         // Navigate to home
-        await _initializeData(context.read<UserData>(), context.read<UserProvider>());
+        if(mounted){
+          await _initializeData(context.read<UserData>(), context.read<UserProvider>());
+        }
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
@@ -179,7 +181,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                  
                   if (widget.userProvider.firstLogin && context.mounted) {
                     NavigationService.instance.pushNamed('/registro');
-                  } else {
+                  } else if(context.mounted){
                      await _initializeData(context.read<UserData>(), context.read<UserProvider>());
                     NavigationService.instance.pushNamed("/home");
                   }

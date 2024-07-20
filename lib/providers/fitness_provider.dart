@@ -106,7 +106,8 @@ class FitnessProvider extends ChangeNotifier {
         QuerySnapshot weeksSnapshot = await _firebase
             .collection('plan')
             .doc(planId)
-            .collection('week').orderBy('number')
+            .collection('week')
+            .orderBy('number')
             .get();
         List<Week> weeks =
             await Future.wait(weeksSnapshot.docs.map((weekDoc) async {
@@ -143,46 +144,46 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   //tested
-Future<List<Plan>> getPlanesList() async {
-  final prefs = SharedPrefsHelper();
-  final userId = await prefs.getUserId();
-  final querySnapshot = await _firebase
-      .collection('plan')
-      .where('ownerId', isEqualTo: userId)
-      .get();
-
-  List<Plan> planes = [];
-
-  for (var doc in querySnapshot.docs) {
-    CollectionReference weeksCollectionRef =
-        _firebase.collection('plan').doc(doc.id).collection('week');
-
-    // Retrieve weeks sorted by the 'number' field
-    QuerySnapshot weeksSnapshot = await weeksCollectionRef
-        .orderBy('number') // Order weeks by the 'number' field
+  Future<List<Plan>> getPlanesList() async {
+    final prefs = SharedPrefsHelper();
+    final userId = await prefs.getUserId();
+    final querySnapshot = await _firebase
+        .collection('plan')
+        .where('ownerId', isEqualTo: userId)
         .get();
 
-    List<Week> weeks = await Future.wait(weeksSnapshot.docs.map((weekDoc) async {
-      CollectionReference exerciseCollectionRef =
-          weeksCollectionRef.doc(weekDoc.id).collection('ejercicio');
-      QuerySnapshot exerciseSnapshot = await exerciseCollectionRef.get();
+    List<Plan> planes = [];
 
-      List<Ejercicio> ejercicios = exerciseSnapshot.docs.map((exeDoc) {
-        return Ejercicio.fromDocument(
-            exeDoc.id, exeDoc.data() as Map<String, dynamic>);
-      }).toList();
+    for (var doc in querySnapshot.docs) {
+      CollectionReference weeksCollectionRef =
+          _firebase.collection('plan').doc(doc.id).collection('week');
 
-      return Week.fromDocument(
-          weekDoc.id, weekDoc.data() as Map<String, dynamic>, ejercicios);
-    }).toList());
+      // Retrieve weeks sorted by the 'number' field
+      QuerySnapshot weeksSnapshot = await weeksCollectionRef
+          .orderBy('number') // Order weeks by the 'number' field
+          .get();
 
-    Plan plan = Plan.fromDocument(doc.id, doc.data(), weeks);
-    planes.add(plan);
+      List<Week> weeks =
+          await Future.wait(weeksSnapshot.docs.map((weekDoc) async {
+        CollectionReference exerciseCollectionRef =
+            weeksCollectionRef.doc(weekDoc.id).collection('ejercicio');
+        QuerySnapshot exerciseSnapshot = await exerciseCollectionRef.get();
+
+        List<Ejercicio> ejercicios = exerciseSnapshot.docs.map((exeDoc) {
+          return Ejercicio.fromDocument(
+              exeDoc.id, exeDoc.data() as Map<String, dynamic>);
+        }).toList();
+
+        return Week.fromDocument(
+            weekDoc.id, weekDoc.data() as Map<String, dynamic>, ejercicios);
+      }).toList());
+
+      Plan plan = Plan.fromDocument(doc.id, doc.data(), weeks);
+      planes.add(plan);
+    }
+
+    return planes;
   }
-
-  return planes;
-}
-
 
   //tested
   Future<List<Ejercicio>> getEjerciciosDelDiaList(
@@ -376,14 +377,16 @@ Future<List<Plan>> getPlanesList() async {
         .doc(weekNumber)
         .get();
 
-
     for (var user in list.docs) {
       _notificationService.sendNotification(
           user.get('fcmToken'),
           'NUEVO EJERCICIO',
           'Un nuevo ejercicio fue agregado a Semana ${weekSnapshot['number']} - Dia $dia');
-      provider.addNotification(user.id, 'NUEVO EJERCICIO',
-          'Un nuevo ejercicio fue agregado a Semana ${weekSnapshot['number']} - Dia $dia', '/ejercicios');
+      provider.addNotification(
+          user.id,
+          'NUEVO EJERCICIO',
+          'Un nuevo ejercicio fue agregado a Semana ${weekSnapshot['number']} - Dia $dia',
+          '/ejercicios');
     }
     notifyListeners();
   }
@@ -491,7 +494,60 @@ Future<List<Plan>> getPlanesList() async {
         .collection('ejercicio')
         .doc(docId)
         .delete();
+    await deleteExerciseFromWorkoutState(weekId, docId);
     notifyListeners();
+  }
+
+  Future<void> deleteExerciseFromWorkoutState(
+      String weekId, String exerciseId) async {
+    final usersSnapshot = await _firebase.collection('workoutStates').get();
+    for (var userDoc in usersSnapshot.docs) {
+      final userId = userDoc.id;
+      final weekSnapshot = await _firebase
+          .collection('workoutStates')
+          .doc(userId)
+          .collection('weeks')
+          .doc(weekId)
+          .get();
+
+      if (weekSnapshot.exists) {
+        final weekData = weekSnapshot.data() as Map<String, dynamic>;
+        if (weekData.containsKey('exercises')) {
+          final exercises = weekData['exercises'] as Map<String, dynamic>;
+          final day = exercises[exerciseId]['day'];
+
+          if (exercises.containsKey(exerciseId)) {
+            exercises.remove(exerciseId);
+
+            // Check if there are no more exercises for that day
+            bool noExercisesForDay =
+                !exercises.values.any((exercise) => exercise['day'] == day);
+            if (noExercisesForDay) {
+              weekData['daysCompleted'][day] = true;
+            }
+
+            // Check if all days are completed
+            bool allDaysCompleted = weekData['daysCompleted']
+                .values
+                .every((completed) => completed == true);
+            if (allDaysCompleted) {
+              weekData['weekCompleted'] = true;
+            }
+
+            await _firebase
+                .collection('workoutStates')
+                .doc(userId)
+                .collection('weeks')
+                .doc(weekId)
+                .update({
+              'exercises': exercises,
+              'daysCompleted': weekData['daysCompleted'],
+              'weekCompleted': weekData['weekCompleted']
+            });
+          }
+        }
+      }
+    }
   }
 
   Future<void> deleteWeek(Plan plan) async {
@@ -510,59 +566,67 @@ Future<List<Plan>> getPlanesList() async {
   Future<void> initializeWorkoutState(Plan plan, List<String> daysNames) async {
     final userType = await SharedPrefsHelper().getUserTipo();
     if (userType != 'Basico') return;
+    try {
+      List<Week> weeks = plan.weeks;
+      for (var week in weeks) {
+        final userId = await SharedPrefsHelper().getUserId();
+        final userRef = _firebase.collection('workoutStates').doc(userId);
+        final snapshot = await userRef.get();
+        if(!snapshot.exists) userRef.set({'plan':plan.planId});
+        
+        final weekRef = userRef.collection('weeks').doc(week.id);
 
-    List<Week> weeks = plan.weeks;
-    for (var week in weeks) {
-      final userId = await SharedPrefsHelper().getUserId();
-      final userRef = _firebase.collection('workoutStates').doc(userId);
-      final weekRef = userRef.collection('weeks').doc(week.id);
-
-      // Check if the week document exists
-      final weekSnapshot = await weekRef.get();
-      if (!weekSnapshot.exists) {
-        // If the week document doesn't exist, initialize it with empty data
-        await weekRef.set({});
-        Map<String, dynamic> initialDays = {};
-        bool weekState = true;
-        for (var day in daysNames) {
-          final ejercicios = await getEjerciciosDelDiaList(plan, week.id!, day);
-          for (final ejercicio in ejercicios) {
-            await updateExerciseInFirestore(week.id!, ejercicio, day);
-          }
-          initialDays[day] = ejercicios.isEmpty ? true : false;
-          weekState = weekState && initialDays[day];
-        }
-
-        await weekRef.update({
-          'daysCompleted': initialDays,
-          'weekCompleted': weekState,
-        });
-      } else {
-        // If the week document exists, ensure each day exists in daysCompleted
-        final data = weekSnapshot.data() as Map<String, dynamic>;
-        final daysCompleted = data['daysCompleted'] as Map<String, dynamic>?;
-
-        if (daysCompleted == null) {
-          // If daysCompleted doesn't exist, initialize all days
+        // Check if the week document exists
+        final weekSnapshot = await weekRef.get();
+        if (!weekSnapshot.exists) {
+          // If the week document doesn't exist, initialize it with empty data
+          await weekRef.set({});
           Map<String, dynamic> initialDays = {};
+          bool weekState = true;
           for (var day in daysNames) {
-            initialDays[day] = false;
+            final ejercicios =
+                await getEjerciciosDelDiaList(plan, week.id!, day);
+            for (final ejercicio in ejercicios) {
+              await updateExerciseInFirestore(week.id!, ejercicio, day);
+            }
+            initialDays[day] = ejercicios.isEmpty ? true : false;
+            weekState = weekState && initialDays[day];
           }
 
           await weekRef.update({
             'daysCompleted': initialDays,
+            'weekCompleted': weekState,
           });
         } else {
-          // Initialize any missing days
-          for (var day in daysNames) {
-            if (!daysCompleted.containsKey(day)) {
-              await weekRef.update({
-                'daysCompleted.$day': false,
-              });
+          // If the week document exists, ensure each day exists in daysCompleted
+          final data = weekSnapshot.data() as Map<String, dynamic>;
+          final daysCompleted = data['daysCompleted'] as Map<String, dynamic>?;
+
+          if (daysCompleted == null) {
+            // If daysCompleted doesn't exist, initialize all days
+            Map<String, dynamic> initialDays = {};
+            for (var day in daysNames) {
+              initialDays[day] = false;
+            }
+
+            await weekRef.update({
+              'daysCompleted': initialDays,
+            });
+          } else {
+            // Initialize any missing days
+            for (var day in daysNames) {
+              if (!daysCompleted.containsKey(day)) {
+                await weekRef.update({
+                  'daysCompleted.$day': false,
+                });
+              }
             }
           }
         }
+
       }
+    } catch (e) {
+      Logger().e(e);
     }
   }
 
@@ -728,11 +792,14 @@ Future<List<Plan>> getPlanesList() async {
           .get();
 
       if (weekDoc.exists) {
-        bool weekCompleted = weekDoc.get('weekCompleted');
-        if (weekCompleted) {
-          return true;
+        final weekData = weekDoc.data() as Map<String, dynamic>;
+        if (weekData.containsKey('weekCompleted')) {
+          bool weekCompleted = weekDoc.get('weekCompleted');
+          if (weekCompleted) {
+            return true;
+          }
+          return false;
         }
-        return false;
       }
       return false;
     } catch (e) {

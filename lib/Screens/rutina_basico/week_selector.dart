@@ -127,15 +127,7 @@ class _WeekSelectorState extends State<WeekSelector> {
   }
 
   final List<String> days = ['1', '2', '3', '4', '5', '6', '7'];
-  final List<String> daysNames = [
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7'
-  ];
+  final List<String> daysNames = ['1', '2', '3', '4', '5', '6', '7'];
 
   void _addWeek(FitnessProvider fProv) async {
     await fProv.addWeek(widget.plan.weekCount() + 1, widget.plan);
@@ -177,20 +169,20 @@ class _WeekSelectorState extends State<WeekSelector> {
         } else {
           return Scaffold(
             appBar: esBasico == false
-                ?      AppBar(
-              iconTheme: const IconThemeData(
-                color: Colors.white, // Set the back arrow color here
-              ),
-              backgroundColor: Colors.black,
-              title:  Text(
-                widget.plan.name,
-                style: const TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  overflow: TextOverflow.ellipsis,  
-                ),
-              ))
+                ? AppBar(
+                    iconTheme: const IconThemeData(
+                      color: Colors.white, // Set the back arrow color here
+                    ),
+                    backgroundColor: Colors.black,
+                    title: Text(
+                      widget.plan.name,
+                      style: const TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ))
                 : null,
             body: Column(
               children: [
@@ -257,7 +249,8 @@ class _WeekSelectorState extends State<WeekSelector> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: widget.plan.weeks.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  bool weekCompleted = snapshot.data!.length == widget.plan.weeks.length
+                                  bool weekCompleted = snapshot.data!.length ==
+                                          widget.plan.weeks.length
                                       ? snapshot.data![index]
                                       : false;
                                   return GestureDetector(
@@ -296,33 +289,12 @@ class _WeekSelectorState extends State<WeekSelector> {
                             }),
                       ),
                       const SizedBox(height: 20),
-                      Row(
+                      const Row(
                         children: [
-                          const Text('Dia:',
+                          Text('Dia:',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 32)),
-                          const Spacer(),
-                          if (!userData.esBasico()) ...[
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  openNoteBox(null, provider);
-                                });
-                              },
-                              child: Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(Icons.add),
-                                ),
-                              ),
-                            )
-                          ]
+                          Spacer(),
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -343,9 +315,10 @@ class _WeekSelectorState extends State<WeekSelector> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: days.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  bool dayCompleted = snapshot.data!.length == days.length
-                                      ? snapshot.data![index]
-                                      : false;
+                                  bool dayCompleted =
+                                      snapshot.data!.length == days.length
+                                          ? snapshot.data![index]
+                                          : false;
                                   return GestureDetector(
                                     onTap: () {
                                       setState(() {
@@ -387,16 +360,24 @@ class _WeekSelectorState extends State<WeekSelector> {
                   ),
                 ),
                 const HeaderRow(),
-                Expanded(
-                  child: ExerciseRows(
-                    plan: widget.plan,
-                    week: widget.plan.idFromWeek(_selectedWeekIndex!),
-                    day: days[_selectedDayIndex],
-                    fitnessProvider: provider,
+                if (widget.plan.weekCount() > 0 && _selectedWeekIndex != -1)
+                  Expanded(
+                    child: ExerciseRows(
+                      plan: widget.plan,
+                      week: widget.plan.idFromWeek(_selectedWeekIndex!),
+                      day: days[_selectedDayIndex],
+                      fitnessProvider: provider,
+                    ),
                   ),
-                ),
               ],
             ),
+            floatingActionButton: !userData.esBasico()
+                ? FloatingActionButton(
+                    onPressed: () => openNoteBox(null, provider),
+                    child: Icon(Icons.add,
+                        color: Theme.of(context).colorScheme.secondary),
+                  )
+                : null,
           );
         }
       },

@@ -125,12 +125,12 @@ class _ActividadDialogState extends State<ActividadDialog> {
                                             "Error al darse de baja",
                                             ResultType.error);
                                       }
-                                    } else {
-                                      final result =
-                                          await actividadProvider
-                                              .anotarseActividad(
-                                                  userProvider.userId,
-                                                  widget.actividad.id);
+                                    } else if (widget.actividad.participantes <
+                                        widget.actividad.cupos) {
+                                      final result = await actividadProvider
+                                          .anotarseActividad(
+                                              userProvider.userId,
+                                              widget.actividad.id);
                                       setState(() {
                                         _isLoading = false;
                                       });
@@ -141,6 +141,13 @@ class _ActividadDialogState extends State<ActividadDialog> {
                                         showSuccessModal("Error al inscribirse",
                                             ResultType.error);
                                       }
+                                    } else {
+                                      setState(() {
+                                        _isLoading = false;
+                                      });
+                                      showSuccessModal(
+                                          'No hay cupos suficientes',
+                                          ResultType.error);
                                     }
                                   },
                                 ),

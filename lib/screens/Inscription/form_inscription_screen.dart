@@ -291,6 +291,7 @@ class _FormInscriptionScreenState extends State<FormInscriptionScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Ingrese el número de celular';
                       }
+                      return null;
                     },
                     enabled: !_isReadOnly, // Set enabled property
                   ),
