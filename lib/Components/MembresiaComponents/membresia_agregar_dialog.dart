@@ -20,7 +20,9 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
   final _nombreMembresia = TextEditingController();
   final _costoMembresia = TextEditingController();
   final _descripcionMembresia = TextEditingController();
-  late Map<String, dynamic> membresiaData = {};
+  final _cuposController = TextEditingController();
+  final _duracionController = TextEditingController();
+
   bool showMembresiaForm = false;
 
   Map<String, dynamic> collectMembresiaData() {
@@ -28,6 +30,8 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
       'nombreMembresia': _nombreMembresia.text,
       'costo': _costoMembresia.text,
       'descripcion': _descripcionMembresia.text,
+      'cupos': int.tryParse(_cuposController.text) ?? 0,
+      'duracion': int.tryParse(_duracionController.text) ?? 0,
       'origenMembresia': widget.origenMembresia
     };
   }
@@ -113,11 +117,53 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
             ),
             const SizedBox(height: 16.0),
             RoundedInputField(
-              labelText: 'Descripcion',
+              labelText: 'Descripción',
               controller: _descripcionMembresia,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'La descripción de la membresia es obligatoria.';
+                  return 'La descripción de la membresía es obligatoria.';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16.0),
+            RoundedInputField(
+              keyboardType: TextInputType.number,
+              labelText: 'Cupos',
+              controller: _cuposController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'El número de cupos es obligatorio.';
+                } else {
+                  try {
+                    final int cupos = int.parse(value);
+                    if (cupos < 0) {
+                      return 'El número de cupos debe ser un número positivo.';
+                    }
+                  } on FormatException {
+                    return 'El número de cupos debe ser un número válido.';
+                  }
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16.0),
+            RoundedInputField(
+              keyboardType: TextInputType.number,
+              labelText: 'Duración (días)',
+              controller: _duracionController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'La duración es obligatoria.';
+                } else {
+                  try {
+                    final int duracion = int.parse(value);
+                    if (duracion <= 0) {
+                      return 'La duración debe ser un número positivo mayor que cero.';
+                    }
+                  } on FormatException {
+                    return 'La duración debe ser un número válido.';
+                  }
                 }
                 return null;
               },
