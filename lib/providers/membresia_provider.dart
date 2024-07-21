@@ -33,6 +33,34 @@ class MembresiaProvider extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>?> getMembresiaDetails(String membresiaId) async {
+  try {
+    final docSnapshot = await FirebaseFirestore.instance.collection('membresia').doc(membresiaId).get();
+    return docSnapshot.exists ? docSnapshot.data() : null;
+  } catch (e) {
+    print("Error al obtener los detalles de la membresía: $e");
+    return null;
+  }
+}
+
+  Future<String?> getMembershipName(String membershipId) async {
+  try {
+    final docRef = FirebaseFirestore.instance.collection('membresia').doc(membershipId);
+    final docSnapshot = await docRef.get();
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data();
+      return data?['nombreMembresia'] as String?;
+    } else {
+      print("No se encontro membresia con ID: $membershipId");
+      return null;
+    }
+  } catch (e) {
+    print("Error fetching membresia: $e");
+    return null;
+  }
+}
+
+
   Future<Map<String, dynamic>?> getOrigenMembresia(String documentId) async {
     try {
       final usuarioRef =
@@ -130,4 +158,26 @@ class MembresiaProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  Future<DocumentSnapshot?> obtenerMembresiaActiva(String usuarioId) async {
+    try {
+      final db = FirebaseFirestore.instance;
+      var snapshot = await db
+          .collection('usuarioMembresia')
+          .where('usuarioId', isEqualTo: usuarioId)
+          .where('fechaExpiracion', isGreaterThan: DateTime.now())
+          .where('cuposRestantes', isGreaterThan: 0)
+          .orderBy('fechaExpiracion', descending: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return snapshot.docs.first;
+      }
+    } catch (e) {
+      print('Error al obtener la membresía activa: $e');
+    }
+    return null;
+  }
+
 }
