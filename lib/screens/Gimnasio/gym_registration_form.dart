@@ -1,13 +1,14 @@
 import 'dart:io';
 
-import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
+//import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/CommonComponents/input_time_picker.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
+import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 class GymRegistrationForm extends StatefulWidget {
   final GimnasioProvider provider;
@@ -130,7 +131,10 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
         );
       }
     } else {
-      Logger().d('ERROR');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('El formulario cuenta con errores verificar')),
+      );
     }
   }
 
@@ -157,11 +161,16 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
     if (value == null || value.isEmpty) {
       return null; // No error, value is valid
     }
-    return null;
+    if (RegExp(r'^\d{8}$').hasMatch(value)) {
+      return null; // No error, value is valid
+    } else {
+      return 'Ingrese un número de teléfono uruguayo válido (8 dígitos)';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final esPropietario = context.read<UserData>().esParticular();
     return SingleChildScrollView(
       child: Form(
         key: _formKey,
@@ -193,13 +202,13 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: esEntrenador == true
+                  labelText: esPropietario == true
                       ? 'Nombre Entrenador'
                       : 'Nombre Gimnasio',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return esEntrenador == true
+                    return esPropietario == true
                         ? 'Ingrese el nombre del entrenador'
                         : 'Ingrese el nombre del gimnasio';
                   }
@@ -226,6 +235,7 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
                 validator: _validateCrossStreet,
               ),
               TextFormField(
+                keyboardType: TextInputType.number,
                 controller: _celularController,
                 decoration: const InputDecoration(
                   labelText: 'Celular',
@@ -234,10 +244,15 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese el número de celular';
                   }
-                  return null;
+                  if (RegExp(r'^\d{9}$').hasMatch(value)) {
+                    return null; // No error, value is valid
+                  } else {
+                    return 'Ingrese un número de teléfono uruguayo válido (9 dígitos)';
+                  }
                 },
               ),
               TextFormField(
+                keyboardType: TextInputType.number,
                 controller: _telefonoController,
                 decoration: const InputDecoration(
                   labelText: 'Teléfono',

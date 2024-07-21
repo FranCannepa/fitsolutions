@@ -13,9 +13,21 @@ class EvaluationDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Evaluation Details'),
-      ),
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          title: const Text(
+            'Detalles de Evaluacion',
+            style: TextStyle(color: Colors.white, fontSize: 30),
+          ),
+        ),
       body: FutureBuilder<EvaluationModel?>(
         future: Provider.of<InscriptionProvider>(context, listen: false)
             .getEvaluationData(gymId, userId),
@@ -79,7 +91,8 @@ class EvaluationDetailsScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        side: const BorderSide(color: Colors.black, width: 4.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 4.0,
       child: ListTile(
@@ -107,7 +120,8 @@ class EvaluationDetailsScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        side: const BorderSide(color: Colors.black, width: 4.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 4.0,
       child: Padding(

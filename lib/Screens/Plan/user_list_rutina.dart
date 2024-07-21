@@ -96,7 +96,7 @@ class _UserListRutinaState extends State<UserListRutina> {
                       .any((selectedUser) => selectedUser.docId == user.docId);
                   final inSelected = asignarUsers
                       .any((selectedUser) => selectedUser.docId == user.docId);
-
+                    
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30.0),

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
@@ -9,28 +7,28 @@ class MembresiaProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
   Future<List<Membresia>> getMembresiasOrigen() async {
     final String? origenMembresia = await prefs.getSubscripcion();
-    if (origenMembresia == null) {
-      return [];
-    }
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('membresia')
-          .where('origenMembresia', isEqualTo: origenMembresia)
-          .get();
-      if (querySnapshot.docs.isNotEmpty) {
-        final fetchedMembresias = querySnapshot.docs.map((doc) {
-          final data = doc.data();
-          data['membresiaId'] = doc.id;
-          return Membresia.fromDocument(data);
-        }).toList();
-        return fetchedMembresias;
-      } else {
+    if (origenMembresia != null && origenMembresia != '') {
+      try {
+        final querySnapshot = await FirebaseFirestore.instance
+            .collection('membresia')
+            .where('origenMembresia', isEqualTo: origenMembresia)
+            .get();
+        if (querySnapshot.docs.isNotEmpty) {
+          final fetchedMembresias = querySnapshot.docs.map((doc) {
+            final data = doc.data();
+            data['membresiaId'] = doc.id;
+            return Membresia.fromDocument(data);
+          }).toList();
+          return fetchedMembresias;
+        } else {
+          return [];
+        }
+      } catch (e) {
+        print('Error fetching membresias: $e');
         return [];
       }
-    } catch (e) {
-      print('Error fetching membresias: $e');
-      return [];
     }
+    return [];
   }
 
   Future<Map<String, dynamic>?> getMembresiaDetails(String membresiaId) async {
@@ -131,8 +129,11 @@ class MembresiaProvider extends ChangeNotifier {
       if (membresiaId == null) {
         throw Exception('Missing "membresiaId" field in updatedMembresiaData');
       }
-      final docRef =
-          FirebaseFirestore.instance.collection('membresia').doc(membresiaId);
+      FirebaseFirestore.instance
+          .collection('membresia')
+          .doc(membresiaId)
+          .update(updatedMembresiaData);
+      notifyListeners();
       return true;
     } on FirebaseException catch (e) {
       print("Error updating document: ${e.message}");

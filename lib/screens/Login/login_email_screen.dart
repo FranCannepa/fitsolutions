@@ -56,6 +56,11 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     }
   }
 
+  Future<void> _initializeData(UserData userProvider, UserProvider auth) async {
+    await SharedPrefsHelper().initializeData();
+    await userProvider.initializeData();
+  }
+
   void _handleGoogleSignIn() async {
     final userProvider = context.read<UserData>();
     final prefs = SharedPrefsHelper();
@@ -83,6 +88,9 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
         await prefs.setLoggedIn(true);
 
         // Navigate to home
+        if(mounted){
+          await _initializeData(context.read<UserData>(), context.read<UserProvider>());
+        }
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
@@ -170,9 +178,11 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                     _emailController.text,
                     _passwordController.text,
                   );
+                 
                   if (widget.userProvider.firstLogin && context.mounted) {
                     NavigationService.instance.pushNamed('/registro');
-                  } else {
+                  } else if(context.mounted){
+                     await _initializeData(context.read<UserData>(), context.read<UserProvider>());
                     NavigationService.instance.pushNamed("/home");
                   }
                 } catch (e) {
@@ -221,7 +231,8 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               ),
             ),
             SizedBox(
-              child: SignInButton(Buttons.google, text: "Continuar con Google",
+               width: double.infinity, // Adjust the width as needed
+              child: SignInButton(Buttons.google, text: "Iniciar con Google",
                   onPressed: () {
                 _handleGoogleSignIn();
               }),

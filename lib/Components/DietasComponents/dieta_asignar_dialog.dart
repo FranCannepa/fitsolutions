@@ -18,7 +18,7 @@ class AsignarDietaDialog extends StatefulWidget {
 }
 
 class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
-  late String? clienteSeleccionado;
+  String? clienteSeleccionado;
   void updateClienteSeleccionado(String value) {
     clienteSeleccionado = value;
   }
@@ -89,7 +89,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
             const SizedBox(height: 10),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: gimnasioProvider
-                  .getClientesGym(userProvider.origenAdministrador!),
+                  .getClientesGym(userProvider.origenAdministrador),
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                   final users = snapshot.data!;
@@ -112,7 +112,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
                             updateClienteSeleccionado(value!);
                           });
                         },
-                        hint: const Text('Select User'),
+                        hint: const Text('Seleccionar Usuario'),
                       ),
                       const SizedBox(height: 20),
                       SubmitButton(
@@ -130,9 +130,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
                                 widget.onClose;
                               }
                             } else {
-                              return const ResultDialog(
-                                  text: "Cliente no seleccionado",
-                                  resultType: ResultType.warning);
+                             _showSuccessModal("Cliente no seleccionado",ResultType.warning);
                             }
                           })
                     ],
@@ -140,7 +138,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 }
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               },
             )
           ]),

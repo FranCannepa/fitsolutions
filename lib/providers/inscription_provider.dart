@@ -216,7 +216,11 @@ class InscriptionProvider extends ChangeNotifier {
           'Tiene un formulario de Inscripcion disponible');
       notifyListeners();
 
-      NotificationProvider(_firebase).addNotification(basicUserId, 'Formulario Disponible', 'Tiene un formulario de Inscripcion disponible', '/form_inscription');
+      NotificationProvider(_firebase).addNotification(
+          basicUserId,
+          'Formulario Disponible',
+          'Tiene un formulario de Inscripcion disponible',
+          '/form_inscription');
     } catch (e) {
       rethrow;
     }
@@ -234,28 +238,56 @@ class InscriptionProvider extends ChangeNotifier {
     return null;
   }
 
+  Future<DocumentSnapshot> fetchGymOrTrainerInfo(String ownerId) async {
+    // Try to get the document from the gimnasio collection
+    final gymDoc = await _firebase.collection('gimnasio').doc(ownerId).get();
+
+    // If the document exists, return it
+    if (gymDoc.exists) {
+      return gymDoc;
+    }
+
+    // Otherwise, try to get the document from the trainerInfo collection
+    final trainerDoc =
+        await _firebase.collection('trainerInfo').doc(ownerId).get();
+
+    // Return the trainerDoc, whether it exists or not
+    return trainerDoc;
+  }
+
   Future<void> submitFormData(
       String formId, Map<String, dynamic> formData) async {
-    try{
-    final form = await _firebase.collection('form').doc(formId).get();
-        
-        await _firebase
-        .collection('form')
-        .doc(formId).update({'formData': formData, 'readOnly': true});
-    //Get the user ID from
+    try {
+      final form = await _firebase.collection('form').doc(formId).get();
 
-    final user = await _firebase.collection('usuario').doc(form.get('basicUserId')).get();
-    final gym = await _firebase.collection('gimnasio').doc(form.get('ownerId')).get();
-    final owner= await _firebase.collection('usuario').doc(gym.get('propietarioId')).get();
+      await _firebase
+          .collection('form')
+          .doc(formId)
+          .update({'formData': formData, 'readOnly': true});
+      //Get the user ID from
 
-    final userToken = owner.get('fcmToken');
+      final user = await _firebase
+          .collection('usuario')
+          .doc(form.get('basicUserId'))
+          .get();
+      final gym = await fetchGymOrTrainerInfo(form.get('ownerId'));
+      final owner = await _firebase
+          .collection('usuario')
+          .doc(gym.get('propietarioId'))
+          .get();
 
-    _notificationService.sendNotification(userToken,'Formulario Completado', 'El usuario ${user.get('nombreCompleto')} completo el formulario');
-    NotificationProvider(_firebase).addNotification(owner.id,'Formulario Completado','El usuario ${user.get('nombreCompleto')} completo el formulario','/inscription');
+      final userToken = owner.get('fcmToken');
 
-    notifyListeners();
-    }
-    catch(e){
+      _notificationService.sendNotification(userToken, 'Formulario Completado',
+          'El usuario ${user.get('nombreCompleto')} completo el formulario');
+      NotificationProvider(_firebase).addNotification(
+          owner.id,
+          'Formulario Completado',
+          'El usuario ${user.get('nombreCompleto')} completo el formulario',
+          '/inscription');
+
+      notifyListeners();
+    } catch (e) {
       rethrow;
     }
   }
@@ -314,9 +346,15 @@ class InscriptionProvider extends ChangeNotifier {
       });
 
       final user = await _firebase.collection('usuario').doc(userId).get();
-      _notificationService.sendNotification(user.get('fcmToken'),'Inscripcion Completada', 'Se finalizo tu inscripcion a un gimnasio!');
-      NotificationProvider(_firebase).addNotification(user.id,'Inscripcion Completada','Se finalizo tu inscripcion a un gimnasio!','/ejercicios');
-
+      _notificationService.sendNotification(
+          user.get('fcmToken'),
+          'Inscripcion Completada',
+          'Se finalizo tu inscripcion a un gimnasio!');
+      NotificationProvider(_firebase).addNotification(
+          user.id,
+          'Inscripcion Completada',
+          'Se finalizo tu inscripcion a un gimnasio!',
+          '/ejercicios');
     } catch (e) {
       log.e(e);
     }

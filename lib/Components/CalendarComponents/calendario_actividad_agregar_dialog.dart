@@ -29,6 +29,7 @@ class CalendarioAgregarActividadDialog extends StatefulWidget {
 class _CalendarioAgregarActividadDialogState
     extends State<CalendarioAgregarActividadDialog> {
   final _formKey = GlobalKey<FormState>();
+
   final nombreActividadController = TextEditingController();
   final tipoActividadController = TextEditingController(text: "Definida");
   final cuposActividadController = TextEditingController();
@@ -81,8 +82,8 @@ class _CalendarioAgregarActividadDialogState
       final now = TimeOfDay.now();
       final nowInMinutes = now.hour * 60 + now.minute;
       final inicioInMinutes = horaInicio.hour * 60 + horaInicio.minute;
-
-      if (inicioInMinutes < nowInMinutes) {
+      final today = DateTime.now();
+      if (inicioInMinutes < nowInMinutes && (fechaActividad.day == today.day || fechaActividad.isBefore(today))) {
         return 'La hora de inicio no puede ser antes de la hora actual.';
       }
     }
@@ -111,7 +112,7 @@ class _CalendarioAgregarActividadDialogState
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
-        }else if(snapshot.data == null){
+        }else if(snapshot.data == null || snapshot.data == ''){
             return AlertDialog(
             title: const Text('Registro no completado'),
             content: const Text('Complete su registro completando sus datos de Entrenador o Gimnasio'),
@@ -208,20 +209,23 @@ class _CalendarioAgregarActividadDialogState
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        InputTimePicker(
-                          labelText: "Hora Inicio",
-                          horaSeleccionada: horaInicioActividadSeleccionada,
-                          onTimeSelected: (time) {
-                            setState(() {
-                              horaInicioActividadSeleccionada = time;
-                            });
-                          },
-                          validator: (value) {
-                            return validateHoraInicioNotBeforeCurrent(
-                                horaInicioActividadSeleccionada);
-                          },
-                        ),
-                        InputTimePicker(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InputTimePicker(
+                              labelText: 'Hora Inicio',
+                              horaSeleccionada: horaInicioActividadSeleccionada,
+                              onTimeSelected: (time) {
+                                setState(() {
+                                  horaInicioActividadSeleccionada = time;
+                                });
+                              },
+                              validator: (value) {
+                                return validateHoraInicioNotBeforeCurrent(
+                                    horaInicioActividadSeleccionada);
+                              },
+                            ),
+                          InputTimePicker(
                           labelText: "Hora Fin",
                           horaSeleccionada: horaFinActividadSeleccionada,
                           onTimeSelected: (time) {
@@ -234,6 +238,9 @@ class _CalendarioAgregarActividadDialogState
                                 horaFinActividadSeleccionada);
                           },
                         ),
+                          ],
+                        ),
+
                         InputDatePicker(
                           labelText: "Fecha",
                           fechaSeleccionada: fechaActividad,
@@ -267,7 +274,7 @@ class _CalendarioAgregarActividadDialogState
                                       "Error al crear", ResultType.error);
                                 }
                               } else {
-                                _showSuccessModal("Errores en el formulario", ResultType.info);
+                                _showSuccessModal("Errores en el formulario", ResultType.error);
                               }
                             },
                             text: "Agregar",

@@ -5,18 +5,6 @@ import 'package:flutter/material.dart';
 class ActivityPieChart extends StatelessWidget {
   final List<Actividad> activities;
   const ActivityPieChart({super.key, required this.activities});
-  /*
-  titlesData: FlTitlesData(
-      leftTitles: SideTitles(showTitles: true),
-      bottomTitles: SideTitles(
-        showTitles: true,
-        getTitles: (value) {
-          final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-          return '${date.day}/${date.month}';
-        },
-      ),
-    ),
-  */
   @override
   Widget build(BuildContext context) {
     return PieChart(

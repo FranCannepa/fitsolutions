@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/modelo/models.dart';
@@ -125,7 +124,8 @@ class GimnasioProvider with ChangeNotifier {
         collection = 'trainerInfo';
       }
       final docRef = await _firebase.collection(collection).add(gymData);
-      prefs.setSubscripcion(docRef.id);
+      await prefs.setSubscripcion(docRef.id);
+      
       notifyListeners();
     } catch (e) {
       log.d(e);

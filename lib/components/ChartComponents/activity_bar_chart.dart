@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/widgets.dart';
 
 import '../../modelo/models.dart';
 
@@ -79,10 +78,12 @@ class ActivityBarChart extends StatelessWidget {
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(10),
+          height: MediaQuery.of(context).size.height - 400,
           width: MediaQuery.of(context).size.width - 60.0,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.0),
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(5.0),
+            color: Colors.white,
+            border: Border.all(color: Colors.black, width: 3.0),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
@@ -91,34 +92,37 @@ class ActivityBarChart extends StatelessWidget {
                 offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
-            gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).colorScheme.primary
-                ],
-                begin: Alignment.centerRight,
-                end: const Alignment(-1.0, -1.0)), //Gradient
           ),
-          child: DataTable(
-            columns: const [
-              DataColumn(
-                  label:
-                      Text('Actividad', style: TextStyle(color: Colors.white))),
-              DataColumn(
-                  label: Center(
-                child: Text('Participantes',
-                    style: TextStyle(color: Colors.white)),
-              )),
-            ],
-            rows: activities.map((activity) {
-              return DataRow(cells: [
-                DataCell(Text(activity.nombre,
-                    style: const TextStyle(color: Colors.white))),
-                DataCell(Center(
-                    child: Text(activity.participantes.toString(),
-                        style: const TextStyle(color: Colors.white)))),
-              ]);
-            }).toList(),
+          child: Scrollbar(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: DataTable(
+                columns: const [
+                  DataColumn(
+                      label: Text('Actividad',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20))),
+                  DataColumn(
+                      label: Text('Participantes',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20))),
+                ],
+                rows: activities.map((activity) {
+                  return DataRow(cells: [
+                    DataCell(Text(activity.nombre,
+                        style: const TextStyle(
+                          color: Colors.black,
+                        ))),
+                    DataCell(Text(activity.participantes.toString(),
+                        style: const TextStyle(color: Colors.black))),
+                  ]);
+                }).toList(),
+              ),
+            ),
           ),
         ),
       ],

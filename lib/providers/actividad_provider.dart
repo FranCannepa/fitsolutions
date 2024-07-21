@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
@@ -85,6 +83,7 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
+      Logger().d(e);
       rethrow;
     }
   }
@@ -104,9 +103,10 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
+      Logger().d(e);
       rethrow;
     } catch (e) {
-      print(e.toString());
+      Logger().d(e);
       return false;
     }
   }
@@ -129,10 +129,10 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
-      print("Error deleting document: ${e.message}");
+      Logger().d(e);
       return false;
     } catch (e) {
-      print("An unexpected error occurred: ${e.toString()}");
+      Logger().d(e);
       return false;
     }
   }
@@ -146,25 +146,26 @@ class ActividadProvider extends ChangeNotifier {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  Future<bool> desinscribirseActividad(BuildContext context,
-      String userId, String actividadId) async {
+  Future<bool> desinscribirseActividad(
+      BuildContext context, String userId, String actividadId) async {
     try {
       //obtengo la membresia actual del usuario
-      final membresiaSnapshot = await Provider.of<MembresiaProvider>(context, listen:false).obtenerMembresiaActiva(userId);
-      
+      final membresiaSnapshot =
+          await Provider.of<MembresiaProvider>(context, listen: false)
+              .obtenerMembresiaActiva(userId);
+
       if (membresiaSnapshot == null) {
         return false;
       }
-      
+
       //id de la membresia
       var usuarioMembresiaId = membresiaSnapshot.id;
-      
+
       //incremento un cupo
       await FirebaseFirestore.instance
-        .collection('usuarioMembresia')
-        .doc(usuarioMembresiaId)
-        .update({'cuposRestantes': FieldValue.increment(1)});
-
+          .collection('usuarioMembresia')
+          .doc(usuarioMembresiaId)
+          .update({'cuposRestantes': FieldValue.increment(1)});
 
       final collectionRef =
           FirebaseFirestore.instance.collection('actividadParticipante');
@@ -180,29 +181,36 @@ class ActividadProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print('Error unsubscribing from activity: $e');
+      Logger().d(e);
       return false;
     }
   }
 
-  Future<bool> anotarseActividad(BuildContext context, String userId, String actividadId) async {
+  Future<bool> anotarseActividad(
+      BuildContext context, String userId, String actividadId) async {
     try {
+      final activity = await FirebaseFirestore.instance
+          .collection('actividad')
+          .doc(actividadId)
+          .get();
       //obtengo la membresia actual del usuario
-      final membresiaSnapshot = await Provider.of<MembresiaProvider>(context, listen:false).obtenerMembresiaActiva(userId);
-      
+      final membresiaSnapshot =
+          await Provider.of<MembresiaProvider>(context, listen: false)
+              .obtenerMembresiaActiva(userId);
+
       if (membresiaSnapshot == null) {
         return false;
       }
-      
+
       //id de la membresia
       var usuarioMembresiaId = membresiaSnapshot.id;
-      
+
       //decremento un cupo
       await FirebaseFirestore.instance
-        .collection('usuarioMembresia')
-        .doc(usuarioMembresiaId)
-        .update({'cuposRestantes': FieldValue.increment(-1)});
-      
+          .collection('usuarioMembresia')
+          .doc(usuarioMembresiaId)
+          .update({'cuposRestantes': FieldValue.increment(-1)});
+
       //registro al usuario en la actividad
       final collectionRef =
           FirebaseFirestore.instance.collection('actividadParticipante');
@@ -211,10 +219,7 @@ class ActividadProvider extends ChangeNotifier {
         'participanteId': userId,
       };
       await collectionRef.add(participantData);
-      final activity = await FirebaseFirestore.instance
-          .collection('actividad')
-          .doc(actividadId)
-          .get();
+
       final data = activity.data();
       final inicio = data!['inicio'];
       NotificationService().scheduleNotification(
@@ -224,7 +229,7 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print('Error registering for activity: $e');
+      Logger().d(e);
       return false;
     }
   }

@@ -1,7 +1,3 @@
-//import 'dart:developer';
-
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -124,7 +120,7 @@ class SharedPrefsHelper {
     return await prefs.remove(key);
   }
 
-  void initializeData() async {
+  Future<void> initializeData() async {
     setLoggedIn(true);
     String? userEmail = await getEmail();
     if (userEmail != null) {

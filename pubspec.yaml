@@ -70,6 +70,8 @@ dependencies:
   timezone: ^0.9.3
   fl_chart: ^0.68.0
   flutter_custom_tabs: ^2.1.0
+  flutter_appauth: ^6.0.6
+  flutter_secure_storage: ^4.2.1
 
 deep_linking:
   prefixes:

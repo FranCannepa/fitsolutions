@@ -158,7 +158,6 @@ class MockFirebaseAuth extends _i1.Mock implements _i4.FirebaseAuth {
         returnValue: <dynamic, dynamic>{},
       ) as Map<dynamic, dynamic>);
 
-  @override
   _i5.Future<void> useEmulator(String? origin) => (super.noSuchMethod(
         Invocation.method(
           #useEmulator,
@@ -503,7 +502,6 @@ class MockFirebaseAuth extends _i1.Mock implements _i4.FirebaseAuth {
         )),
       ) as _i5.Future<_i4.UserCredential>);
 
-  @override
   _i5.Future<_i4.UserCredential> signInWithAuthProvider(
           _i3.AuthProvider? provider) =>
       (super.noSuchMethod(

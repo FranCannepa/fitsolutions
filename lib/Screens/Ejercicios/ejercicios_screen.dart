@@ -17,7 +17,7 @@ class EjerciciosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<FitnessProvider>();
+    final provider = context.watch<FitnessProvider>();
     return FutureBuilder(
       future: getPlanFromUser(provider),
       builder: (context, snapshot) {
@@ -30,10 +30,16 @@ class EjerciciosScreen extends StatelessWidget {
         } else if (snapshot.hasError) {
           return const Scaffold(
             body: Center(
-              child: NoDataError(message: "No tiene rutinas asignadas"),
+              child: NoDataError(message: "Internal Error in FitnessProvider"),
             ),
           );
-        } else {
+        } else if(snapshot.data == null){
+          return const Scaffold(
+            body: Center(
+              child: NoDataError(message: "No tiene una rutina Asignada"),
+            ),
+          );
+          }else {
           return WorkoutSchedule(plan: snapshot.data!, leading: false);
         }
       },

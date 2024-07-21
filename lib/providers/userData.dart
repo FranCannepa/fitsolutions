@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
@@ -23,7 +22,7 @@ class UserData extends ChangeNotifier {
   String gimnasioId = '';
   String asociadoId = '';
   late String calendarioId = '';
-  late String membresiaId;
+  late String membresiaId = '';
   late String entrenadorId = '';
   String? gimnasioIdPropietario = '';
   late String origenAdministrador = '';
@@ -33,7 +32,7 @@ class UserData extends ChangeNotifier {
 
   get context => null;
 
-  void initializeData() async {
+  Future<void> initializeData() async {
     final prefs = SharedPrefsHelper();
     Logger log = Logger();
     String? userEmail = await prefs.getEmail();
@@ -41,11 +40,11 @@ class UserData extends ChangeNotifier {
       final userData = await getUserData(userEmail);
       final userTipo = userData?['tipo'];
       if (userTipo == "Basico") {
-        dataFormBasic(userData);
+        await dataFormBasic(userData);
       } else if (userTipo == "Propietario") {
-        dataFormPropietario(userData);
+        await dataFormPropietario(userData);
       } else {
-        dataFormParticular(userData);
+        await dataFormParticular(userData);
       }
     } else {
       log.d("EMPTY EMAIL!");
@@ -225,7 +224,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormBasic(Map<String, dynamic>? userData) async {
+  Future<void> dataFormBasic(Map<String, dynamic>? userData) async {
     String? usuarioId = userData?['userId'];
     if (usuarioId != null) {
       userId = usuarioId;
@@ -243,7 +242,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormPropietario(Map<String, dynamic>? userData) async {
+    Future<void> dataFormPropietario(Map<String, dynamic>? userData) async {
     userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
@@ -251,10 +250,10 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void dataFormParticular(Map<String, dynamic>? userData) async {
+    Future<void> dataFormParticular(Map<String, dynamic>? userData) async {
     userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
-    tipo = 'Propietario';
+    tipo = 'Particular';
     origenAdministrador = (await prefs.getTrainerInfo(userId)) ?? '';
     notifyListeners();
   }
@@ -304,7 +303,6 @@ class UserData extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print(e);
       return false;
     }
   }

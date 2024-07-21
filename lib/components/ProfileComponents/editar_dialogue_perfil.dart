@@ -1,5 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
+import 'package:fitsolutions/components/CommonComponents/input_date_picker.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/providers/userData.dart';
@@ -23,6 +23,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   late TextEditingController _heightController;
   late TextEditingController _weightController;
   late TextEditingController _birthdateController;
+  late DateTime _fechaActividad;
 
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
@@ -36,8 +37,9 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         TextEditingController(text: widget.userData['altura'].toString());
     _weightController =
         TextEditingController(text: widget.userData['peso'].toString());
-    _birthdateController = TextEditingController(
-        text: widget.userData['fechaNacimiento'].toString());
+    _birthdateController =
+        TextEditingController(text: widget.userData['fechaNacimiento']);
+    _fechaActividad = DateTime.parse(widget.userData['fechaNacimiento']);
   }
 
   @override
@@ -47,6 +49,15 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     _weightController.dispose();
     _birthdateController.dispose();
     super.dispose();
+  }
+
+  String? validateBirthDate(DateTime? birthDate) {
+    final today = DateTime.now();
+    if (_fechaActividad.isAfter(today)) {
+      return 'La fecha de nacimiento no puede ser en el futuro.';
+    }
+
+    return null;
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -82,7 +93,8 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         'nombreCompleto': _nameController.text,
         'altura': int.parse(_heightController.text),
         'peso': double.parse(_weightController.text),
-        'fechaNacimiento': _birthdateController.text,
+        'fechaNacimiento':
+            '${_fechaActividad.year}-${_fechaActividad.month.toString().padLeft(2, '0')}-${_fechaActividad.day.toString().padLeft(2, '0')}',
         'profilePic': imageUrl ?? widget.userData['profilePic'],
       };
 
@@ -162,23 +174,50 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                             value!.isEmpty ? 'Campo requerido' : null,
                       ),
                       TextFormField(
-                        controller: _heightController,
-                        decoration: const InputDecoration(labelText: 'Altura'),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Campo requerido' : null,
-                      ),
+                          controller: _heightController,
+                          decoration:
+                              const InputDecoration(labelText: 'Altura'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'El campo no puede ser vacio';
+                            }
+                            if (int.tryParse(value) == null) {
+                              return 'Debe ser un número válido';
+                            }
+                            if (int.parse(value) <= 0) {
+                              return 'El número no puede ser negativo, o cero';
+                            }
+                            return null;
+                          }),
                       TextFormField(
-                        controller: _weightController,
-                        decoration: const InputDecoration(labelText: 'Peso'),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Campo requerido' : null,
-                      ),
-                      TextFormField(
-                        controller: _birthdateController,
-                        decoration: const InputDecoration(
-                            labelText: 'Fecha de Nacimiento'),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Campo requerido' : null,
+                          controller: _weightController,
+                          decoration: const InputDecoration(labelText: 'Peso'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'El campo no puede ser vacio';
+                            }
+                            if (double.tryParse(value) == null) {
+                              return 'Debe ser un número válido';
+                            }
+                            if (double.tryParse(value)! <= 0) {
+                              return 'El número no puede ser negativo, o cero';
+                            }
+                            return null;
+                          }),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          const Text('Fecha de Nacimiento'),
+                          InputDatePicker(
+                              labelText: "Fecha",
+                              fechaSeleccionada: _fechaActividad,
+                              onDateSelected: (date) {
+                                setState(() {
+                                  _fechaActividad = date;
+                                });
+                              },
+                              validator: validateBirthDate),
+                        ],
                       ),
                       const SizedBox(
                         height: 20,

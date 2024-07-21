@@ -24,7 +24,7 @@ class _InputDatePickerState extends State<InputDatePicker> {
   @override
   void initState() {
     super.initState();
-    selectedDate = "";
+    selectedDate = '${widget.fechaSeleccionada!.day}/${widget.fechaSeleccionada!.month}';
   }
 
   @override
@@ -42,8 +42,8 @@ class _InputDatePickerState extends State<InputDatePicker> {
                   onPressed: () async {
                     final pickedDate = await showDatePicker(
                       context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2020, 1, 1),
+                      initialDate: widget.fechaSeleccionada,
+                      firstDate: DateTime(1950, 1, 1),
                       lastDate: DateTime.now().add(const Duration(days: 365)),
                     );
         
@@ -68,14 +68,19 @@ class _InputDatePickerState extends State<InputDatePicker> {
                       Text(selectedDate.isEmpty ? widget.labelText : selectedDate),
                 ),
               ),
-              if (validationMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
-                  child: Text(
-                    validationMessage!,
-                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                if (field.errorText != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Container(
+                      constraints: BoxConstraints(
+                           maxWidth: MediaQuery.of(context).size.width * 0.2), // Adjust the width as needed
+                      child: Text(
+                        field.errorText!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                        softWrap: true,
+                      ),
+                    ),
                   ),
-                ),
             ],
           ),
         );

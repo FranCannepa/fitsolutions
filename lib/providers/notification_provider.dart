@@ -31,16 +31,16 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   Stream<List<NotificationModel>> getUserNotifications(String? userId) {
-    if(userId != null){
-    return _firebase
-        .collection('usuario')
-        .doc(userId)
-        .collection('notification')
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => NotificationModel.fromFirestore(doc))
-            .toList());
+    if (userId != null) {
+      return _firebase
+          .collection('usuario')
+          .doc(userId)
+          .collection('notification')
+          .orderBy('timestamp', descending: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => NotificationModel.fromFirestore(doc))
+              .toList());
     }
     return Stream.value([]);
   }

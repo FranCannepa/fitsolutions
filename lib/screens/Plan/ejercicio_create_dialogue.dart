@@ -1,3 +1,5 @@
+import 'package:fitsolutions/Utilities/modal_utils.dart';
+import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/screens/Plan/time_input_field.dart';
@@ -115,7 +117,7 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'El campo no puede ser vacio';
+                        return 'El campo no puede ser vacio,\nescribir 0 si no corresponde';
                       }
                       if (double.tryParse(value) == null) {
                         return 'Debe ser un número válido';
@@ -134,7 +136,7 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'El campo no puede ser vacio';
+                    return 'El campo no puede ser vacio, escribir 0 si no corresponde';
                   }
                   if (double.tryParse(value) == null) {
                     return 'Debe ser un número válido';
@@ -212,6 +214,9 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
                           },
                           parentKey: _parentKey);
                     });
+              }
+              else{
+                ModalUtils.showSuccessModal(context, 'El formulario cuenta con errores',ResultType.error, () => Navigator.pop(context));
               }
             },
             child: widget.docId == null

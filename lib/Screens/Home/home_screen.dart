@@ -1,24 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-//import 'package:fitsolutions/Components/CalendarComponents/calendarioDisplayer.dart';
-//import 'package:fitsolutions/Components/components.dart';
-//import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
-//import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen.dart';
 import 'package:fitsolutions/screens/Home/home_screen_content.dart';
-//import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:fitsolutions/screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
 import 'package:flutter/cupertino.dart';
-//import 'package:fitsolutions/Components/CalendarComponents/calendario_agregar_actividad_dialog.dart';
-//import 'package:fitsolutions/Components/CalendarComponents/calendario_displayer.dart';
-//import 'package:fitsolutions/Components/components.dart';
-//import 'package:fitsolutions/Modelo/Screens.dart';
+
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -180,6 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ];
                 }
+
                 return Scaffold(
                   body: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),

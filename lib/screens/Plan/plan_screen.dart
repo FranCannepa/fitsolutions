@@ -44,19 +44,20 @@ class _PlanScreenState extends State<PlanScreen> {
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
-              iconTheme: const IconThemeData(
-                color: Colors.white, // Set the back arrow color here
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 30,
               ),
-              backgroundColor: Colors.black,
-              title: const Text(
-                'Rutinas',
-                style: TextStyle(
-                  fontSize: 25.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  overflow: TextOverflow.ellipsis,  
-                ),
-              )),
+              onPressed: () => Navigator.pop(context),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            title: const Text(
+              'Rutinas',
+              style: TextStyle(color: Colors.white, fontSize: 30),
+            ),
+          ),
           floatingActionButton: FloatingActionButton(
             onPressed: () => openNoteBox(null, fitnessProvider),
             child:

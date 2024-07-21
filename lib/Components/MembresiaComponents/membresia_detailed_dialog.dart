@@ -142,7 +142,6 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
 }
 
 class WidgetBindingsObserverSample extends NavigatorObserver {
-  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       debugPrint('App resumed after launching URL');
