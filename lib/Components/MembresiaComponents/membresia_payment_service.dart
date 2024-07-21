@@ -176,7 +176,7 @@ class PaymentService {
 
       if (status != null && status == 'approved') {
         final UserData userProvider = context.read<UserData>();
-        await userProvider.updateMembresiaId(membresiaId);
+        await userProvider.updateMembresiaId(context, membresiaId);
         ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Pago exitoso y membresía asignada')));
         Navigator.pushReplacementNamed(context, '/membresia');

@@ -14,7 +14,7 @@ class ActividadDialog extends StatefulWidget {
       {super.key, required this.actividad, required this.onClose});
 
   @override
-  _ActividadDialogState createState() => _ActividadDialogState();
+  State<ActividadDialog> createState() => _ActividadDialogState();
 }
 
 class _ActividadDialogState extends State<ActividadDialog> {
@@ -110,7 +110,7 @@ class _ActividadDialogState extends State<ActividadDialog> {
 
                                     if (isInscrito) {
                                       final result = await actividadProvider
-                                          .desinscribirseActividad(
+                                          .desinscribirseActividad(context,
                                               userProvider.userId,
                                               widget.actividad.id);
                                       setState(() {
@@ -128,7 +128,7 @@ class _ActividadDialogState extends State<ActividadDialog> {
                                     } else if (widget.actividad.participantes <
                                         widget.actividad.cupos) {
                                       final result = await actividadProvider
-                                          .anotarseActividad(
+                                          .anotarseActividad(context,
                                               userProvider.userId,
                                               widget.actividad.id);
                                       setState(() {

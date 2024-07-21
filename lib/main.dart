@@ -19,6 +19,7 @@ import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
+import 'package:fitsolutions/providers/purchases_provider.dart';
 import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
@@ -77,6 +78,9 @@ class MyApp extends StatelessWidget {
             create: (context) => DietaProvider()),
         ChangeNotifierProvider(
             create: (context) => ChartProvider(FirebaseFirestore.instance)),
+        ChangeNotifierProvider<PurchasesProvider>(
+            create: (context) => PurchasesProvider()),
+        
       ],
       child: MaterialApp(
         navigatorKey: NavigationService.navigatorKey,

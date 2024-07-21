@@ -4,6 +4,8 @@ import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:fitsolutions/providers/membresia_provider.dart';
 
 class ActividadProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
@@ -145,8 +147,26 @@ class ActividadProvider extends ChangeNotifier {
   }
 
   Future<bool> desinscribirseActividad(
-      String userId, String actividadId) async {
+      BuildContext context, String userId, String actividadId) async {
     try {
+      //obtengo la membresia actual del usuario
+      final membresiaSnapshot =
+          await Provider.of<MembresiaProvider>(context, listen: false)
+              .obtenerMembresiaActiva(userId);
+
+      if (membresiaSnapshot == null) {
+        return false;
+      }
+
+      //id de la membresia
+      var usuarioMembresiaId = membresiaSnapshot.id;
+
+      //incremento un cupo
+      await FirebaseFirestore.instance
+          .collection('usuarioMembresia')
+          .doc(usuarioMembresiaId)
+          .update({'cuposRestantes': FieldValue.increment(1)});
+
       final collectionRef =
           FirebaseFirestore.instance.collection('actividadParticipante');
       final querySnapshot = await collectionRef
@@ -166,12 +186,32 @@ class ActividadProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> anotarseActividad(String userId, String actividadId) async {
+  Future<bool> anotarseActividad(
+      BuildContext context, String userId, String actividadId) async {
     try {
-            final activity = await FirebaseFirestore.instance
+      final activity = await FirebaseFirestore.instance
           .collection('actividad')
           .doc(actividadId)
           .get();
+      //obtengo la membresia actual del usuario
+      final membresiaSnapshot =
+          await Provider.of<MembresiaProvider>(context, listen: false)
+              .obtenerMembresiaActiva(userId);
+
+      if (membresiaSnapshot == null) {
+        return false;
+      }
+
+      //id de la membresia
+      var usuarioMembresiaId = membresiaSnapshot.id;
+
+      //decremento un cupo
+      await FirebaseFirestore.instance
+          .collection('usuarioMembresia')
+          .doc(usuarioMembresiaId)
+          .update({'cuposRestantes': FieldValue.increment(-1)});
+
+      //registro al usuario en la actividad
       final collectionRef =
           FirebaseFirestore.instance.collection('actividadParticipante');
       final participantData = {

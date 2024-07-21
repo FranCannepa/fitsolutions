@@ -168,7 +168,6 @@ class SharedPrefsHelper {
         return null;
       }
     } catch (e) {
-      //print(e);
       return null;
     }
   }
