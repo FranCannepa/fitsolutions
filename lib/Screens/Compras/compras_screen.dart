@@ -10,7 +10,7 @@ class ComprasScreen extends StatefulWidget {
   const ComprasScreen({super.key});
 
   @override
-  _ComprasScreenState createState() => _ComprasScreenState();
+  State<ComprasScreen> createState() => _ComprasScreenState();
 }
 
 class _ComprasScreenState extends State<ComprasScreen> {
@@ -120,7 +120,7 @@ class _ComprasScreenState extends State<ComprasScreen> {
                           builder: (context, snapshot) =>
                               Text('Producto: ${snapshot.data ?? 'Cargando...'}'),
                         ),
-                        Text('Fecha: ${formattedDate}'),
+                        Text('Fecha: $formattedDate'),
                         FutureBuilder<String?>(
                           future: context
                               .read<PurchasesProvider>()
