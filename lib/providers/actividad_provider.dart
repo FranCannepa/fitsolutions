@@ -78,16 +78,65 @@ class ActividadProvider extends ChangeNotifier {
   }
 
   Future<bool> registrarActividad(Map<String, dynamic> actividadData) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('actividad')
-          .add(actividadData);
-      notifyListeners();
-      return true;
-    } on FirebaseException catch (e) {
-      rethrow;
+  try {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final String nombre = actividadData['nombreActividad'];
+    final String propietarioActividadId = actividadData['propietarioActividadId'];
+    final String tipo = actividadData['tipo'];
+    final cupos = int.tryParse(actividadData['cupos'].toString()) ?? 0;
+    final DateTime inicio = actividadData['inicio'].toDate();
+    final DateTime fin = actividadData['fin'].toDate();
+    final List<int> diasRepeticion = List<int>.from(actividadData['dias']);
+    const int duracionMeses = 1;
+
+    // Calculo la fecha final basada en la duracion en meses
+    DateTime now = DateTime.now();
+    DateTime fechaFinal = DateTime(now.year, now.month + duracionMeses, now.day);
+
+    if (diasRepeticion.isEmpty) {
+      // Creo actividad unica
+      await firestore.collection('actividad').add({
+        'nombreActividad': nombre,
+        'propietarioActividadId': propietarioActividadId,
+        'tipo': tipo,
+        'cupos': cupos,
+        'inicio': DateTime(inicio.year, inicio.month, inicio.day, inicio.hour, inicio.minute),
+        'fin': DateTime(fin.year, fin.month, fin.day, fin.hour, fin.minute),
+        'duracionMeses': duracionMeses,
+        'diasRepeticion': diasRepeticion,
+      });
+    } else {
+      // Recorro desde la fecha de inicio hasta la fecha final
+      DateTime fechaActual = inicio;
+
+      while (fechaActual.isBefore(fechaFinal)) {
+        // Verifico si el dia de la semana actual es uno de los seleccionados
+        int diaDeLaSemana = fechaActual.weekday;
+        if (diasRepeticion.contains(diaDeLaSemana)) {
+          await firestore.collection('actividad').add({
+            'nombreActividad': nombre,
+            'propietarioActividadId': propietarioActividadId,
+            'tipo': tipo,
+            'cupos': cupos,
+            'inicio': DateTime(fechaActual.year, fechaActual.month, fechaActual.day, inicio.hour, inicio.minute),
+            'fin': DateTime(fechaActual.year, fechaActual.month, fechaActual.day, fin.hour, fin.minute),
+            'duracionMeses': duracionMeses,
+            'diasRepeticion': diasRepeticion,
+          });
+        }
+        
+        // Avanzo al siguiente dia
+        fechaActual = fechaActual.add(Duration(days: 1));
+      }
     }
+
+    notifyListeners();
+    return true;
+  } on FirebaseException catch (e) {
+    print('Error al registrar la actividad: ${e.message}');
+    return false;
   }
+}
 
   Future<bool> actualizarActividad(Map<String, dynamic> actividadData) async {
     try {
