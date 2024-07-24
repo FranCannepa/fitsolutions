@@ -3,6 +3,7 @@ import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/components/ProfileComponents/actividad_dialogue_perfi.dart';
 import 'package:fitsolutions/components/ProfileComponents/editar_dialogue_perfil.dart';
 import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen_basico.dart';
 import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,11 +20,12 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
   @override
   Widget build(BuildContext context) {
     context.watch<UserData>();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const ScreenUpperTitle(title: "Perfil"),
-        Container(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const ScreenUpperTitle(title: "Perfil"),
+          Container(
             width: double.infinity,
             margin: const EdgeInsets.all(30),
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
@@ -193,8 +195,9 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                             builder: (context) {
                               return EditProfileDialog(
                                 userData: widget.userData,
-                                onClose: (){
-                                  Navigator.pop(context);},
+                                onClose: () {
+                                  Navigator.pop(context);
+                                },
                               );
                             },
                           )
@@ -269,10 +272,14 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
-            )),
-      ],
+            ),
+          ),
+          const SizedBox(child: ScreenUpperTitle( title: 'Informacion de Subscripcion')),
+          const SizedBox(child: GimnasioScreenBasico())
+        ],
+      ),
     );
   }
 }

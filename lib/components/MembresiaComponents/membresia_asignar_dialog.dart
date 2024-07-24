@@ -1,23 +1,23 @@
-import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
-import 'package:fitsolutions/providers/dietas_provider.dart';
+import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
+import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/userData.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AsignarDietaDialog extends StatefulWidget {
-  final Dieta dieta;
+class MembresiaAsignarDialog extends StatefulWidget {
+  final Membresia membresia;
   final VoidCallback onClose;
-  const AsignarDietaDialog(
-      {super.key, required this.dieta, required this.onClose});
+  const MembresiaAsignarDialog(
+      {super.key, required this.membresia, required this.onClose});
 
   @override
-  State<AsignarDietaDialog> createState() => _AsignarDietaDialogState();
+  State<MembresiaAsignarDialog> createState() => _MembresiaAsignarDialogState();
 }
 
-class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
+class _MembresiaAsignarDialogState extends State<MembresiaAsignarDialog> {
   String? clienteSeleccionado;
   void updateClienteSeleccionado(String value) {
     clienteSeleccionado = value;
@@ -38,10 +38,10 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final dieta = widget.dieta;
+    final membresia = widget.membresia;
     final GimnasioProvider gimnasioProvider = context.watch<GimnasioProvider>();
     final UserData userProvider = context.read<UserData>();
-    final DietaProvider dietaProvider = context.read<DietaProvider>();
+    final MembresiaProvider membershipProivder = context.read<MembresiaProvider>();
 
     return Dialog(
         shape: RoundedRectangleBorder(
@@ -71,7 +71,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
                   color: Colors.black,
                   padding: const EdgeInsets.all(10),
                   child: const Text(
-                    'Asignar Dieta',
+                    'Asignar Membresia',
                     style: TextStyle(
                       fontSize: 25.0,
                       fontWeight: FontWeight.bold,
@@ -119,10 +119,10 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
                           text: "Asignar",
                           onPressed: () async {
                             if (clienteSeleccionado != null) {
-                              final result = await dietaProvider.asignarDieta(
-                                  dieta.id, clienteSeleccionado as String);
+                              final result = await membershipProivder.asignarMembresia(
+                                  membresia.id, clienteSeleccionado as String);
                               if (result) {
-                               _showSuccessModal("Dieta asignada exitosamente", ResultType.success);
+                               _showSuccessModal("Membresia asignada exitosamente", ResultType.success);
                               } else {
                                 const ResultDialog(
                                     text: "Error al asignar dieta",

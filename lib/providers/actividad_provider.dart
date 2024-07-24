@@ -197,7 +197,7 @@ class ActividadProvider extends ChangeNotifier {
       final membresiaSnapshot =
           await Provider.of<MembresiaProvider>(context, listen: false)
               .obtenerMembresiaActiva(userId);
-
+      
       if (membresiaSnapshot == null) {
         return false;
       }
@@ -267,4 +267,5 @@ class ActividadProvider extends ChangeNotifier {
       rethrow;
     }
   }
+  
 }

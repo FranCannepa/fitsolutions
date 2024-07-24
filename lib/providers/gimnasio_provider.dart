@@ -50,6 +50,37 @@ class GimnasioProvider with ChangeNotifier {
       return null;
     }
   }
+Future<Gimnasio?> getInfoSubscripto() async {
+  final prefs = SharedPrefsHelper();
+  final userId = await prefs.getSubscripcion();
+
+  // Check gimnasio collection first
+  final gimnasioDoc = await FirebaseFirestore.instance
+      .collection('gimnasio')
+      .doc(userId)
+      .get();
+
+  if (gimnasioDoc.exists) {
+    final data = gimnasioDoc.data();
+    Gimnasio? gym = Gimnasio.fromFirestore(gimnasioDoc.id, data!);
+    return gym;
+  }
+
+  // If not found in gimnasio, check trainerInfo collection
+  final trainerDoc = await FirebaseFirestore.instance
+      .collection('trainerInfo')
+      .doc(userId)
+      .get();
+
+  if (trainerDoc.exists) {
+    final data = trainerDoc.data();
+    Gimnasio? trainer = Gimnasio.fromFirestore(trainerDoc.id, data!);
+    return trainer;
+  }
+
+  // If not found in both collections, return null
+  return null;
+}
 
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -161,4 +192,32 @@ class GimnasioProvider with ChangeNotifier {
       return [];
     }
   }
+
+    Future<List<Map<String, dynamic>>> getParticipantesActividad(String activityId) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('actividadParticipante')
+          .where('actividadId', isEqualTo: activityId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final List<Map<String, dynamic>> usuarios = [];
+        for (var doc in querySnapshot.docs) {
+          final data = doc.data();
+          final queryUsers = await FirebaseFirestore.instance.collection('usuario').doc(data['participanteId']).get();
+          final userData = queryUsers.data() as Map<String,dynamic>;
+          usuarios.add(userData);
+        }
+        return usuarios;
+      } else {
+        return [];
+      }
+    } catch (e) {
+      log.d("Error getting usuarios data: $e");
+      return [];
+    }
+  }
+
 }
+
+
