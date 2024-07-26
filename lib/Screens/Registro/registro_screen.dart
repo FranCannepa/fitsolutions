@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/components/components.dart';
 //import 'package:fitsolutions/modelo/models.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -13,6 +13,11 @@ class RegistroScreen extends StatefulWidget {
 
   @override
   State<RegistroScreen> createState() => _RegistroScreenState();
+}
+
+Future<void> _initializeData(UserData userProvider) async {
+  await SharedPrefsHelper().initializeData();
+  await userProvider.initializeData();
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
@@ -36,6 +41,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
       prefs.setEmail(userProvider.email);
       prefs.setLoggedIn(true);
       prefs.setUserId(docRef.id);
+      await _initializeData(userProvider);
       NavigationService.instance.pushNamed("/home");
     } on FirebaseException catch (e) {
       log.d(e.code);
@@ -100,7 +106,8 @@ class _RegistroScreenState extends State<RegistroScreen> {
                         const SizedBox(height: 20),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                             foregroundColor: Colors.white,
                             elevation: 5,
                             shape: RoundedRectangleBorder(

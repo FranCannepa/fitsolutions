@@ -158,8 +158,8 @@ class ClienteCard extends StatelessWidget {
                                 ),
                                 Text(
                                   'Fecha de Expiración: ${DateFormat().format(membresiaAsignada.fechaExpiracion)}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style:  TextStyle(
+                                    color: membresiaAsignada.fechaExpiracion.isBefore(DateTime.now()) ? Colors.red : Colors.white,
                                   ),
                                 ),
                                 const SizedBox(height: 8.0),

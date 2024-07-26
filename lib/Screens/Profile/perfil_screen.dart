@@ -8,7 +8,7 @@
 //import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigator.dart';
 import 'package:fitsolutions/Components/ProfileComponents/perfilDetailed.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -2,7 +2,7 @@ import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/components/ProfileComponents/actividad_dialogue_perfi.dart';
 import 'package:fitsolutions/components/ProfileComponents/editar_dialogue_perfil.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen_basico.dart';
 import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:flutter/material.dart';
@@ -166,10 +166,11 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                           ),
                           Expanded(
                             child: Text(
+                              widget.userData['fechaNacimiento'] != null ?
                               Formatters()
                                   .calculateAge(
                                       widget.userData['fechaNacimiento'])
-                                  .toString(),
+                                  .toString() : 'No informado',
                               style: TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.w500,

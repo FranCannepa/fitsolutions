@@ -1,6 +1,6 @@
 import 'dart:core';
 import 'package:fitsolutions/Components/CommonComponents/no_data_error.dart';
-import 'package:fitsolutions/Components/GimnasioComponents/gimnasio_cliente_card.dart';
+import 'package:fitsolutions/components/CalendarComponents/participante_card.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -74,7 +74,7 @@ class ActividadParticipantes extends StatelessWidget {
                             itemCount: clientes.length,
                             itemBuilder: (context, index) {
                               final clienteData = clientes[index];
-                              return ClienteCard(clienteData: clienteData);
+                              return ParticipanteCard(clienteData: clienteData);
                             },
                           ));
                     }

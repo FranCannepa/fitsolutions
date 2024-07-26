@@ -354,7 +354,7 @@ class InscriptionProvider extends ChangeNotifier {
           user.id,
           'Inscripcion Completada',
           'Se finalizo tu inscripcion a un gimnasio!',
-          '/ejercicios');
+          '/perfil');
     } catch (e) {
       log.e(e);
     }

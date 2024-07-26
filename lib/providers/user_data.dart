@@ -80,7 +80,7 @@ class UserData extends ChangeNotifier {
       final data = docSnapshot.data();
       return data?['nombreCompleto'] as String?;
     } else {
-      print("No se encontro usuario con ID: $userId");
+      log.d("No se encontro usuario con ID: $userId");
       return null;
     }
   } catch (e) {
@@ -143,7 +143,7 @@ class UserData extends ChangeNotifier {
 
   Future<void> updateMembresiaId(BuildContext context, String membresiaId) async {
   final String? userId = await getUserId();
-  if (userId != null && membresiaId != null) {
+  if (userId != null) {
     // Obtengo la membresia
     final membresiaProvider = Provider.of<MembresiaProvider>(context, listen: false);
     final membresiaData = await membresiaProvider.getMembresiaDetails(membresiaId);
@@ -173,10 +173,10 @@ class UserData extends ChangeNotifier {
 
       notifyListeners();
     } else {
-      print("Membresía no encontrada o datos incompletos para ID: $membresiaId");
+      log.d("Membresía no encontrada o datos incompletos para ID: $membresiaId");
     }
   } else {
-    print("No se pudo actualizar la membresía o el ID de usuario es nulo");
+    log.d("No se pudo actualizar la membresía o el ID de usuario es nulo");
   }
 }
 
@@ -211,7 +211,7 @@ class UserData extends ChangeNotifier {
   }
 
   Future<bool?> tieneSub() async {
-    final bool? sub = await prefs.tieneSub();
+    final bool sub = await prefs.tieneSub();
     return sub;
   }
 
@@ -265,7 +265,7 @@ class UserData extends ChangeNotifier {
       photoUrl = user.photoURL != null ? user.photoURL as String : '';
       prefs.setEmail(email);
     }
-    notifyListeners();
+    //notifyListeners();
   }
 
   void updateUserData(Map<String, dynamic>? userData) {

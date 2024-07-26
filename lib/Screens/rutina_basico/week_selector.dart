@@ -1,6 +1,6 @@
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/screens/Plan/ejercicio_create_dialogue.dart';
 import 'package:fitsolutions/screens/rutina_basico/exercise_rows.dart';
 import 'package:fitsolutions/screens/rutina_basico/header_row.dart';
@@ -85,34 +85,47 @@ class _WeekSelectorState extends State<WeekSelector> {
   }
 
   Future<void> initializeWorkout() async {
-    await context
-        .read<FitnessProvider>()
-        .initializeWorkoutState(widget.plan, daysNames);
-    Logger().d('INIT');
+    final userData = context.read<UserData>();
+    if (userData.esBasico()) {
+      await context
+          .read<FitnessProvider>()
+          .initializeWorkoutState(widget.plan, daysNames);
+    }
   }
 
   Future<bool> checkWeekCompletion(int weekIndex) async {
     // Fetch week completion status from Firestore and update state
-    final provider = context.read<FitnessProvider>();
-    return await provider.isWeekCompleted(widget.plan.idFromWeek(weekIndex));
+    final userData = context.read<UserData>();
+    if (userData.esBasico()) {
+      final provider = context.read<FitnessProvider>();
+      return await provider.isWeekCompleted(widget.plan.idFromWeek(weekIndex));
+    }
+    return false;
   }
 
   Future<bool> checkDayCompletion(int weekIndex, int dayIndex) async {
-    final provider = context.read<FitnessProvider>();
-    return await provider.isDayCompleted(
-        widget.plan.idFromWeek(weekIndex), daysNames[dayIndex]);
+    final userData = context.read<UserData>();
+    if (userData.esBasico()) {
+      final provider = context.read<FitnessProvider>();
+      return await provider.isDayCompleted(
+          widget.plan.idFromWeek(weekIndex), daysNames[dayIndex]);
+    }
+    return false;
   }
 
   Future<void> setInitialSelectedWeek() async {
     final provider = context.read<FitnessProvider>();
-    for (int i = 0; i < widget.plan.weeks.length; i++) {
-      bool weekCompleted =
-          await provider.isWeekCompleted(widget.plan.idFromWeek(i));
-      if (!weekCompleted) {
-        setState(() {
-          _selectedWeekIndex = i;
-        });
-        break;
+    final userData = context.read<UserData>();
+    if (userData.esBasico()) {
+      for (int i = 0; i < widget.plan.weeks.length; i++) {
+        bool weekCompleted =
+            await provider.isWeekCompleted(widget.plan.idFromWeek(i));
+        if (!weekCompleted) {
+          setState(() {
+            _selectedWeekIndex = i;
+          });
+          break;
+        }
       }
     }
   }
@@ -141,6 +154,7 @@ class _WeekSelectorState extends State<WeekSelector> {
       await fProv.deleteWeek(widget.plan);
       setState(() {
         _selectedWeekIndex = widget.plan.weekCount() - 1;
+
       });
     }
   }
@@ -298,6 +312,7 @@ class _WeekSelectorState extends State<WeekSelector> {
                         ],
                       ),
                       const SizedBox(height: 20),
+                      if(_selectedWeekIndex != -1)
                       SizedBox(
                         height: 50, // Adjust height according to your design
                         child: FutureBuilder<List<bool>>(

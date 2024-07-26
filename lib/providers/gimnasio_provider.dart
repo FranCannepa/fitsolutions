@@ -55,29 +55,30 @@ Future<Gimnasio?> getInfoSubscripto() async {
   final userId = await prefs.getSubscripcion();
 
   // Check gimnasio collection first
-  final gimnasioDoc = await FirebaseFirestore.instance
-      .collection('gimnasio')
-      .doc(userId)
-      .get();
+  if(userId != ''){
+    final gimnasioDoc = await FirebaseFirestore.instance
+        .collection('gimnasio')
+        .doc(userId)
+        .get();
 
-  if (gimnasioDoc.exists) {
-    final data = gimnasioDoc.data();
-    Gimnasio? gym = Gimnasio.fromFirestore(gimnasioDoc.id, data!);
-    return gym;
+    if (gimnasioDoc.exists) {
+      final data = gimnasioDoc.data();
+      Gimnasio? gym = Gimnasio.fromFirestore(gimnasioDoc.id, data!);
+      return gym;
+    }
+
+    // If not found in gimnasio, check trainerInfo collection
+    final trainerDoc = await FirebaseFirestore.instance
+        .collection('trainerInfo')
+        .doc(userId)
+        .get();
+
+    if (trainerDoc.exists) {
+      final data = trainerDoc.data();
+      Gimnasio? trainer = Gimnasio.fromFirestore(trainerDoc.id, data!);
+      return trainer;
+    }
   }
-
-  // If not found in gimnasio, check trainerInfo collection
-  final trainerDoc = await FirebaseFirestore.instance
-      .collection('trainerInfo')
-      .doc(userId)
-      .get();
-
-  if (trainerDoc.exists) {
-    final data = trainerDoc.data();
-    Gimnasio? trainer = Gimnasio.fromFirestore(trainerDoc.id, data!);
-    return trainer;
-  }
-
   // If not found in both collections, return null
   return null;
 }
