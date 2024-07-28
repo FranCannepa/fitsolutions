@@ -5,9 +5,12 @@ import 'package:fitsolutions/Components/GimnasioComponents/gimnasio_clientes.dar
 import 'package:fitsolutions/components/ChartComponents/chart_display.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/Screens/Plan/plan_screen.dart';
+import 'package:fitsolutions/providers/gimnasio_provider.dart';
+import 'package:fitsolutions/screens/Gimnasio/gym_edit_form.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 import 'package:fitsolutions/Screens/Compras/compras_screen.dart';
+import 'package:provider/provider.dart';
 
 class GimnasioInfo extends StatelessWidget {
   final Gimnasio gimnasio;
@@ -16,6 +19,7 @@ class GimnasioInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<GimnasioProvider>();
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -54,14 +58,15 @@ class GimnasioInfo extends StatelessWidget {
                                   width: 100,
                                   child: Center(
                                     child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              (loadingProgress
-                                                      .expectedTotalBytes ??
-                                                  1)
-                                          : null,
+                                      value:
+                                          loadingProgress.expectedTotalBytes !=
+                                                  null
+                                              ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  (loadingProgress
+                                                          .expectedTotalBytes ??
+                                                      1)
+                                              : null,
                                     ),
                                   ),
                                 );
@@ -72,7 +77,8 @@ class GimnasioInfo extends StatelessWidget {
                       ),
                   ],
                 ),
-                InfoItem(text: gimnasio.direccion, icon: const Icon(Icons.place)),
+                InfoItem(
+                    text: gimnasio.direccion, icon: const Icon(Icons.place)),
                 InfoItem(text: gimnasio.contacto, icon: const Icon(Icons.call)),
                 const SizedBox(width: 25),
                 Text(
@@ -113,6 +119,31 @@ class GimnasioInfo extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () => {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration:
+                                  const Duration(milliseconds: 500),
+                              pageBuilder: (_, __, ___) => const GymModificationForm(),
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          )
+                        },
+                        child: const Text('Editar Informacion'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => {
                           showDialog(
                             context: context,
                             builder: (context) => GimnasioClientes(
@@ -134,8 +165,10 @@ class GimnasioInfo extends StatelessWidget {
                               transitionDuration:
                                   const Duration(milliseconds: 500),
                               pageBuilder: (_, __, ___) => const PlanScreen(),
-                              transitionsBuilder: (_, Animation<double> animation,
-                                  __, Widget child) {
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
                                 return FadeTransition(
                                   opacity: animation,
                                   child: child,
@@ -158,8 +191,10 @@ class GimnasioInfo extends StatelessWidget {
                                   const Duration(milliseconds: 500),
                               pageBuilder: (_, __, ___) =>
                                   const InscriptionScreen(),
-                              transitionsBuilder: (_, Animation<double> animation,
-                                  __, Widget child) {
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
                                 return FadeTransition(
                                   opacity: animation,
                                   child: child,
@@ -181,8 +216,10 @@ class GimnasioInfo extends StatelessWidget {
                               transitionDuration:
                                   const Duration(milliseconds: 500),
                               pageBuilder: (_, __, ___) => const ChartDisplay(),
-                              transitionsBuilder: (_, Animation<double> animation,
-                                  __, Widget child) {
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
                                 return FadeTransition(
                                   opacity: animation,
                                   child: child,
@@ -193,31 +230,33 @@ class GimnasioInfo extends StatelessWidget {
                         },
                         child: const Text('Graficas'),
                       ),
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            transitionDuration:
-                                const Duration(milliseconds: 500),
-                            pageBuilder: (_, __, ___) =>
-                                const ComprasScreen(),
-                            transitionsBuilder: (_, Animation<double> animation,
-                                __, Widget child) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
-                            },
-                          ),
-                        )
-                      },
-                      child: const Text('Compras'),
                     ),
-                  ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration:
+                                  const Duration(milliseconds: 500),
+                              pageBuilder: (_, __, ___) =>
+                                  const ComprasScreen(),
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          )
+                        },
+                        child: const Text('Compras'),
+                      ),
+                    ),
                   ],
                 )
               ],

@@ -1,5 +1,6 @@
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/components/MembresiaComponents/membresia_detailed_basic.dart';
 import 'package:fitsolutions/components/ProfileComponents/actividad_dialogue_perfi.dart';
 import 'package:fitsolutions/components/ProfileComponents/editar_dialogue_perfil.dart';
 import 'package:fitsolutions/providers/user_data.dart';
@@ -249,27 +250,15 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              transitionDuration:
-                                  const Duration(milliseconds: 500),
-                              pageBuilder: (_, __, ___) =>
-                                  const FormInscriptionScreen(),
-                              transitionsBuilder: (_,
-                                  Animation<double> animation,
-                                  __,
-                                  Widget child) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                );
-                              },
-                            ),
+                        onPressed: () async => {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return MembresiaDialogBasic(usuarioId: widget.userData['id']);
+                            },
                           )
                         },
-                        child: const Text('Mi Membresia'),
+                        child: const Text('Mi membresia'),
                       ),
                     ),
                   ],

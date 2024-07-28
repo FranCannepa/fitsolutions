@@ -6,20 +6,20 @@ import '../Utilities/utilities.dart';
 
 class UserProvider extends ChangeNotifier {
   // Shared preferences helper for storing and retrieving user data locally
-  final prefs = SharedPrefsHelper();
-  
+  final SharedPrefsHelper prefs = SharedPrefsHelper();
+
   // Firebase Auth and Firestore instances
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
-  
+
   // Current user instance
   User? _user;
-  
+
   // Flag to check if this is the user's first login
   bool _firstLogin = false;
-  
+
   // Logger instance for logging events and errors
-  Logger log = Logger();
+  final Logger log = Logger();
 
   // Constructor to initialize Firebase Auth and Firestore instances
   // Listens to authentication state changes to update the current user
@@ -43,7 +43,7 @@ class UserProvider extends ChangeNotifier {
   Future<Map<String, dynamic>?> checkUserExistence(User user) async {
     try {
       // Query Firestore for a user with the provided email
-      final querySnapshot = await FirebaseFirestore.instance
+      final querySnapshot = await _firestore
           .collection('usuario')
           .where('email', isEqualTo: user.email)
           .limit(1)
@@ -94,17 +94,24 @@ class UserProvider extends ChangeNotifier {
         await prefs.setLoggedIn(true);
       }
     } on FirebaseAuthException catch (e) {
-      log.e(e);
+      log.e('FirebaseAuthException in signIn: $e');
       rethrow; // Rethrow the exception for further handling
+    } catch (e) {
+      log.e('Exception in signIn: $e');
+      rethrow;
     }
   }
 
   // Method to sign in a user with Google
   Future<User?> signInWithGoogle() async {
-    final UserCredential userCredential =
-        await _firebaseAuth.signInWithProvider(GoogleAuthProvider());
-    final User? user = userCredential.user;
-    return user;
+    try {
+      final UserCredential userCredential = 
+          await _firebaseAuth.signInWithProvider(GoogleAuthProvider());
+      return userCredential.user;
+    } catch (e) {
+      log.e('Exception in signInWithGoogle: $e');
+      rethrow;
+    }
   }
 
   // Method to sign up a new user with email and password
@@ -115,10 +122,10 @@ class UserProvider extends ChangeNotifier {
       _firstLogin = true; // Mark as first login
       return userCred;
     } on FirebaseAuthException catch (e) {
-      log.d(e);
+      log.e('FirebaseAuthException in signUp: $e');
       throw Exception('Un usuario con ese email ya existe');
     } catch (e) {
-      log.d(e);
+      log.e('Exception in signUp: $e');
       rethrow;
     }
   }
@@ -128,8 +135,11 @@ class UserProvider extends ChangeNotifier {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
-      log.e(e);
+      log.e('FirebaseAuthException in resetPassword: $e');
       rethrow; // Rethrow the exception for further handling
+    } catch (e) {
+      log.e('Exception in resetPassword: $e');
+      rethrow;
     }
   }
 
@@ -139,8 +149,8 @@ class UserProvider extends ChangeNotifier {
       await _firebaseAuth.signOut(); // Sign out from Firebase Auth
       await prefs.clearAll(); // Clear all stored preferences
       notifyListeners(); // Notify listeners to update the UI
-    } on FirebaseAuthException catch (e) {
-      log.t(e);
+    } catch (e) {
+      log.e('Exception in signOut: $e');
       rethrow;
     }
   }

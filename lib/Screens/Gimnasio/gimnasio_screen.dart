@@ -37,7 +37,7 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final gimnasioProvider = context.read<GimnasioProvider>();
+    final gimnasioProvider = context.watch<GimnasioProvider>();
     final esParticular = context.read<UserData>().esParticular();
     return Scaffold(
       body: Center(

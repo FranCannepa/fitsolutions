@@ -97,7 +97,9 @@ class UserData extends ChangeNotifier {
           FirebaseFirestore.instance.collection('usuario').doc(userId);
       final snapshot = await docRef.get();
       if (snapshot.exists) {
-        return snapshot.data() as Map<String, dynamic>;
+        final data = snapshot.data();
+        data!['id'] = userId;
+        return data;
       } else {
         return null;
       }

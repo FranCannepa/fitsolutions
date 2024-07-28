@@ -50,38 +50,39 @@ class GimnasioProvider with ChangeNotifier {
       return null;
     }
   }
-Future<Gimnasio?> getInfoSubscripto() async {
-  final prefs = SharedPrefsHelper();
-  final userId = await prefs.getSubscripcion();
 
-  // Check gimnasio collection first
-  if(userId != ''){
-    final gimnasioDoc = await FirebaseFirestore.instance
-        .collection('gimnasio')
-        .doc(userId)
-        .get();
+  Future<Gimnasio?> getInfoSubscripto() async {
+    final prefs = SharedPrefsHelper();
+    final userId = await prefs.getSubscripcion();
 
-    if (gimnasioDoc.exists) {
-      final data = gimnasioDoc.data();
-      Gimnasio? gym = Gimnasio.fromFirestore(gimnasioDoc.id, data!);
-      return gym;
+    // Check gimnasio collection first
+    if (userId != '') {
+      final gimnasioDoc = await FirebaseFirestore.instance
+          .collection('gimnasio')
+          .doc(userId)
+          .get();
+
+      if (gimnasioDoc.exists) {
+        final data = gimnasioDoc.data();
+        Gimnasio? gym = Gimnasio.fromFirestore(gimnasioDoc.id, data!);
+        return gym;
+      }
+
+      // If not found in gimnasio, check trainerInfo collection
+      final trainerDoc = await FirebaseFirestore.instance
+          .collection('trainerInfo')
+          .doc(userId)
+          .get();
+
+      if (trainerDoc.exists) {
+        final data = trainerDoc.data();
+        Gimnasio? trainer = Gimnasio.fromFirestore(trainerDoc.id, data!);
+        return trainer;
+      }
     }
-
-    // If not found in gimnasio, check trainerInfo collection
-    final trainerDoc = await FirebaseFirestore.instance
-        .collection('trainerInfo')
-        .doc(userId)
-        .get();
-
-    if (trainerDoc.exists) {
-      final data = trainerDoc.data();
-      Gimnasio? trainer = Gimnasio.fromFirestore(trainerDoc.id, data!);
-      return trainer;
-    }
+    // If not found in both collections, return null
+    return null;
   }
-  // If not found in both collections, return null
-  return null;
-}
 
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -157,7 +158,49 @@ Future<Gimnasio?> getInfoSubscripto() async {
       }
       final docRef = await _firebase.collection(collection).add(gymData);
       await prefs.setSubscripcion(docRef.id);
-      
+
+      notifyListeners();
+    } catch (e) {
+      log.d(e);
+    }
+  }
+    Future<void> updateGym(
+    String name,
+    String address,
+    String contact,
+    String logo,
+    Map<String, TimeOfDay> openHours,
+    Map<String, TimeOfDay> closeHours,
+  ) async {
+    final gymId = await prefs.getSubscripcion();
+    try {
+      final gymData = {
+        'nombreGimnasio': name,
+        'direccion': address,
+        'contacto': contact,
+        'logoUrl': gymLogoUrl == null ? logo : gymLogoUrl!,
+        'horario': {
+          'Lunes-Viernes': {
+            'open': formatTimeOfDay(openHours['Lunes-Viernes']!),
+            'close': formatTimeOfDay(closeHours['Lunes-Viernes']!),
+          },
+          'Sabado': {
+            'open': formatTimeOfDay(openHours['Sabado']!),
+            'close': formatTimeOfDay(closeHours['Sabado']!),
+          },
+          'Domingo': {
+            'open': formatTimeOfDay(openHours['Domingo']!),
+            'close': formatTimeOfDay(closeHours['Domingo']!),
+          },
+        }
+      };
+      final esEntrenador = await prefs.esEntrenador();
+      String? collection = 'gimnasio';
+      if (esEntrenador) {
+        collection = 'trainerInfo';
+      }
+      await _firebase.collection(collection).doc(gymId).update(gymData);
+
       notifyListeners();
     } catch (e) {
       log.d(e);
@@ -194,7 +237,8 @@ Future<Gimnasio?> getInfoSubscripto() async {
     }
   }
 
-    Future<List<Map<String, dynamic>>> getParticipantesActividad(String activityId) async {
+  Future<List<Map<String, dynamic>>> getParticipantesActividad(
+      String activityId) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('actividadParticipante')
@@ -205,8 +249,11 @@ Future<Gimnasio?> getInfoSubscripto() async {
         final List<Map<String, dynamic>> usuarios = [];
         for (var doc in querySnapshot.docs) {
           final data = doc.data();
-          final queryUsers = await FirebaseFirestore.instance.collection('usuario').doc(data['participanteId']).get();
-          final userData = queryUsers.data() as Map<String,dynamic>;
+          final queryUsers = await FirebaseFirestore.instance
+              .collection('usuario')
+              .doc(data['participanteId'])
+              .get();
+          final userData = queryUsers.data() as Map<String, dynamic>;
           usuarios.add(userData);
         }
         return usuarios;
@@ -218,7 +265,4 @@ Future<Gimnasio?> getInfoSubscripto() async {
       return [];
     }
   }
-
 }
-
-
