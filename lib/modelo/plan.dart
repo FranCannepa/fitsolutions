@@ -58,6 +58,7 @@ class Plan{
   }
 
   String idFromWeek(int number){
+    if(number < 0) return '';
     return weeks.elementAt(number).id!;
   }
 

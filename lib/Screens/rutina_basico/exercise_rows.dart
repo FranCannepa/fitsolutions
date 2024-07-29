@@ -1,7 +1,7 @@
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/screens/Plan/ejercicio_create_dialogue.dart';
 import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:fitsolutions/screens/rutina_basico/ejercicio_dialog.dart';

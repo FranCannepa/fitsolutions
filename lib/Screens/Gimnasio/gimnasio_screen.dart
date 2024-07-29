@@ -3,7 +3,7 @@ import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_registration_form.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -37,7 +37,7 @@ class _GimnasioScreenState extends State<GimnasioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final gimnasioProvider = context.read<GimnasioProvider>();
+    final gimnasioProvider = context.watch<GimnasioProvider>();
     final esParticular = context.read<UserData>().esParticular();
     return Scaffold(
       body: Center(

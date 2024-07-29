@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/components/components.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/register_email_screen.dart';
 import 'package:flutter/material.dart';

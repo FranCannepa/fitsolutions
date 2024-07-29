@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:fitsolutions/providers/purchases_provider.dart';
 import 'package:fitsolutions/providers/inscription_provider.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:intl/intl.dart';
 
 class ComprasScreen extends StatefulWidget {

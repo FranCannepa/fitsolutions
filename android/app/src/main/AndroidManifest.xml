@@ -36,7 +36,7 @@
                  to determine the Window background behind the Flutter UI. 
                  
                                  Esto de aqui rompe las notificaciones (plugin) cuando esta en el intent-filter donde dice MAIN
-                                 <data android:scheme="com.fitsolutions.fitsolutionsapp" /> -->
+                 <data android:scheme="com.fitsolutions.fitsolutionsapp" /> -->
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"

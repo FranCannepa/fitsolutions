@@ -23,7 +23,6 @@ class _PropietarioFormState extends State<PropietarioForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

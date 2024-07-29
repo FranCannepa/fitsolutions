@@ -2,10 +2,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:fitsolutions/Screens/Dietas/dietas_screen.dart';
-import 'package:fitsolutions/Screens/Ejercicios/ejercicios_screen.dart';
-import 'package:fitsolutions/Screens/Gimnasio/gimnasio_screen.dart';
-import 'package:fitsolutions/Screens/Membresia/membresia_screen.dart';
 import 'package:fitsolutions/Screens/Registro/registro_screen.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_detailed_dialog.dart';
@@ -25,11 +21,10 @@ import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 import 'package:fitsolutions/screens/Login/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
-import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
 import 'package:fitsolutions/Theme/light_theme.dart';
 import 'package:fitsolutions/firebase_options.dart';
 import 'package:provider/provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -125,14 +120,12 @@ class MyApp extends StatelessWidget {
         routes: <String, WidgetBuilder>{
           '/home': (BuildContext context) => const HomeScreen(),
           '/login': (BuildContext context) => const WelcomePage(),
-          '/perfil': (BuildContext context) => const PerfilScreen(),
-          '/dieta': (BuildContext context) => const DietasScreen(),
-          '/ejercicios': (BuildContext context) => const EjerciciosScreen(),
-          '/membresia': (BuildContext context) => MembresiaScreen(
-                provider: context.read<UserData>(),
-              ),
+          '/perfil': (BuildContext context) => const HomeScreen(index: 1),
+          '/dieta': (BuildContext context) => const HomeScreen(index: 3),
+          '/ejercicios': (BuildContext context) => const HomeScreen(index: 0),
+          '/membresia': (BuildContext context) => const HomeScreen (index:4),
           '/registro': (BuildContext context) => const RegistroScreen(),
-          '/gimnasio': (BuildContext context) => const GimnasioScreen(),
+          '/gimnasio': (BuildContext context) => const HomeScreen(index: 0),
           '/welcome': (BuildContext context) => const WelcomePage(),
           '/inscription': (BuildContext context) => const InscriptionScreen(),
           '/form_inscription': (BuildContext context) =>

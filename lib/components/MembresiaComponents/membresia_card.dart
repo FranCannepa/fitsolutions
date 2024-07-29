@@ -1,14 +1,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresia_detailed_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
+import 'package:fitsolutions/components/MembresiaComponents/membresia_asignar_dialog.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_edit_dialog.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
-import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+//import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
+//import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 
 class MembershipCard extends StatelessWidget {
   final Membresia membresia;
@@ -20,8 +21,8 @@ class MembershipCard extends StatelessWidget {
     final UserData userProvider = context.read<UserData>();
     final MembresiaProvider membresiaProvider =
         context.read<MembresiaProvider>();
-    final PaymentService paymentService = PaymentService();
-    final prefs = SharedPrefsHelper();
+    //final PaymentService paymentService = PaymentService();
+    //final prefs = SharedPrefsHelper();
     return Card(
       shape: RoundedRectangleBorder(
         side: const BorderSide(color: Colors.black, width: 4.0),
@@ -77,6 +78,23 @@ class MembershipCard extends StatelessWidget {
                                   color: Colors.black),
                               child: Row(
                                 children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.supervised_user_circle,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              MembresiaAsignarDialog(
+                                                membresia: membresia,
+                                                onClose: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ));
+                                    },
+                                  ),
                                   IconButton(
                                     icon: const Icon(
                                       Icons.edit,
@@ -196,6 +214,21 @@ class MembershipCard extends StatelessWidget {
                       const SizedBox(height: 4.0),
                       const Text(
                         "Mensualmente",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        "${membresia.cupos}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      const Text(
+                        "Cupos",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 15,

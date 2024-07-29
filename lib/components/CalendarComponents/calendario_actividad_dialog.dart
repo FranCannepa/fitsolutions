@@ -2,7 +2,7 @@ import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -124,11 +124,11 @@ class _PlanScreenState extends State<PlanScreen> {
                                               .value,
                                           minHeightController.text = plan
                                               .height.entries
-                                              .elementAt(0)
+                                              .elementAt(1)
                                               .value,
                                           maxHeightController.text = plan
                                               .height.entries
-                                              .elementAt(1)
+                                              .elementAt(0)
                                               .value,
                                           openNoteBox(
                                               plan.planId, fitnessProvider)

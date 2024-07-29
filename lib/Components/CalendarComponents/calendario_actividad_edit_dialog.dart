@@ -82,18 +82,18 @@ class _CalendarioActividadEditDialogState
       return null;
     }
 
-    String? validateHoraInicioNotBeforeCurrent(TimeOfDay? horaInicio) {
-      if (horaInicio != null) {
-        final now = TimeOfDay.now();
-        final nowInMinutes = now.hour * 60 + now.minute;
-        final inicioInMinutes = horaInicio.hour * 60 + horaInicio.minute;
-
-        if (inicioInMinutes < nowInMinutes) {
-          return 'La hora de inicio no puede ser antes de la hora actual.';
-        }
+  String? validateHoraInicioNotBeforeCurrent(TimeOfDay? horaInicio) {
+    if (horaInicio != null) {
+      final now = TimeOfDay.now();
+      final nowInMinutes = now.hour * 60 + now.minute;
+      final inicioInMinutes = horaInicio.hour * 60 + horaInicio.minute;
+      final today = DateTime.now();
+      if (inicioInMinutes < nowInMinutes && (fechaSelected.day == today.day || fechaSelected.isBefore(today))) {
+        return 'La hora de inicio no puede ser antes de la hora actual.';
       }
-      return null;
     }
+    return null;
+  }
 
     String? validateDateNotBeforeCurrent(DateTime? date) {
       if (date != null) {

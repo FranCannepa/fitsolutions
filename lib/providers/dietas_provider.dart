@@ -5,6 +5,8 @@ import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
+import 'package:fitsolutions/providers/notification_service.dart';
 
 class DietaProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
@@ -12,6 +14,7 @@ class DietaProvider extends ChangeNotifier {
   Logger log = Logger();
   StreamSubscription<DocumentSnapshot>? _usuarioSubscription;
   StreamSubscription<DocumentSnapshot>? _dietaSubscription;
+  final NotificationService _notificationService = NotificationService();
 
   DietaProvider() {
     _initializeListener();
@@ -139,11 +142,19 @@ class DietaProvider extends ChangeNotifier {
     try {
       final userDocRef =
           FirebaseFirestore.instance.collection('usuario').doc(clienteId);
-
+      final user = await userDocRef.get();
+      final userData = user.data();
       final updateData = {'dietaId': dietaId};
       await userDocRef.update(updateData);
 
+      _notificationService.sendNotification(
+          userData!['fcmToken'], 'NUEVA DIETA', 'Se le fue asignada una nueva rutina');
+
+      final provider = NotificationProvider(query);
+      provider.addNotification(user.id, 'NUEVA DIETA',
+          'Se le fue asignada una nueva dieta', '/dieta');
       return true;
+
     } catch (e) {
       log.d(e.toString());
       return false;

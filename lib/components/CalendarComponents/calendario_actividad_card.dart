@@ -4,15 +4,39 @@ import 'package:fitsolutions/Components/CalendarComponents/calendario_actividad_
 import 'package:fitsolutions/Components/CommonComponents/info_item.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/formaters.dart';
+import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/components/CalendarComponents/actividad_participantes.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CartaActividad extends StatelessWidget {
+class CartaActividad extends StatefulWidget {
   final Actividad actividad;
 
   const CartaActividad({super.key, required this.actividad});
+
+  @override
+  State<CartaActividad> createState() => _CartaActividadState();
+}
+
+class _CartaActividadState extends State<CartaActividad> {
+
+  String? subId;
+
+  @override
+  void initState() {
+    super.initState();
+    getSubId();
+  }
+
+  Future<void> getSubId() async{
+    final prefs = SharedPrefsHelper();
+    final result = await prefs.getSubscripcion();
+    setState(() {
+      subId = result;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +54,17 @@ class CartaActividad extends StatelessWidget {
             ? () => showDialog(
                   context: context,
                   builder: (context) => ActividadDialog(
-                    actividad: actividad,
+                    actividad: widget.actividad,
                     onClose: () => Navigator.pop(context),
                   ),
                 )
-            : null,
+            : subId != null ? () => showDialog(
+                  context: context,
+                  builder: (context) => ActividadParticipantes(
+                    actividadId: widget.actividad.id,
+                    onClose: () => Navigator.pop(context),
+                  ),
+                ) : null,
         child: Flex(
           direction: Axis.horizontal,
           children: [
@@ -47,7 +77,7 @@ class CartaActividad extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     AutoSizeText(
-                      actividad.nombre,
+                      widget.actividad.nombre,
                       style: TextStyle(
                         fontSize: const TextStyle(fontSize: 35.0).fontSize,
                         fontWeight: FontWeight.bold,
@@ -59,7 +89,7 @@ class CartaActividad extends StatelessWidget {
                     InfoItem(
                       icon: const Icon(Icons.timer, size: 20),
                       text:
-                          "${Formatters().formatTimestampTime(actividad.inicio)}  ${Formatters().formatTimestampTime(actividad.fin)}",
+                          "${Formatters().formatTimestampTime(widget.actividad.inicio)}  ${Formatters().formatTimestampTime(widget.actividad.fin)}",
                     ),
                     if (!userData.esBasico())
                       Row(
@@ -82,7 +112,7 @@ class CartaActividad extends StatelessWidget {
                                         context: context,
                                         builder: (context) =>
                                             CalendarioActividadEditDialog(
-                                              actividad: actividad,
+                                              actividad: widget.actividad,
                                               onClose: () {
                                                 Navigator.pop(context);
                                               },
@@ -105,7 +135,7 @@ class CartaActividad extends StatelessWidget {
                                           ),
                                         ),
                                         content: Text(
-                                          '¿Está seguro de que desea eliminar la actividad "${actividad.nombre}"?',
+                                          '¿Está seguro de que desea eliminar la actividad "${widget.actividad.nombre}"?',
                                           style: const TextStyle(
                                             fontSize: 16.0,
                                             color: Colors.black,
@@ -128,7 +158,7 @@ class CartaActividad extends StatelessWidget {
                                               final result =
                                                   await actividadProvider
                                                       .eliminarActividad(
-                                                          actividad.id);
+                                                          widget.actividad.id);
                                               if (result) {
                                                 if (context.mounted) {
                                                   Navigator.pop(context);
@@ -168,7 +198,7 @@ class CartaActividad extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        actividad.participantes.toString(),
+                        widget.actividad.participantes.toString(),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 25),
                       ),
@@ -180,7 +210,7 @@ class CartaActividad extends StatelessWidget {
                       ),
                       const SizedBox(height: 8.0),
                       Text(
-                        actividad.cupos.toString(),
+                        widget.actividad.cupos.toString(),
                         style:
                             const TextStyle(color: Colors.white, fontSize: 25),
                       ),

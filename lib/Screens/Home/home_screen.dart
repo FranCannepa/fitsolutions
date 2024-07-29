@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
+import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/screens/Dietas/dietas_screen.dart';
 import 'package:fitsolutions/screens/Ejercicios/ejercicios_screen.dart';
 import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen.dart';
@@ -11,13 +12,14 @@ import 'package:fitsolutions/screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/screens/Profile/perfil_screen.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int index;
+  const HomeScreen({super.key, this.index = 99});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -30,7 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initializeScreenIndex() async {
     final userProvider = context.read<UserData>();
-    _selectedIndex = userProvider.esBasico() ? 2 : 1;
+    if (widget.index == 99) {
+      _selectedIndex = userProvider.esBasico() ? 2 : 1;
+    } else {
+      setState(() {
+        _selectedIndex = widget.index;
+      });
+    }
   }
 
   @override
@@ -95,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final actividadProvider = context.read<ActividadProvider>();
+    context.watch<GimnasioProvider>();
     return SafeArea(
         child: FutureBuilder(
             future: getUserData(),

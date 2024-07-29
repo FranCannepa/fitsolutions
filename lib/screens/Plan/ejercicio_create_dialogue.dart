@@ -67,7 +67,6 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
           width: MediaQuery.of(context).size.width * 0.8,
           child: Form(
             key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               RoundedInputField(
                 controller: widget.nameController,
