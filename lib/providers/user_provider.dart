@@ -80,22 +80,22 @@ class UserProvider extends ChangeNotifier {
           .get();
 
       if (querySnapshot.size > 0) {
-        // If user data exists, store it in SharedPreferences
+
         DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
         Map<String, dynamic> docData = documentSnapshot.data() as Map<String, dynamic>;
         await prefs.setEmail(docData['email']);
         await prefs.setUserId(documentSnapshot.id);
         await prefs.setLoggedIn(true);
-        _firstLogin = false; // Not first login
+        _firstLogin = false; 
       } else {
-        // If no user data, mark as first login and store email
+
         _firstLogin = true;
         await prefs.setEmail(email);
         await prefs.setLoggedIn(true);
       }
     } on FirebaseAuthException catch (e) {
       log.e('FirebaseAuthException in signIn: $e');
-      rethrow; // Rethrow the exception for further handling
+      rethrow; 
     } catch (e) {
       log.e('Exception in signIn: $e');
       rethrow;
