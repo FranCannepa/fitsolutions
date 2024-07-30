@@ -20,7 +20,8 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
   final _costoMembresia = TextEditingController();
   final _descripcionMembresia = TextEditingController();
   final _cuposController = TextEditingController();
-  late Map<String, dynamic> membresiaData = {};
+  final _duracionController = TextEditingController();
+
   bool showMembresiaForm = false;
 
   Map<String, dynamic> collectMembresiaData() {
@@ -28,8 +29,9 @@ class _MembresiaFormState extends State<MembresiaFormDialog> {
       'nombreMembresia': _nombreMembresia.text,
       'costo': _costoMembresia.text,
       'descripcion': _descripcionMembresia.text,
-      'origenMembresia': widget.origenMembresia,
       'cupos': int.tryParse(_cuposController.text) ?? 0,
+      'duracion': int.tryParse(_duracionController.text) ?? 0,
+      'origenMembresia': widget.origenMembresia
     };
   }
 
