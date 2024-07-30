@@ -138,9 +138,21 @@ class _InscriptionScreenState extends State<InscriptionScreen> {
               List<UsuarioBasico> unsubscribedUsers = snapshot.data![2];
 
               // Filter users based on the search query
-              List<UsuarioBasico> filteredSubscribedUsers = subscribedUsers.where((user) => user.email.toLowerCase().contains(searchQuery.toLowerCase())).toList();
-              List<UsuarioBasico> filteredPendingUsers = pendingUsers.where((user) => user.email.toLowerCase().contains(searchQuery.toLowerCase())).toList();
-              List<UsuarioBasico> filteredUnsubscribedUsers = unsubscribedUsers.where((user) => user.email.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+              List<UsuarioBasico> filteredSubscribedUsers = subscribedUsers
+                  .where((user) => user.email
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()))
+                  .toList();
+              List<UsuarioBasico> filteredPendingUsers = pendingUsers
+                  .where((user) => user.email
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()))
+                  .toList();
+              List<UsuarioBasico> filteredUnsubscribedUsers = unsubscribedUsers
+                  .where((user) => user.email
+                      .toLowerCase()
+                      .contains(searchQuery.toLowerCase()))
+                  .toList();
 
               return SingleChildScrollView(
                 child: Container(
@@ -273,19 +285,30 @@ class UserCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isSubscribed)
-              IconButton(
-                icon: const Icon(Icons.assignment_ind_sharp),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EvaluationDetailsScreen(
-                        gymId: gymId,
-                        userId: user.docId,
-                      ),
-                    ),
-                  );
-                },
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.assignment_ind_sharp),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EvaluationDetailsScreen(
+                            gymId: gymId,
+                            userId: user.docId,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: ()async {
+                      final provider = context.read<InscriptionProvider>();
+                      await provider.allowModification(user.docId, gymId);
+                    },
+                  ),
+                ],
               ),
             if (onAddToPending == null)
               IconButton(

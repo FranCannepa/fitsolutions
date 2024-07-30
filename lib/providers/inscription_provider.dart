@@ -349,11 +349,11 @@ class InscriptionProvider extends ChangeNotifier {
       _notificationService.sendNotification(
           user.get('fcmToken'),
           'Inscripcion Completada',
-          'Se finalizo tu inscripcion a un gimnasio!');
+          'Se finalizo tu inscripcion!');
       NotificationProvider(_firebase).addNotification(
           user.id,
           'Inscripcion Completada',
-          'Se finalizo tu inscripcion a un gimnasio!',
+          'Se finalizo tu inscripcion!',
           '/perfil');
     } catch (e) {
       log.e(e);
@@ -423,6 +423,40 @@ class InscriptionProvider extends ChangeNotifier {
     } catch (e) {
       log.e('Error fetching evaluation data: $e');
       return null;
+    }
+  }
+
+  Future<void> allowModification(String userId, String gymId) async {
+    try {
+      var querySnapshot = await FirebaseFirestore.instance
+          .collection('form')
+          .where('ownerId', isEqualTo: gymId)
+          .where('basicUserId', isEqualTo: userId)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var docId = querySnapshot.docs.first.id;
+        await FirebaseFirestore.instance
+            .collection('form')
+            .doc(docId)
+            .update({'readOnly': false});
+
+        final user = await _firebase.collection('usuario').doc(userId).get();
+        _notificationService.sendNotification(
+            user.get('fcmToken'),
+            'Modificacion de Inscripcion',
+            'Se ha habilitado un formulario');
+        NotificationProvider(_firebase).addNotification(
+            user.id,
+            'Modificacion de Inscripcion',
+            'Se ha habilitado un formulario',
+            '/perfil');
+      } else {
+        log.w('No matching document found');
+      }
+    } catch (e) {
+      log.e('Error: $e');
     }
   }
 }

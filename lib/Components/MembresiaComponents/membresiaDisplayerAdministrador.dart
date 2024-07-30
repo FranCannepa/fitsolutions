@@ -90,10 +90,9 @@ class _MembresiaDisplayerPropietarioState
               future: _fetchGymId(),
               builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Show a loading indicator while waiting for the result
-                  return const SizedBox(); // No button while loading
+                  
+                  return const SizedBox();
                 } else if (snapshot.hasError) {
-                  // Handle any errors
                   return FloatingActionButton(
                     heroTag: 'unique5',
                     onPressed: () => _showMyDialog(context),
