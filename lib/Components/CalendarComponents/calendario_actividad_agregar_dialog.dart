@@ -37,6 +37,9 @@ class _CalendarioAgregarActividadDialogState
   late TimeOfDay horaInicioActividadSeleccionada = TimeOfDay.now();
   late TimeOfDay horaFinActividadSeleccionada = TimeOfDay.now();
 
+  // Variable para días de la semana seleccionados
+  List<bool> diasSeleccionados = List.generate(7, (index) => false);
+
   Map<String, dynamic> actividadData = {};
 
   void summarizeData() {
@@ -50,7 +53,13 @@ class _CalendarioAgregarActividadDialogState
           .combineDateTime(fechaActividad, horaFinActividadSeleccionada));
       actividadData['cupos'] = int.tryParse(cuposActividadController.text);
       actividadData['propietarioActividadId'] = widget.propietarioActividadId;
-    } else {}
+      actividadData['dias'] = diasSeleccionados
+          .asMap()
+          .entries
+          .where((entry) => entry.value)
+          .map((entry) => entry.key)
+          .toList();
+    }
   }
 
   void _showSuccessModal(String mensaje, ResultType resultado) {
@@ -107,15 +116,16 @@ class _CalendarioAgregarActividadDialogState
   Widget build(BuildContext context) {
     return FutureBuilder<String?>(
       future: SharedPrefsHelper().getSubscripcion(),
-      builder: (context,snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
-        }else if(snapshot.data == null || snapshot.data == ''){
-            return AlertDialog(
+        } else if (snapshot.data == null) {
+          return AlertDialog(
             title: const Text('Registro no completado'),
-            content: const Text('Complete su registro completando sus datos de Entrenador o Gimnasio'),
+            content: const Text(
+                'Complete su registro completando sus datos de Entrenador o Gimnasio'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -123,173 +133,190 @@ class _CalendarioAgregarActividadDialogState
               ),
             ],
           );
-        }else{
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-          elevation: 0.0,
-          backgroundColor: Colors.transparent,
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: Colors.white,
+        } else {
+          return Dialog(
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10.0,
-                  offset: Offset(0.0, 10.0),
-                ),
-              ],
             ),
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          color: Colors.black,
-                          padding: const EdgeInsets.all(10),
-                          child: const Text(
-                            'Nueva Actividad',
-                            style: TextStyle(
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: widget.onClose,
-                        ),
-                      ],
-                    ),
-                    RoundedInputField(
-                      labelText: "Nombre Actividad",
-                      controller: nombreActividadController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'El nombre de la actividad es obligatorio.';
-                        }
-                        return null;
-                      },
-                    ),
-                    InputDropdown(
-                      labelText: "Tipo",
-                      controller: tipoActividadController,
-                      options: const ["Definida", "Libre"],
-                    ),
-                    RoundedInputField(
-                      labelText: "Cupos",
-                      controller: cuposActividadController,
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Debes especificar la cantidad de cupos.';
-                        }
-                        try {
-                          final cupos = int.parse(value);
-                          if (cupos <= 0) {
-                            return 'La cantidad de cupos debe ser un número positivo mayor que cero.';
-                          }
-                        } catch (e) {
-                          return 'La cantidad de cupos debe ser un número.';
-                        }
-                        return null;
-                      },
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            InputTimePicker(
-                              labelText: 'Hora Inicio',
-                              horaSeleccionada: horaInicioActividadSeleccionada,
-                              onTimeSelected: (time) {
-                                setState(() {
-                                  horaInicioActividadSeleccionada = time;
-                                });
-                              },
-                              validator: (value) {
-                                return validateHoraInicioNotBeforeCurrent(
-                                    horaInicioActividadSeleccionada);
-                              },
-                            ),
-                          InputTimePicker(
-                          labelText: "Hora Fin",
-                          horaSeleccionada: horaFinActividadSeleccionada,
-                          onTimeSelected: (time) {
-                            setState(() {
-                              horaFinActividadSeleccionada = time;
-                            });
-                          },
-                          validator: (value) {
-                            return validateTime(horaInicioActividadSeleccionada,
-                                horaFinActividadSeleccionada);
-                          },
-                        ),
-                          ],
-                        ),
-
-                        InputDatePicker(
-                          labelText: "Fecha",
-                          fechaSeleccionada: fechaActividad,
-                          onDateSelected: (date) {
-                            setState(() {
-                              fechaActividad = date;
-                            });
-                          },
-                          validator: (value){
-                            return validateDateNotBeforeCurrent(fechaActividad);
-                          },
-                        ),
-                      ],
-                    ),
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+            elevation: 0.0,
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10.0,
+                    offset: Offset(0.0, 10.0),
+                  ),
+                ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SubmitButton(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                summarizeData();
-                                final result = await widget.actividadProvider
-                                    .registrarActividad(actividadData);
-                                if (result) {
-                                  _showSuccessModal(
-                                      "Actividad Creada", ResultType.success);
-                                  _formKey.currentState!.reset();
-                                } else {
-                                  _showSuccessModal(
-                                      "Error al crear", ResultType.error);
-                                }
-                              } else {
-                                _showSuccessModal("Errores en el formulario", ResultType.error);
-                              }
-                            },
-                            text: "Agregar",
+                          Container(
+                            color: Colors.black,
+                            padding: const EdgeInsets.all(10),
+                            child: const Text(
+                              'Nueva Actividad',
+                              style: TextStyle(
+                                fontSize: 25.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: widget.onClose,
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      RoundedInputField(
+                        labelText: "Nombre Actividad",
+                        controller: nombreActividadController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El nombre de la actividad es obligatorio.';
+                          }
+                          return null;
+                        },
+                      ),
+                      InputDropdown(
+                        labelText: "Tipo",
+                        controller: tipoActividadController,
+                        options: const ["Definida", "Libre"],
+                      ),
+                      RoundedInputField(
+                        labelText: "Cupos",
+                        controller: cuposActividadController,
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Debes especificar la cantidad de cupos.';
+                          }
+                          try {
+                            final cupos = int.parse(value);
+                            if (cupos <= 0) {
+                              return 'La cantidad de cupos debe ser un número positivo mayor que cero.';
+                            }
+                          } catch (e) {
+                            return 'La cantidad de cupos debe ser un número.';
+                          }
+                          return null;
+                        },
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          InputTimePicker(
+                            labelText: "Hora Inicio",
+                            horaSeleccionada: horaInicioActividadSeleccionada,
+                            onTimeSelected: (time) {
+                              setState(() {
+                                horaInicioActividadSeleccionada = time;
+                              });
+                            },
+                            validator: (value) {
+                              return validateHoraInicioNotBeforeCurrent(
+                                  horaInicioActividadSeleccionada);
+                            },
+                          ),
+                          InputTimePicker(
+                            labelText: "Hora Fin",
+                            horaSeleccionada: horaFinActividadSeleccionada,
+                            onTimeSelected: (time) {
+                              setState(() {
+                                horaFinActividadSeleccionada = time;
+                              });
+                            },
+                            validator: (value) {
+                              return validateTime(
+                                  horaInicioActividadSeleccionada,
+                                  horaFinActividadSeleccionada);
+                            },
+                          ),
+                          InputDatePicker(
+                            labelText: "Fecha",
+                            fechaSeleccionada: fechaActividad,
+                            onDateSelected: (date) {
+                              setState(() {
+                                fechaActividad = date;
+                              });
+                            },
+                            validator: (value) {
+                              return validateDateNotBeforeCurrent(
+                                  fechaActividad);
+                            },
+                          ),
+                          // Selector de días de la semana
+                          // Selector de días de la semana
+                          const SizedBox(height: 16.0),
+                          const Text('Selecciona los días de la semana:',
+                              style: TextStyle(fontSize: 16)),
+                          Wrap(
+                            spacing: 8.0, // Espacio horizontal entre chips
+                            runSpacing:
+                                8.0, // Espacio vertical entre líneas de chips
+                            children: List.generate(7, (index) {
+                              final dias = [
+                                'Dom',
+                                'Lun',
+                                'Mar',
+                                'Mié',
+                                'Jue',
+                                'Vie',
+                                'Sáb'
+                              ];
+                              return FilterChip(
+                                label: Text(dias[index]),
+                                selected: diasSeleccionados[index],
+                                onSelected: (selected) {
+                                  setState(() {
+                                    diasSeleccionados[index] = selected;
+                                  });
+                                },
+                              );
+                            }),
+                          ),
+                          const SizedBox(height: 16.0),
+                          SubmitButton(
+                            text: "Registrar",
+                            onPressed: () async {
+                              summarizeData();
+                              try {
+                                await widget.actividadProvider
+                                    .registrarActividad(actividadData);
+                                _showSuccessModal(
+                                    'Actividad registrada exitosamente',
+                                    ResultType.success);
+                              } catch (e) {
+                                _showSuccessModal(
+                                    'Error al registrar la actividad',
+                                    ResultType.error);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
         }
-      }
+      },
     );
   }
 }
