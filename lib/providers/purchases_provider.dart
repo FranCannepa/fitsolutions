@@ -1,16 +1,16 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class PurchasesProvider extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-
+  Logger log = Logger();
   Future<void> addPurchase(Map<String, dynamic> purchaseData) async {
     try {
       await _db.collection('purchases').add(purchaseData);
       notifyListeners();
     } catch (e) {
-      print('Error adding purchase: $e');
+      log.e('Error adding purchase: $e');
     }
   }
 
@@ -22,7 +22,7 @@ class PurchasesProvider extends ChangeNotifier {
           .get();
       return querySnapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
-      print('Error fetching purchases: $e');
+      log.e('Error fetching purchases: $e');
       return [];
     }
   }
@@ -44,7 +44,7 @@ class PurchasesProvider extends ChangeNotifier {
 
       return purchasesSnapshot.docs.map((doc) => doc.data()).toList();
     } catch (e) {
-      print('Error fetching purchases by gym: $e');
+      log.e('Error fetching purchases by gym: $e');
       return [];
     }
   }
@@ -56,7 +56,7 @@ class PurchasesProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print('Error updating purchase status: $e');
+      log.e('Error updating purchase status: $e');
       return false;
     }
   }
@@ -68,7 +68,7 @@ class PurchasesProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      print('Error deleting purchase: $e');
+      log.e('Error deleting purchase: $e');
       return false;
     }
   }
@@ -85,7 +85,7 @@ class PurchasesProvider extends ChangeNotifier {
         return 'Unknown status';
       }
     } catch (e) {
-      print('Error fetching status name: $e');
+      log.e('Error fetching status name: $e');
       return 'Error retrieving status';
     }
   }

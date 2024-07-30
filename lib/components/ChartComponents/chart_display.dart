@@ -16,149 +16,206 @@ class ChartDisplay extends StatefulWidget {
 }
 
 class _ChartDisplayState extends State<ChartDisplay> {
+  DateTime selectedDate = DateTime.now();
+  Future<List<Actividad>>? _futureActivities;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureActivities = _fetchActivities();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      helpText: 'Seleccionar Mes y Año',
+      fieldLabelText: 'Mes/Año',
+      builder: (context, child) {
+        return child!;
+      },
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        _futureActivities = _fetchActivities();
+      });
+    }
+  }
+
+  Future<List<Actividad>> _fetchActivities() {
+    final provider = context.read<ChartProvider>();
+    return provider.getAllActivitiesByDate(
+      month: selectedDate.month,
+      year: selectedDate.year,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ChartProvider>();
+    final provider = context.read<ChartProvider>();
     return Scaffold(
-      appBar: AppBar(title: const Text('METRICAS DEL GIMNASIO')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 30,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        title: const Text(
+          'Graficas y metricas',
+          style: TextStyle(color: Colors.white, fontSize: 25),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.white),
+            onPressed: () => _selectDate(context),
+          ),
+        ],
+      ),
       body: FutureBuilder<List<Actividad>>(
-        future: provider.getAllActivities(),
+        future: _futureActivities,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
           List<Actividad> activities = snapshot.data!;
           if (activities.isNotEmpty) {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      //margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                      padding: const EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Text(
-                        'Cantidad de Participantes en cada Actividad',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+            return Scrollbar(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20.0),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                          border: Border.all(color: Colors.black87, width: 3.0),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(
+                          'Cantidad de Participantes en cada Actividad',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      height: 1000,
-                      padding: const EdgeInsets.all(30),
-                      decoration: BoxDecoration(
+                      const SizedBox(height: 20),
+                      Container(
+                        height: MediaQuery.of(context).size.height - 200,
+                        padding: const EdgeInsets.all(30),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 3.0),
                           borderRadius: BorderRadius.circular(20),
-                          color:
-                              Theme.of(context).primaryColor.withOpacity(0.3)),
-                      child: ActivityBarChart(activities: activities),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      //margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                      padding: const EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.0),
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                        ),
+                        child: ActivityBarChart(activities: activities),
                       ),
-                      child: Text(
-                        'Distribucion de Tipos de Actividad',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.all(20.0),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                          border: Border.all(color: Colors.black87, width: 3.0),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(
+                          'Distribucion de Tipos de Actividad',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      height: 200,
-                      padding: const EdgeInsets.all(30),
-                      decoration: BoxDecoration(
+                      const SizedBox(height: 20),
+                      Container(
+                        height: 200,
+                        padding: const EdgeInsets.all(30),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black87, width: 3.0),
                           borderRadius: BorderRadius.circular(20),
-                          color: Theme.of(context)
-                              .colorScheme
-                              .tertiaryContainer
-                              .withOpacity(0.5)),
-                      child: ActivityPieChart(activities: activities),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      //margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                      padding: const EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.0),
+                          color: Theme.of(context).colorScheme.tertiaryContainer.withOpacity(0.1),
+                        ),
+                        child: ActivityPieChart(activities: activities),
                       ),
-                      child: Text(
-                        'Duracion de Actividad contra Participantes',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.all(20.0),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(color: Colors.black87, width: 3.0),
+                        ),
+                        child: Text(
+                          'Duracion de Actividad contra Participantes',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      height: 1000,
-                      padding: const EdgeInsets.all(30),
-                      decoration: BoxDecoration(
+                      const SizedBox(height: 20),
+                      Container(
+                        height: MediaQuery.of(context).size.height - 200,
+                        padding: const EdgeInsets.all(30),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black87, width: 3.0),
                           borderRadius: BorderRadius.circular(20),
-                          color:
-                              Theme.of(context).colorScheme.tertiaryContainer),
-                      child: ActivityScatterChart(activities: activities),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      //margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                      padding: const EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.0),
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        ),
+                        child: ActivityScatterChart(activities: activities),
                       ),
-                      child: Text(
-                        'Distribucion de Edades por Actividad',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.all(20.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black87, width: 3.0),
+                          color: Theme.of(context).primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(
+                          'Distribucion de Edades por Actividad',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    FutureBuilder<List<UsuarioBasico>>(
+                      const SizedBox(height: 20),
+                      FutureBuilder<List<UsuarioBasico>>(
                         future: provider.getAllParticipants(),
                         builder: (context, participantSnapshot) {
                           if (!participantSnapshot.hasData) {
-                            return const Center(
-                                child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           }
-                          List<UsuarioBasico> participants =
-                              participantSnapshot.data!;
-                          Map<String, int> ageCategories =
-                              categorizeAges(participants);
+                          List<UsuarioBasico> participants = participantSnapshot.data!;
+                          Map<String, int> ageCategories = categorizeAges(participants);
                           return Container(
                             height: 200,
                             padding: const EdgeInsets.all(30),
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .tertiaryContainer),
-                            child: AgeDistributionPieChart(
-                                ageCategories: ageCategories),
+                              border: Border.all(color: Colors.black87, width: 3.0),
+                              borderRadius: BorderRadius.circular(20),
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            ),
+                            child: AgeDistributionPieChart(ageCategories: ageCategories),
                           );
                         })
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -176,34 +233,33 @@ class _ChartDisplayState extends State<ChartDisplay> {
       ),
     );
   }
+    Map<String, int> categorizeAges(List<UsuarioBasico> participants) {
+      Map<String, int> ageCategories = {
+        '0-18': 0,
+        '19-25': 0,
+        '26-35': 0,
+        '36-45': 0,
+        '46-60': 0,
+        '60+': 0,
+      };
 
-  Map<String, int> categorizeAges(List<UsuarioBasico> participants) {
-    Map<String, int> ageCategories = {
-      '0-18': 0,
-      '19-25': 0,
-      '26-35': 0,
-      '36-45': 0,
-      '46-60': 0,
-      '60+': 0,
-    };
-
-    for (var participant in participants) {
-      int age = participant.getAge();
-      if (age <= 18) {
-        ageCategories['0-18'] = ageCategories['0-18']! + 1;
-      } else if (age <= 25) {
-        ageCategories['19-25'] = ageCategories['19-25']! + 1;
-      } else if (age <= 35) {
-        ageCategories['26-35'] = ageCategories['26-35']! + 1;
-      } else if (age <= 45) {
-        ageCategories['36-45'] = ageCategories['36-45']! + 1;
-      } else if (age <= 60) {
-        ageCategories['46-60'] = ageCategories['46-60']! + 1;
-      } else {
-        ageCategories['60+'] = ageCategories['60+']! + 1;
+      for (var participant in participants) {
+        int age = participant.getAge();
+        if (age <= 18) {
+          ageCategories['0-18'] = ageCategories['0-18']! + 1;
+        } else if (age <= 25) {
+          ageCategories['19-25'] = ageCategories['19-25']! + 1;
+        } else if (age <= 35) {
+          ageCategories['26-35'] = ageCategories['26-35']! + 1;
+        } else if (age <= 45) {
+          ageCategories['36-45'] = ageCategories['36-45']! + 1;
+        } else if (age <= 60) {
+          ageCategories['46-60'] = ageCategories['46-60']! + 1;
+        } else {
+          ageCategories['60+'] = ageCategories['60+']! + 1;
+        }
       }
-    }
 
-    return ageCategories;
+      return ageCategories;
+    }
   }
-}

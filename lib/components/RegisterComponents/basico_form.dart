@@ -59,7 +59,6 @@ class _BasicoFormState extends State<BasicoForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -123,6 +122,30 @@ class _BasicoFormState extends State<BasicoForm> {
                 if (value == null || value.isEmpty) {
                   return 'Ingrese su fecha de nacimiento';
                 }
+                DateTime? birthDate;
+                try {
+                  birthDate = DateTime.parse(
+                      value); // assuming the value is in a parseable format
+                } catch (e) {
+                  return 'Formato de fecha no válido';
+                }
+
+                final today = DateTime.now();
+                if (birthDate.isAfter(today)) {
+                  return 'La fecha de nacimiento no puede ser en el futuro.';
+                }
+
+                var age = today.year - birthDate.year;
+                if (today.month < birthDate.month ||
+                    (today.month == birthDate.month &&
+                        today.day < birthDate.day)) {
+                  age--;
+                }
+
+                if (age < 18) {
+                  return 'Debes tener al menos 18 años.';
+                }
+
                 return null;
               },
             ),
@@ -152,6 +175,9 @@ class _BasicoFormState extends State<BasicoForm> {
                 }
                 try {
                   double.parse(value);
+                  if (double.tryParse(value)! <= 0) {
+                    return 'Ingrese un valor positivo mayor a cero';
+                  }
                 } catch (e) {
                   return 'Ingrese una altura válida (solo números)';
                 }
@@ -183,6 +209,9 @@ class _BasicoFormState extends State<BasicoForm> {
                 }
                 try {
                   double.parse(value);
+                  if (double.tryParse(value)! <= 0) {
+                    return 'Ingrese un valor positivo mayor a cero';
+                  }
                 } catch (e) {
                   return 'Ingrese un peso válido (solo números)';
                 }

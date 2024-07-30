@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Components/CommonComponents/image_logo.dart';
 import 'package:fitsolutions/components/components.dart';
-//import 'package:fitsolutions/modelo/models.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:fitsolutions/screens/Login/forgot_password_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,39 +31,21 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
   String? _errorMsg;
   Logger log = Logger();
 
-  Future<Map<String, dynamic>?> _checkUserExistence(User user) async {
-    try {
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('usuario')
-          .where('email', isEqualTo: user.email)
-          .limit(1)
-          .get();
-
-      if (querySnapshot.docs.isEmpty) {
-        return null;
-      }
-
-      final doc = querySnapshot.docs.first;
-      final Map<String, dynamic> userData = doc.data();
-      userData['docId'] = doc.id;
-
-      return userData;
-    } catch (e) {
-      log.d("Error checking user existence: $e");
-      return null;
-    }
+  Future<void> _initializeData(
+      UserData userDataProvider, UserProvider auth) async {
+    await SharedPrefsHelper().initializeData();
+    await userDataProvider.initializeData();
   }
 
   void _handleGoogleSignIn() async {
     final userProvider = context.read<UserData>();
+    final authProvider = context.read<UserProvider>();
+
     final prefs = SharedPrefsHelper();
     Logger log = Logger();
 
     try {
-      // Sign in with Google
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithProvider(GoogleAuthProvider());
-      final User? user = userCredential.user;
+      final User? user = await authProvider.signInWithGoogle();
 
       if (user == null) {
         log.d("User is null after sign-in with Google.");
@@ -74,7 +54,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
 
       // Check if the user exists
       final Map<String, dynamic>? existingUserData =
-          await _checkUserExistence(user);
+          await authProvider.checkUserExistence(user);
       if (existingUserData != null) {
         // Update user data in provider and SharedPreferences
         userProvider.updateUserData(existingUserData);
@@ -83,11 +63,14 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
         await prefs.setLoggedIn(true);
 
         // Navigate to home
+        if (mounted) {
+          await _initializeData(
+              context.read<UserData>(), context.read<UserProvider>());
+        }
         NavigationService.instance.pushNamed("/home");
       } else {
         if (user.email != null) {
           userProvider.firstLogin(user);
-          // Navigate to registration
           NavigationService.instance.pushNamed("/registro");
         }
       }
@@ -109,7 +92,6 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
     return SingleChildScrollView(
       child: Form(
           key: _formKeyLogin,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(children: [
             const LogoWidget(
               assetPath: "assets/media/main_logo.png",
@@ -170,9 +152,12 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                     _emailController.text,
                     _passwordController.text,
                   );
+
                   if (widget.userProvider.firstLogin && context.mounted) {
                     NavigationService.instance.pushNamed('/registro');
-                  } else {
+                  } else if (context.mounted) {
+                    await _initializeData(
+                        context.read<UserData>(), context.read<UserProvider>());
                     NavigationService.instance.pushNamed("/home");
                   }
                 } catch (e) {
@@ -180,7 +165,13 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text("Error al intentar Iniciar Sesion")),
+                          content: Column(
+                        children: [
+                          Text(
+                              "Credenciales erroneas, error al intentar ingresar"),
+                          Text("Revisar sus credenciales"),
+                        ],
+                      )),
                     );
                   }
                 }
@@ -221,7 +212,8 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
               ),
             ),
             SizedBox(
-              child: SignInButton(Buttons.google, text: "Continuar con Google",
+              width: double.infinity, // Adjust the width as needed
+              child: SignInButton(Buttons.google, text: "Iniciar con Google",
                   onPressed: () {
                 _handleGoogleSignIn();
               }),
@@ -232,7 +224,7 @@ class _LoginEmailScreenState extends State<LoginEmailScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Registro ",
+                    "Registro de Usuario",
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.onPrimary),
                   ),

@@ -1,15 +1,65 @@
-import 'dart:developer';
+import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:fitsolutions/providers/notification_provider.dart';
+import 'package:fitsolutions/providers/notification_service.dart';
 
 class DietaProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
   final query = FirebaseFirestore.instance;
   Logger log = Logger();
+  StreamSubscription<DocumentSnapshot>? _usuarioSubscription;
+  StreamSubscription<DocumentSnapshot>? _dietaSubscription;
+  final NotificationService _notificationService = NotificationService();
+
+  DietaProvider() {
+    _initializeListener();
+  }
+
+  void _initializeListener() async {
+    final userId = await prefs.getUserId();
+    if (userId != null) {
+      _usuarioSubscription = query.collection('usuario').doc(userId).snapshots().listen((snapshot) {
+        if (snapshot.exists) {
+          final userData = snapshot.data() as Map<String, dynamic>;
+          if (userData.containsKey('dietaId')) {
+            final dietaId = userData['dietaId'] as String;
+            _listenToDietaChanges(dietaId);
+          } else {
+            _cancelDietaSubscription();
+          }
+          notifyListeners();
+        }
+      });
+    }
+  }
+
+  void _listenToDietaChanges(String dietaId) {
+    _cancelDietaSubscription();
+    _dietaSubscription =
+        query.collection('dieta').doc(dietaId).snapshots().listen((snapshot) {
+      if (snapshot.exists) {
+        notifyListeners();
+      }
+    });
+  }
+
+  void _cancelDietaSubscription() {
+    if (_dietaSubscription != null) {
+      _dietaSubscription!.cancel();
+      _dietaSubscription = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _usuarioSubscription?.cancel();
+    super.dispose();
+  }
 
   Future<Dieta?> getDieta() async {
     final userId = await prefs.getUserId();
@@ -27,15 +77,15 @@ class DietaProvider extends ChangeNotifier {
           final dieta = Dieta.fromDocument(dietaData);
           return dieta;
         } else {
-          print("Dieta document not found for user ID: $userId");
+          Logger().d("Dieta document not found for user ID: $userId");
           return null;
         }
       } else {
-        print("User data does not contain 'dietaId' key");
+        Logger().d("User data does not contain 'dietaId' key");
         return null;
       }
     } else {
-      print("User document not found for user ID: $userId");
+      Logger().d("User document not found for user ID: $userId");
       return null;
     }
   }
@@ -43,22 +93,24 @@ class DietaProvider extends ChangeNotifier {
   Future<List<Dieta>> getDietas() async {
     final String? origenMembresia = await prefs.getSubscripcion();
     try {
-      final dietQuery = query
-          .collection('dieta')
-          .where('origenDieta', isEqualTo: origenMembresia);
-      final querySnapshot = await dietQuery.get();
       final List<Dieta> dietas = [];
-      for (var doc in querySnapshot.docs) {
-        final dietaData = doc.data();
-        final dieta = Dieta.fromDocument({
-          ...dietaData,
-          "dietaId": doc.id,
-        });
-        dietas.add(dieta);
+      if (origenMembresia != null) {
+        final dietQuery = query
+            .collection('dieta')
+            .where('origenDieta', isEqualTo: origenMembresia);
+        final querySnapshot = await dietQuery.get();
+        for (var doc in querySnapshot.docs) {
+          final dietaData = doc.data();
+          final dieta = Dieta.fromDocument({
+            ...dietaData,
+            "dietaId": doc.id,
+          });
+          dietas.add(dieta);
+        }
       }
       return dietas;
     } catch (error) {
-      print("Error fetching dietas: $error");
+      Logger().d("Error fetching dietas: $error");
       return [];
     }
   }
@@ -74,19 +126,35 @@ class DietaProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> actualizarDieta(Map<String, dynamic> dietaData) async {
-    return false;
+  Future<bool> actualizarDieta(
+      Map<String, dynamic> dietaData, String dietaId) async {
+    try {
+      await query.collection('dieta').doc(dietaId).update(dietaData);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      log.d(e.toString());
+      return false;
+    }
   }
 
   Future<bool> asignarDieta(String dietaId, String clienteId) async {
     try {
       final userDocRef =
           FirebaseFirestore.instance.collection('usuario').doc(clienteId);
-
+      final user = await userDocRef.get();
+      final userData = user.data();
       final updateData = {'dietaId': dietaId};
       await userDocRef.update(updateData);
 
+      _notificationService.sendNotification(
+          userData!['fcmToken'], 'NUEVA DIETA', 'Se le fue asignada una nueva rutina');
+
+      final provider = NotificationProvider(query);
+      provider.addNotification(user.id, 'NUEVA DIETA',
+          'Se le fue asignada una nueva dieta', '/dieta');
       return true;
+
     } catch (e) {
       log.d(e.toString());
       return false;
@@ -113,10 +181,10 @@ class DietaProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
-      print("Error deleting document: ${e.message}");
+      Logger().d("Error deleting document: ${e.message}");
       return false;
     } catch (e) {
-      print("An unexpected error occurred: ${e.toString()}");
+      Logger().d("An unexpected error occurred: ${e.toString()}");
       return false;
     }
   }

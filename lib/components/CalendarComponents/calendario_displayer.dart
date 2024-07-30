@@ -3,7 +3,7 @@ import 'package:fitsolutions/components/CalendarComponents/calendario_actividad_
 import 'package:fitsolutions/components/CalendarComponents/calendario_dia_actual.dart';
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/providers/actividad_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

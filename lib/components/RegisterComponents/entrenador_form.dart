@@ -24,7 +24,6 @@ class _EntrenadorFormState extends State<EntrenadorForm> {
   Widget build(BuildContext context) {
     return Form(
         key: _formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

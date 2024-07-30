@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/CommonComponents/input_time_picker.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 class GymRegistrationForm extends StatefulWidget {
   final GimnasioProvider provider;
@@ -31,6 +31,7 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
 
   File? _gymLogo;
   bool? esEntrenador;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -90,7 +91,8 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
     return true;
   }
 
-  void _submitForm(BuildContext context, GimnasioProvider provider) async {
+  Future<void> _submitForm(
+      BuildContext context, GimnasioProvider provider) async {
     if (_formKey.currentState!.validate()) {
       if (!_validateHours()) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -100,6 +102,10 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
         );
         return;
       }
+
+      setState(() {
+        _isLoading = true;
+      });
 
       _formKey.currentState!.save();
 
@@ -129,21 +135,26 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
           const SnackBar(content: Text('Información registrada exitosamente')),
         );
       }
+
+      setState(() {
+        _isLoading = false;
+      });
     } else {
-      Logger().d('ERROR');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('El formulario cuenta con errores verificar')),
+      );
     }
   }
 
   String? _validateCrossStreet(String? value) {
-    // Allow empty value for cross street
     if (value == null || value.isEmpty) {
-      return null; // No error, value is valid
+      return null;
     }
     return null;
   }
 
   String? _validateApertura(TimeOfDay? value) {
-    // Allow empty value for cross street
     for (var day in _openHours.keys) {
       if (_openHours[day] == null) {
         return 'Seleccionar una hora';
@@ -153,160 +164,183 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
   }
 
   String? _validatePhoneNumber(String? value) {
-    // Allow empty value for phone number
     if (value == null || value.isEmpty) {
-      return null; // No error, value is valid
+      return null;
     }
-    return null;
+    if (RegExp(r'^\d{8}$').hasMatch(value)) {
+      return null;
+    } else {
+      return 'Ingrese un número de teléfono uruguayo válido (8 dígitos)';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => _pickImage(),
-                child: Center(
-                  child: _gymLogo != null
-                      ? ClipOval(
-                          child: Image.file(_gymLogo!,
-                              height: 100, width: 100, fit: BoxFit.cover),
-                        )
-                      : Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey[200],
-                          ),
-                          child: const Center(child: Text('Agregar Logo')),
-                        ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: esEntrenador == true
-                      ? 'Nombre Entrenador'
-                      : 'Nombre Gimnasio',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return esEntrenador == true
-                        ? 'Ingrese el nombre del entrenador'
-                        : 'Ingrese el nombre del gimnasio';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _streetAddressController,
-                decoration: const InputDecoration(
-                  labelText: 'Calle y Numero',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese la calle y número';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _crossStreetController,
-                decoration: const InputDecoration(
-                  labelText: 'Esquina',
-                ),
-                validator: _validateCrossStreet,
-              ),
-              TextFormField(
-                controller: _celularController,
-                decoration: const InputDecoration(
-                  labelText: 'Celular',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese el número de celular';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _telefonoController,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono',
-                ),
-                validator: _validatePhoneNumber,
-              ),
-              const SizedBox(height: 16),
-              const Text('Horarios'),
-              Column(
+    final esPropietario = context.read<UserData>().esParticular();
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: _openHours.keys.map((day) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Text(day),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: InputTimePicker(
-                            labelText: 'Apertura',
-                            horaSeleccionada: _openHours[day],
-                            onTimeSelected: (time) {
-                              setState(() {
-                                _openHours[day] = time;
-                              });
-                            },
-                            validator: _validateApertura),
-                      ),
-                      const Text(' - '),
-                      Expanded(
-                        flex: 2,
-                        child: InputTimePicker(
-                          labelText: 'Cierre',
-                          horaSeleccionada: _closeHours[day],
-                          onTimeSelected: (time) {
-                            setState(() {
-                              _closeHours[day] = time;
-                            });
-                          },
-                          validator: (time) {
-                            if (_openHours[day] != null &&
-                                (_closeHours[day]!.hour <
-                                        _openHours[day]!.hour ||
-                                    (_closeHours[day]!.hour ==
-                                            _openHours[day]!.hour &&
-                                        _closeHours[day]!.minute <=
-                                            _openHours[day]!.minute))) {
-                              return 'La hora de cierre debe ser después de la hora de apertura';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
+                children: [
+                  GestureDetector(
+                    onTap: () => _pickImage(),
+                    child: Center(
+                      child: _gymLogo != null
+                          ? ClipOval(
+                              child: Image.file(_gymLogo!,
+                                  height: 100, width: 100, fit: BoxFit.cover),
+                            )
+                          : Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey[200],
+                              ),
+                              child: const Center(child: Text('Agregar Logo')),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: esPropietario == true
+                          ? 'Nombre Entrenador'
+                          : 'Nombre Gimnasio',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return esPropietario == true
+                            ? 'Ingrese el nombre del entrenador'
+                            : 'Ingrese el nombre del gimnasio';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _streetAddressController,
+                    decoration: const InputDecoration(
+                      labelText: 'Calle y Numero',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Ingrese la calle y número';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _crossStreetController,
+                    decoration: const InputDecoration(
+                      labelText: 'Esquina',
+                    ),
+                    validator: _validateCrossStreet,
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: _celularController,
+                    decoration: const InputDecoration(
+                      labelText: 'Celular',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Ingrese el número de celular';
+                      }
+                      if (RegExp(r'^\d{9}$').hasMatch(value)) {
+                        return null;
+                      } else {
+                        return 'Ingrese un número de teléfono uruguayo válido (9 dígitos)';
+                      }
+                    },
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: _telefonoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Teléfono',
+                    ),
+                    validator: _validatePhoneNumber,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Horarios'),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _openHours.keys.map((day) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Text(day),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: InputTimePicker(
+                                labelText: 'Apertura',
+                                horaSeleccionada: _openHours[day],
+                                onTimeSelected: (time) {
+                                  setState(() {
+                                    _openHours[day] = time;
+                                  });
+                                },
+                                validator: _validateApertura),
+                          ),
+                          const Text(' - '),
+                          Expanded(
+                            flex: 2,
+                            child: InputTimePicker(
+                              labelText: 'Cierre',
+                              horaSeleccionada: _closeHours[day],
+                              onTimeSelected: (time) {
+                                setState(() {
+                                  _closeHours[day] = time;
+                                });
+                              },
+                              validator: (time) {
+                                if (_openHours[day] != null &&
+                                    (_closeHours[day]!.hour <
+                                            _openHours[day]!.hour ||
+                                        (_closeHours[day]!.hour ==
+                                                _openHours[day]!.hour &&
+                                            _closeHours[day]!.minute <=
+                                                _openHours[day]!.minute))) {
+                                  return 'La hora de cierre debe ser después de la hora de apertura';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: SubmitButton(
+                      onPressed: () => _submitForm(context, widget.provider),
+                      text: "Registrar",
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              Center(
-                child: SubmitButton(
-                  onPressed: () => _submitForm(context, widget.provider),
-                  text: "Registrar",
-                ),
-              ),
-            ],
+            ),
           ),
         ),
-      ),
+        if (_isLoading)
+          const ModalBarrier(
+            dismissible: false,
+            color: Colors.black54,
+          ),
+        if (_isLoading)
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+      ],
     );
   }
 }

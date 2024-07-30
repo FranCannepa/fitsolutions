@@ -1,3 +1,5 @@
+import 'package:fitsolutions/Utilities/modal_utils.dart';
+import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +90,6 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
           width: MediaQuery.of(context).size.width * 0.8,
           child: Form(
             key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               RoundedInputField(
                 controller: widget.nameController,
@@ -116,7 +117,7 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                   Expanded(
                     child: RoundedInputField(
                       controller: widget.minWeightController,
-                      labelText: 'Peso minimo',
+                      labelText: 'Peso minimo (kg)',
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -136,7 +137,7 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                   Expanded(
                     child: RoundedInputField(
                       controller: widget.maxWeightController,
-                      labelText: 'Peso maximo',
+                      labelText: 'Peso maximo (kg)',
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -159,7 +160,7 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                   Expanded(
                     child: RoundedInputField(
                       controller: widget.minHeightController,
-                      labelText: 'Altura minima',
+                      labelText: 'Altura minima (cm)',
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -179,7 +180,7 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                   Expanded(
                     child: RoundedInputField(
                       controller: widget.maxHeightController,
-                      labelText: 'Altura maxima',
+                      labelText: 'Altura maxima (cm)',
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -247,9 +248,7 @@ class _PlanCreateDialogueState extends State<PlanCreateDialogue> {
                           parentKey: _parentKey);
                     });
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Validación fallida, verficiar campos')),
-                );
+                ModalUtils.showSuccessModal(context, 'Validación fallida, verificar campos', ResultType.error, ()=>Navigator.pop(context));
               }
             },
             child: widget.docId == null

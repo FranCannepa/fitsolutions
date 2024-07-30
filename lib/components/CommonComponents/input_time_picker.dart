@@ -24,7 +24,9 @@ class _InputTimePickerState extends State<InputTimePicker> {
   @override
   void initState() {
     super.initState();
-    selectedTime = "";
+    selectedTime = widget.horaSeleccionada != null
+        ? "${widget.horaSeleccionada!.hour.toString().padLeft(2, '0')}:${widget.horaSeleccionada!.minute.toString().padLeft(2, '0')}"
+        : "";
   }
 
   @override
@@ -65,12 +67,17 @@ class _InputTimePickerState extends State<InputTimePicker> {
                         selectedTime.isEmpty ? widget.labelText : selectedTime),
                   ),
                 ),
-                if (errorText != null)
+                if (field.errorText != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 5.0),
-                    child: Text(
-                      errorText!,
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    child: Container(
+                      constraints: BoxConstraints(
+                           maxWidth: MediaQuery.of(context).size.width * 0.2), // Adjust the width as needed
+                      child: Text(
+                        field.errorText!,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                        softWrap: true,
+                      ),
                     ),
                   ),
               ],

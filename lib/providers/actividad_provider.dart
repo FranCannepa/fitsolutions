@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
@@ -12,28 +10,25 @@ import 'package:fitsolutions/providers/membresia_provider.dart';
 class ActividadProvider extends ChangeNotifier {
   final prefs = SharedPrefsHelper();
   final logger = Logger();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   ActividadProvider() {
-    FirebaseFirestore.instance
-        .collection('actividad')
-        .snapshots()
-        .listen((snapshot) {
+    // Listen for changes in the 'actividad' collection and notify listeners
+    _firestore.collection('actividad').snapshots().listen((snapshot) {
       notifyListeners();
     });
   }
 
+  // Get the number of participants for a given activity
   Future<int> cantidadParticipantes(String actividadId) async {
-    final querySnapshot = await FirebaseFirestore.instance
+    final querySnapshot = await _firestore
         .collection('actividadParticipante')
         .where('actividadId', isEqualTo: actividadId)
         .get();
     return querySnapshot.docs.length;
   }
 
-  getCantidadParticipantes(String actividadId) async {
-    return await cantidadParticipantes(actividadId);
-  }
-
+  // Fetch activities for a given date
   Future<List<Actividad>> fetchActividades(DateTime fecha) async {
     String? ownerActividades = await prefs.getSubscripcion();
     try {
@@ -41,6 +36,7 @@ class ActividadProvider extends ChangeNotifier {
       DateTime start;
       DateTime end;
 
+      // Determine start and end times for the specified date
       if (fecha.year == now.year &&
           fecha.month == now.month &&
           fecha.day == now.day) {
@@ -51,7 +47,8 @@ class ActividadProvider extends ChangeNotifier {
         end = DateTime(fecha.year, fecha.month, fecha.day, 23, 59, 59);
       }
 
-      final querySnapshot = await FirebaseFirestore.instance
+      // Fetch activities that match the owner ID and fall within the specified time range
+      final querySnapshot = await _firestore
           .collection('actividad')
           .where('propietarioActividadId', isEqualTo: ownerActividades)
           .where('inicio', isLessThanOrEqualTo: end)
@@ -59,15 +56,14 @@ class ActividadProvider extends ChangeNotifier {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
+        // Map the fetched activities to a list of Actividad objects
         final fetchedActividades = querySnapshot.docs.map((doc) async {
           final actividadData = doc.data();
           actividadData['actividadId'] = doc.id;
           actividadData['participantes'] = await cantidadParticipantes(doc.id);
-          final actividad = Actividad.fromDocument(actividadData);
-          return actividad;
+          return Actividad.fromDocument(actividadData);
         }).toList();
-        final completedActividades = await Future.wait(fetchedActividades);
-        return completedActividades;
+        return await Future.wait(fetchedActividades);
       } else {
         return [];
       }
@@ -77,6 +73,7 @@ class ActividadProvider extends ChangeNotifier {
     }
   }
 
+  // Register a new activity
   Future<bool> registrarActividad(Map<String, dynamic> actividadData) async {
   try {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -138,6 +135,7 @@ class ActividadProvider extends ChangeNotifier {
   }
 }
 
+  // Update an existing activity
   Future<bool> actualizarActividad(Map<String, dynamic> actividadData) async {
     try {
       String? documentId = actividadData['id'];
@@ -145,28 +143,25 @@ class ActividadProvider extends ChangeNotifier {
       if (documentId == null) {
         throw Exception('Missing document ID for update');
       }
-      await FirebaseFirestore.instance
+      await _firestore
           .collection('actividad')
           .doc(documentId)
           .update(actividadData);
-
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
-      rethrow;
-    } catch (e) {
-      print(e.toString());
+      logger.d(e);
       return false;
     }
   }
 
+  // Delete an activity and its participants
   Future<bool> eliminarActividad(String documentId) async {
     try {
-      final db = FirebaseFirestore.instance;
-      final docRef = db.collection('actividad').doc(documentId);
+      final docRef = _firestore.collection('actividad').doc(documentId);
       await docRef.delete();
 
-      final querySnapshot = await db
+      final querySnapshot = await _firestore
           .collection('actividadParticipante')
           .where('actividadId', isEqualTo: documentId)
           .get();
@@ -178,16 +173,14 @@ class ActividadProvider extends ChangeNotifier {
       notifyListeners();
       return true;
     } on FirebaseException catch (e) {
-      print("Error deleting document: ${e.message}");
-      return false;
-    } catch (e) {
-      print("An unexpected error occurred: ${e.toString()}");
+      logger.d(e);
       return false;
     }
   }
 
+  // Check if a user is registered for a specific activity
   Future<bool> estaInscripto(String userId, String actividadId) async {
-    final querySnapshot = await FirebaseFirestore.instance
+    final querySnapshot = await _firestore
         .collection('actividadParticipante')
         .where('actividadId', isEqualTo: actividadId)
         .where('participanteId', isEqualTo: userId)
@@ -195,32 +188,31 @@ class ActividadProvider extends ChangeNotifier {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  Future<bool> desinscribirseActividad(BuildContext context,
-      String userId, String actividadId) async {
+  // Unregister a user from an activity and update their membership
+  Future<bool> desinscribirseActividad(
+      BuildContext context, String userId, String actividadId) async {
     try {
-      //obtengo la membresia actual del usuario
-      final membresiaSnapshot = await Provider.of<MembresiaProvider>(context, listen:false).obtenerMembresiaActiva(userId);
-      
+      final membresiaSnapshot =
+          await Provider.of<MembresiaProvider>(context, listen: false)
+              .obtenerMembresiaActiva(userId);
+
       if (membresiaSnapshot == null) {
         return false;
       }
-      
-      //id de la membresia
+
       var usuarioMembresiaId = membresiaSnapshot.id;
-      
-      //incremento un cupo
-      await FirebaseFirestore.instance
-        .collection('usuarioMembresia')
-        .doc(usuarioMembresiaId)
-        .update({'cuposRestantes': FieldValue.increment(1)});
 
+      await _firestore
+          .collection('usuarioMembresia')
+          .doc(usuarioMembresiaId)
+          .update({'cuposRestantes': FieldValue.increment(1)});
 
-      final collectionRef =
-          FirebaseFirestore.instance.collection('actividadParticipante');
-      final querySnapshot = await collectionRef
+      final querySnapshot = await _firestore
+          .collection('actividadParticipante')
           .where('actividadId', isEqualTo: actividadId)
           .where('participanteId', isEqualTo: userId)
           .get();
+
       if (querySnapshot.docs.isNotEmpty) {
         await querySnapshot.docs.first.reference.delete();
         notifyListeners();
@@ -229,60 +221,57 @@ class ActividadProvider extends ChangeNotifier {
         return false;
       }
     } catch (e) {
-      print('Error unsubscribing from activity: $e');
+      logger.d(e);
       return false;
     }
   }
 
-  Future<bool> anotarseActividad(BuildContext context, String userId, String actividadId) async {
+  // Register a user for an activity and update their membership
+  Future<bool> anotarseActividad(
+      BuildContext context, String userId, String actividadId) async {
     try {
-      //obtengo la membresia actual del usuario
-      final membresiaSnapshot = await Provider.of<MembresiaProvider>(context, listen:false).obtenerMembresiaActiva(userId);
-      
+      final activity =
+          await _firestore.collection('actividad').doc(actividadId).get();
+      final membresiaSnapshot =
+          await Provider.of<MembresiaProvider>(context, listen: false)
+              .obtenerMembresiaActiva(userId);
+
       if (membresiaSnapshot == null) {
         return false;
       }
-      
-      //id de la membresia
+
       var usuarioMembresiaId = membresiaSnapshot.id;
-      
-      //decremento un cupo
-      await FirebaseFirestore.instance
-        .collection('usuarioMembresia')
-        .doc(usuarioMembresiaId)
-        .update({'cuposRestantes': FieldValue.increment(-1)});
-      
-      //registro al usuario en la actividad
-      final collectionRef =
-          FirebaseFirestore.instance.collection('actividadParticipante');
+
+      await _firestore
+          .collection('usuarioMembresia')
+          .doc(usuarioMembresiaId)
+          .update({'cuposRestantes': FieldValue.increment(-1)});
+
       final participantData = {
         'actividadId': actividadId,
         'participanteId': userId,
       };
-      await collectionRef.add(participantData);
-      final activity = await FirebaseFirestore.instance
-          .collection('actividad')
-          .doc(actividadId)
-          .get();
+      await _firestore.collection('actividadParticipante').add(participantData);
+
       final data = activity.data();
       final inicio = data!['inicio'];
       NotificationService().scheduleNotification(
           'Comienzo de Actividad Cercano',
-          'Su actividad ${data['nombreActividad']} comezara pronto',
+          'Su actividad ${data['nombreActividad']} comenzará pronto',
           inicio);
       notifyListeners();
       return true;
     } catch (e) {
-      print('Error registering for activity: $e');
+      logger.d(e);
       return false;
     }
   }
 
+  // Fetch activities for the logged-in participant
   Future<List<Actividad>> actividadesDeParticipante() async {
     final userId = await prefs.getUserId();
     try {
-      QuerySnapshot participantActivitiesSnapshot = await FirebaseFirestore
-          .instance
+      QuerySnapshot participantActivitiesSnapshot = await _firestore
           .collection('actividadParticipante')
           .where('participanteId', isEqualTo: userId)
           .get();
@@ -294,10 +283,8 @@ class ActividadProvider extends ChangeNotifier {
       List<Actividad> activities = [];
 
       for (String activityId in activityIds) {
-        DocumentSnapshot activityDoc = await FirebaseFirestore.instance
-            .collection('actividad')
-            .doc(activityId)
-            .get();
+        DocumentSnapshot activityDoc =
+            await _firestore.collection('actividad').doc(activityId).get();
         if (activityDoc.exists) {
           final actividadData = activityDoc.data() as Map<String, dynamic>;
           actividadData['actividadId'] = activityDoc.id;
@@ -308,6 +295,7 @@ class ActividadProvider extends ChangeNotifier {
       }
       return activities;
     } catch (e) {
+      logger.d(e);
       rethrow;
     }
   }

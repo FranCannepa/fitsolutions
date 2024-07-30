@@ -34,20 +34,15 @@ class _CalendarioActividadEditDialogState
   Widget build(BuildContext context) {
     Map<String, dynamic> actividadData = {};
 
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final nombreActividadController =
         TextEditingController(text: widget.actividad.nombre);
     final tipoActividadController =
         TextEditingController(text: widget.actividad.tipo);
     final cuposActividadController =
         TextEditingController(text: widget.actividad.cupos.toString());
-    late DateTime fechaActividad = DateTime.now();
-    late TimeOfDay horaInicioActividadSeleccionada =
-        Formatters().timestampToTimeOfDay(widget.actividad.inicio);
-    late TimeOfDay horaFinActividadSeleccionada =
-        Formatters().timestampToTimeOfDay(widget.actividad.fin);
 
-    void _showSuccessModal(String mensaje, ResultType resultado) {
+    void showSuccessModal(String mensaje, ResultType resultado) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -61,8 +56,8 @@ class _CalendarioActividadEditDialogState
     }
 
     void summarizeData() {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.save();
+      if (formKey.currentState!.validate()) {
+        formKey.currentState!.save();
         actividadData['id'] = widget.actividad.id;
         actividadData['tipo'] = tipoActividadController.text;
         actividadData['nombreActividad'] = nombreActividadController.text;
@@ -87,18 +82,18 @@ class _CalendarioActividadEditDialogState
       return null;
     }
 
-    String? validateHoraInicioNotBeforeCurrent(TimeOfDay? horaInicio) {
-      if (horaInicio != null) {
-        final now = TimeOfDay.now();
-        final nowInMinutes = now.hour * 60 + now.minute;
-        final inicioInMinutes = horaInicio.hour * 60 + horaInicio.minute;
-
-        if (inicioInMinutes < nowInMinutes) {
-          return 'La hora de inicio no puede ser antes de la hora actual.';
-        }
+  String? validateHoraInicioNotBeforeCurrent(TimeOfDay? horaInicio) {
+    if (horaInicio != null) {
+      final now = TimeOfDay.now();
+      final nowInMinutes = now.hour * 60 + now.minute;
+      final inicioInMinutes = horaInicio.hour * 60 + horaInicio.minute;
+      final today = DateTime.now();
+      if (inicioInMinutes < nowInMinutes && (fechaSelected.day == today.day || fechaSelected.isBefore(today))) {
+        return 'La hora de inicio no puede ser antes de la hora actual.';
       }
-      return null;
     }
+    return null;
+  }
 
     String? validateDateNotBeforeCurrent(DateTime? date) {
       if (date != null) {
@@ -137,7 +132,7 @@ class _CalendarioActividadEditDialogState
           ],
         ),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -180,7 +175,7 @@ class _CalendarioActividadEditDialogState
                     InputTimePicker(
                       labelText:
                           Formatters().timeOfDayString(horaInicioUpdated),
-                      horaSeleccionada: horaInicioActividadSeleccionada,
+                      horaSeleccionada: horaInicioUpdated,
                       onTimeSelected: (time) {
                         setState(() {
                           horaInicioUpdated = time;
@@ -188,34 +183,34 @@ class _CalendarioActividadEditDialogState
                       },
                       validator: (value) {
                         return validateHoraInicioNotBeforeCurrent(
-                          horaInicioActividadSeleccionada,
+                          horaInicioUpdated,
                         );
                       },
                     ),
                     InputTimePicker(
                       labelText: Formatters().timeOfDayString(horaFinUpdated),
-                      horaSeleccionada: horaFinActividadSeleccionada,
+                      horaSeleccionada: horaFinUpdated,
                       onTimeSelected: (time) {
                         setState(() {
                           horaFinUpdated = time;
                         });
                       },
                       validator: (value) {
-                        return validateTime(horaInicioActividadSeleccionada,
-                            horaFinActividadSeleccionada);
+                        return validateTime(horaInicioUpdated,
+                            horaFinUpdated);
                       },
                     ),
                     InputDatePicker(
                       labelText:
                           Formatters().formatDateDayMonthShort(fechaSelected),
-                      fechaSeleccionada: fechaActividad,
+                      fechaSeleccionada: fechaSelected,
                       onDateSelected: (date) {
                         setState(() {
                           fechaSelected = date;
                         });
                       },
                       validator: (value) {
-                        return validateDateNotBeforeCurrent(fechaActividad);
+                        return validateDateNotBeforeCurrent(fechaSelected);
                       },
                     ),
                   ],
@@ -226,20 +221,20 @@ class _CalendarioActividadEditDialogState
                     children: [
                       SubmitButton(
                         onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
+                          if (formKey.currentState!.validate()) {
                             summarizeData();
                             final result = await actividadProvider
                                 .actualizarActividad(actividadData);
                             if (result) {
-                              _showSuccessModal(
+                              showSuccessModal(
                                   "Actividad actualizada", ResultType.success);
-                              _formKey.currentState!.reset();
+                              formKey.currentState!.reset();
                             } else {
-                              _showSuccessModal(
+                              showSuccessModal(
                                   "Error al actualizar", ResultType.error);
                             }
                           } else {
-                            _showSuccessModal("Campos Vacios", ResultType.info);
+                            showSuccessModal("Errores en el Formulario", ResultType.error);
                           }
                         },
                         text: "Guardar",

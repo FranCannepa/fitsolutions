@@ -77,14 +77,17 @@ class NotificationService {
 
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
-
+    try{
     await _flutterLocalNotificationsPlugin.show(
       0,
-      notification?.title,
-      notification?.body,
+      notification?.title ?? 'POR DEFECTO',
+      notification?.body ?? 'POR DEFECTO',
       platformChannelSpecifics,
       payload: 'item x',
     );
+    } catch(e){
+      Logger().d(e);
+    }
   }
 
   Future<void> sendNotification(String token, String title, String body) async {
@@ -108,29 +111,6 @@ class NotificationService {
     } else {
       log.e('Error sending notification: ${response.body}');
     }
-  }
-
-  Future<void> showImmediateNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
-      'channel_3', // Ensure this matches the channel ID created above
-      'your channel name',
-      channelDescription: 'your channel description',
-      importance: Importance.max,
-      priority: Priority.high,
-      ticker: 'ticker',
-    );
-
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await _flutterLocalNotificationsPlugin.show(
-      0,
-      'Test Notification',
-      'This is a test notification',
-      platformChannelSpecifics,
-      payload: 'test_payload',
-    );
   }
 
   static Future<void> showPeriodicNotifications({

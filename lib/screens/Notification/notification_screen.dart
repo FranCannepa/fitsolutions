@@ -1,3 +1,4 @@
+import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,21 @@ class NotificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<NotificationProvider>();
     return Scaffold(
-      appBar: AppBar(title: const Text('NOTIFICACIONES')),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 30,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        title: const Text(
+          'Notificaciones',
+          style: TextStyle(color: Colors.white, fontSize: 25),
+        ),
+      ),
       body: StreamBuilder<List<NotificationModel>>(
         stream: provider.getUserNotifications(userId),
         builder: (context, snapshot) {
@@ -21,7 +36,7 @@ class NotificationScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('NO HAY NOTIFICACIONES'));
+            return const Center(child: NoDataError(message: 'NO HAY NOTIFICACIONES'));
           }
 
           var notifications = snapshot.data!;
@@ -29,7 +44,8 @@ class NotificationScreen extends StatelessWidget {
           // Group notifications by date
           var groupedNotifications = <String, List<NotificationModel>>{};
           for (var notification in notifications) {
-            var date = DateFormat('yyyy-MM-dd').format(notification.timestamp.toLocal());
+            var date = DateFormat('yyyy-MM-dd')
+                .format(notification.timestamp.toLocal());
             if (groupedNotifications[date] == null) {
               groupedNotifications[date] = [];
             }
@@ -47,7 +63,8 @@ class NotificationScreen extends StatelessWidget {
                 children: [
                   // Date Header
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor.withOpacity(0.1),
@@ -65,9 +82,11 @@ class NotificationScreen extends StatelessWidget {
                   // Notifications
                   ...dateNotifications.map((notification) {
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
+                        side: const BorderSide(color: Colors.black, width: 3.0),
                       ),
                       elevation: 4,
                       child: ListTile(
@@ -76,7 +95,8 @@ class NotificationScreen extends StatelessWidget {
                         subtitle: Text(notification.message),
                         trailing: notification.read
                             ? null
-                            : const Icon(Icons.circle, color: Colors.red, size: 12),
+                            : const Icon(Icons.circle,
+                                color: Colors.red, size: 12),
                         onTap: () async {
                           provider.markAsRead(userId, notification.id);
                           Navigator.pushNamed(context, notification.route);

@@ -1,17 +1,8 @@
-import 'dart:developer';
-
 import 'package:fitsolutions/providers/membresia_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-class Membresia {
-  final String nombre;
-  final double precio;
-
-  Membresia({required this.nombre, required this.precio});
-}
 
 class MembresiaScreen extends StatefulWidget {
   final UserData provider;

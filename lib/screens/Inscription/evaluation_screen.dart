@@ -36,12 +36,13 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
             widget.gymId, widget.userId);
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Evaluation submitted successfully')),
+          const SnackBar(content: Text('Evaluacion Completada')),
         );
         Navigator.pop(context);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to submit evaluation')),
+          const SnackBar(
+              content: Text('Hubo un Error al completar la evaluacion')),
         );
       }
     }
@@ -51,7 +52,19 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Evaluación de movimiento y fuerza'),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 30,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        title: const Text(
+          'Evaluacion de Movimiento y Fuerza',
+          style: TextStyle(color: Colors.white, fontSize: 25),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -64,19 +77,33 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                 _buildEvaluationCard(
                   title: 'Sentadilla over head (OFD)',
                   fields: [
-                    _buildTextFormField('Pie', (value) => _evaluationModel.sentadillaPie = value),
-                    _buildTextFormField('Tobillos', (value) => _evaluationModel.sentadillaTobillos = value),
-                    _buildTextFormField('Rodilla', (value) => _evaluationModel.sentadillaRodilla = value),
-                    _buildTextFormField('Cadera', (value) => _evaluationModel.sentadillaCadera = value),
-                    _buildTextFormField('Tronco', (value) => _evaluationModel.sentadillaTronco = value),
-                    _buildTextFormField('Hombro', (value) => _evaluationModel.sentadillaHombro = value),
+                    _buildTextFormField('Pie',
+                        (value) => _evaluationModel.sentadillaPie = value),
+                    const SizedBox(height: 10),
+                    _buildTextFormField('Tobillos',
+                        (value) => _evaluationModel.sentadillaTobillos = value),
+                    const SizedBox(height: 10),
+                    _buildTextFormField('Rodilla',
+                        (value) => _evaluationModel.sentadillaRodilla = value),
+                    const SizedBox(height: 10),
+                    _buildTextFormField('Cadera',
+                        (value) => _evaluationModel.sentadillaCadera = value),
+                    const SizedBox(height: 10),
+                    _buildTextFormField('Tronco',
+                        (value) => _evaluationModel.sentadillaTronco = value),
+                    const SizedBox(height: 10),
+                    _buildTextFormField('Hombro',
+                        (value) => _evaluationModel.sentadillaHombro = value),
                   ],
                 ),
                 _buildEvaluationCard(
                   title: 'Tocar puntas de pies',
                   fields: [
-                    _buildSideBySideFields('Izquierdo', 'Derecho', 
-                      (value) => _evaluationModel.tocarPuntasPieIzquierdo = value,
+                    _buildSideBySideFields(
+                      'Izquierdo',
+                      'Derecho',
+                      (value) =>
+                          _evaluationModel.tocarPuntasPieIzquierdo = value,
                       (value) => _evaluationModel.tocarPuntasPieDerecho = value,
                     ),
                   ],
@@ -84,29 +111,34 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                 _buildEvaluationCard(
                   title: 'Dorsiflexión de tobillo',
                   fields: [
-                    _buildSideBySideFields('Izquierdo', 'Derecho', 
-
-                      (value) => _evaluationModel.dorsiflexionTobilloIzquierdo = value,
-                                            (value) => _evaluationModel.dorsiflexionTobilloDerecho = value,
+                    _buildSideBySideFields(
+                      'Izquierdo',
+                      'Derecho',
+                      (value) =>
+                          _evaluationModel.dorsiflexionTobilloIzquierdo = value,
+                      (value) =>
+                          _evaluationModel.dorsiflexionTobilloDerecho = value,
                     ),
                   ],
                 ),
                 _buildEvaluationCard(
                   title: 'EAPR (Flex cadera)',
                   fields: [
-                    _buildSideBySideFields('Izquierdo', 'Derecho', 
-
+                    _buildSideBySideFields(
+                      'Izquierdo',
+                      'Derecho',
                       (value) => _evaluationModel.eaprIzquierdo = value,
-                                            (value) => _evaluationModel.eaprDerecho = value,
+                      (value) => _evaluationModel.eaprDerecho = value,
                     ),
                   ],
                 ),
                 _buildEvaluationCard(
                   title: 'Hombro (asimétrico)',
                   fields: [
-                    _buildSideBySideFields('Izquierdo', 'Derecho', 
-
-                      (value) => _evaluationModel.hombroIzquierdo = value,                      
+                    _buildSideBySideFields(
+                      'Izquierdo',
+                      'Derecho',
+                      (value) => _evaluationModel.hombroIzquierdo = value,
                       (value) => _evaluationModel.hombroDerecho = value,
                     ),
                   ],
@@ -114,36 +146,48 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
                 _buildEvaluationCard(
                   title: 'PMR',
                   fields: [
-                    _buildSideBySideFields('Izquierdo', 'Derecho', 
-
+                    _buildSideBySideFields(
+                      'Izquierdo',
+                      'Derecho',
                       (value) => _evaluationModel.pmrIzquierdo = value,
-                                            (value) => _evaluationModel.pmrDerecho = value,
+                      (value) => _evaluationModel.pmrDerecho = value,
                     ),
                   ],
                 ),
                 _buildEvaluationCard(
                   title: 'Plancha frontal',
                   fields: [
-                    _buildTextFormField('', (value) => _evaluationModel.planchaFrontal = value),
+                    _buildTextFormField(
+                        '', (value) => _evaluationModel.planchaFrontal = value),
                   ],
                 ),
                 _buildEvaluationCard(
                   title: 'Lagartija',
                   fields: [
-                    _buildTextFormField('', (value) => _evaluationModel.lagartija = value),
+                    _buildTextFormField(
+                        '', (value) => _evaluationModel.lagartija = value),
                   ],
                 ),
                 _buildEvaluationCard(
                   title: 'Sentadilla excéntrica',
                   fields: [
-                    _buildTextFormField('', (value) => _evaluationModel.sentadillaExcentrica = value),
+                    _buildTextFormField(
+                        '',
+                        (value) =>
+                            _evaluationModel.sentadillaExcentrica = value),
                   ],
                 ),
-                const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: _submitForm,
-                    child: const Text('Submit'),
+                const SizedBox(
+                  height: 20,
+                  width: double.infinity,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: _submitForm,
+                      child: const Text('Completar'),
+                    ),
                   ),
                 ),
               ],
@@ -161,7 +205,8 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        side: const BorderSide(color: Colors.black, width: 4.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 4.0,
       child: Padding(
@@ -217,6 +262,15 @@ class _EvaluationFormScreenState extends State<EvaluationFormScreen> {
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Este campo es obligatorio';
+        }
+        try{
+        int parse = int.parse(value);
+        if(parse <= 0){
+          return 'El valor debe ser positivo';
+        }
+        }
+        catch(e){
+          return null;
         }
         return null;
       },

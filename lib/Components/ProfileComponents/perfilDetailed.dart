@@ -1,8 +1,10 @@
 import 'package:fitsolutions/Utilities/formaters.dart';
 import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/components/MembresiaComponents/membresia_detailed_basic.dart';
 import 'package:fitsolutions/components/ProfileComponents/actividad_dialogue_perfi.dart';
 import 'package:fitsolutions/components/ProfileComponents/editar_dialogue_perfil.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
+import 'package:fitsolutions/screens/Gimnasio/gimnasio_screen_basico.dart';
 import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,11 +21,12 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
   @override
   Widget build(BuildContext context) {
     context.watch<UserData>();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const ScreenUpperTitle(title: "Perfil"),
-        Container(
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const ScreenUpperTitle(title: "Perfil"),
+          Container(
             width: double.infinity,
             margin: const EdgeInsets.all(30),
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
@@ -164,10 +167,11 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                           ),
                           Expanded(
                             child: Text(
+                              widget.userData['fechaNacimiento'] != null ?
                               Formatters()
                                   .calculateAge(
                                       widget.userData['fechaNacimiento'])
-                                  .toString(),
+                                  .toString() : 'No informado',
                               style: TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.w500,
@@ -193,8 +197,9 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                             builder: (context) {
                               return EditProfileDialog(
                                 userData: widget.userData,
-                                onClose: (){
-                                  Navigator.pop(context);},
+                                onClose: () {
+                                  Navigator.pop(context);
+                                },
                               );
                             },
                           )
@@ -245,34 +250,26 @@ class _PerfilDetailedState extends State<PerfilDetailed> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () => {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              transitionDuration:
-                                  const Duration(milliseconds: 500),
-                              pageBuilder: (_, __, ___) =>
-                                  const FormInscriptionScreen(),
-                              transitionsBuilder: (_,
-                                  Animation<double> animation,
-                                  __,
-                                  Widget child) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                );
-                              },
-                            ),
+                        onPressed: () async => {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return MembresiaDialogBasic(usuarioId: widget.userData['id']);
+                            },
                           )
                         },
-                        child: const Text('Mi Membresia'),
+                        child: const Text('Mi membresia'),
                       ),
                     ),
                   ],
-                )
+                ),
               ],
-            )),
-      ],
+            ),
+          ),
+          const SizedBox(child: ScreenUpperTitle( title: 'Informacion de Subscripcion')),
+          const SizedBox(child: GimnasioScreenBasico())
+        ],
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/screens/Plan/ejercicio_create_dialogue.dart';
 import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
 import 'package:fitsolutions/screens/rutina_basico/ejercicio_dialog.dart';
@@ -70,6 +70,23 @@ class _ExerciseRowsState extends State<ExerciseRows> {
         _checkedExercises.addAll(values);
       });
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant ExerciseRows oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.day != widget.day) {
+      setState(() {
+        _checkedExercises.clear();
+      });
+      widget.fitnessProvider
+          .initializeCheckBox(widget.week)
+          .then((Map<String, bool> values) {
+        setState(() {
+          _checkedExercises.addAll(values);
+        });
+      });
+    }
   }
 
   Future<List<Widget>> buildEjercicioCards(
@@ -174,21 +191,23 @@ class _ExerciseRowsState extends State<ExerciseRows> {
           buildEjercicioCards(widget.plan, widget.week, widget.day, userData),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const NoDataError(message: 'No hay Ejercicios para este dia');
-        } else {
-          return Flexible(
-            fit: FlexFit.loose,
-            child: ListView(
-              shrinkWrap: true,
-              children: snapshot.data!,
+          return const Center(
+            child:  NoDataError(
+              message: 'DIA LIBRE/SIN EJERCICIOS', 
             ),
+          );
+        } else {
+          return ListView(
+            padding: const EdgeInsets.all(8.0),
+            children: snapshot.data!,
           );
         }
       },
     );
   }
 }
+

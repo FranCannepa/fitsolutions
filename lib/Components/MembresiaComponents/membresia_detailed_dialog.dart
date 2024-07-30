@@ -3,7 +3,7 @@ import 'package:fitsolutions/components/MembresiaComponents/membresia_payment_se
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 
 class MembresiaDetailed extends StatefulWidget {
@@ -58,15 +58,19 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    color: Colors.black,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      membresia.nombreMembresia,
-                      style: const TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                  Flexible(
+                    child: Container(
+                      color: Colors.black,
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        membresia.nombreMembresia,
+                        style: const TextStyle(
+                            fontSize: 25.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -142,7 +146,6 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
 }
 
 class WidgetBindingsObserverSample extends NavigatorObserver {
-  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       debugPrint('App resumed after launching URL');

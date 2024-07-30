@@ -1,11 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:fitsolutions/Modelo/Dieta.dart';
+import 'package:fitsolutions/Utilities/modal_utils.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/components/DietasComponents/dieta_asignar_dialog.dart';
 import 'package:fitsolutions/components/DietasComponents/dieta_edit_form.dart';
 import 'package:fitsolutions/providers/dietas_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -116,21 +117,20 @@ class DietaCard extends StatelessWidget {
                                               final success =
                                                   await dietaProvider
                                                       .eliminarDieta(dieta.id);
-                                              if (success) {
-                                                const ResultDialog(
-                                                    text:
-                                                        "Membresia actualizada exitosamente",
-                                                    resultType:
-                                                        ResultType.success);
-                                              } else {
-                                                const ResultDialog(
-                                                    text:
-                                                        "Error al actualizar membresia",
-                                                    resultType:
-                                                        ResultType.error);
-                                              }
-                                              if (context.mounted) {
-                                                Navigator.pop(context);
+                                              if (success && context.mounted) {
+                                                ModalUtils.showSuccessModal(
+                                                    context,
+                                                    'Dieta eliminada',
+                                                    ResultType.success,
+                                                    () =>
+                                                        Navigator.pop(context));
+                                              } else if (context.mounted) {
+                                                ModalUtils.showSuccessModal(
+                                                    context,
+                                                    'Error al Eliminar Dieta',
+                                                    ResultType.error,
+                                                    () =>
+                                                        Navigator.pop(context));
                                               }
                                             },
                                             child: const Text(

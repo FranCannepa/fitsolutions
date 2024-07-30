@@ -1,12 +1,11 @@
-import 'dart:developer';
-
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaSeleccionador.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresia_payment_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,7 +39,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
         _handleDeepLink(link);
       }
     }, onError: (err) {
-      print('Error: $err');
+      Logger().e('Error: $err');
     });
   }
 
@@ -52,10 +51,10 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     }
 
     Uri uri = Uri.parse(link);
-    print(uri);
+    Logger().e(uri);
 
     String? status = uri.queryParameters['status'];
-    String? payment_id = uri.queryParameters['payment_id'];
+    String? paymentId = uri.queryParameters['payment_id'];
     await prefs.setString('last_handled_link', link);
     final String? membresiaId = prefs.getString('pending_membresia_id');
     final PurchasesProvider purchasesProvider = context.read<PurchasesProvider>();
@@ -95,7 +94,7 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
       'productId': membresiaId,
       'purchaseDate': purchaseDate,
       'status': statusCode,
-      'transactionId': payment_id,
+      'transactionId': paymentId,
       'usuarioId': userId
     });
 
@@ -111,7 +110,6 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
   Widget build(BuildContext context) {
     final UserData userProvider = context.watch<UserData>();
     final PaymentService paymentService = PaymentService();
-    final MembresiaProvider membresiaProvider =
         context.watch<MembresiaProvider>();
     paymentService.verifyPayment(context);
     return Scaffold(

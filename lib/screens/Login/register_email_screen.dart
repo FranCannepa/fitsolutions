@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/components/components.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:fitsolutions/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +16,7 @@ class RegisterEmailScreen extends StatefulWidget {
 }
 
 class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
+
   final _formKeyRegister = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -73,7 +74,6 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKeyRegister,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -87,10 +87,10 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
               prefixIcon: const Icon(CupertinoIcons.mail_solid),
               validator: (val) {
                 if (val!.isEmpty) {
-                  return 'Please fill in this field';
+                  return 'Porfavor completa este campo';
                 } else if (!RegExp(r'^[\w-\.]+@([\w-]+.)+[\w-]{2,4}$')
                     .hasMatch(val)) {
-                  return 'Please enter a valid email';
+                  return 'Ingresar un email con formato valido';
                 }
                 return null;
               }),
@@ -220,7 +220,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
           ),
           const SizedBox(height: 20),
           SubmitButton(
-            text: 'Registrarme',
+            text: 'Registrar',
             onPressed: () async {
               try {
                 bool valid = _formKeyRegister.currentState!.validate();
@@ -241,9 +241,10 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                   snackBarMessage(context, "Las contraseñas no coiniciden");
                 }
               } catch (e) {
-                //It's being handle inside the function
-                // ignore: use_build_context_synchronously
-                snackBarMessage(context, 'Error al registrarse $e ');
+                if(e is Exception){
+                  // ignore: use_build_context_synchronously
+                  snackBarMessage(context, 'Error al registrarse: ${e.toString().replaceFirst('Exception: ', '')}');
+                }
               }
             },
           ),

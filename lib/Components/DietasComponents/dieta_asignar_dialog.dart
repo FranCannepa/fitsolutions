@@ -3,7 +3,7 @@ import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/providers/dietas_provider.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +18,7 @@ class AsignarDietaDialog extends StatefulWidget {
 }
 
 class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
-  late String? clienteSeleccionado;
+  String? clienteSeleccionado;
   void updateClienteSeleccionado(String value) {
     clienteSeleccionado = value;
   }
@@ -89,14 +89,14 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
             const SizedBox(height: 10),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: gimnasioProvider
-                  .getClientesGym(userProvider.origenAdministrador!),
+                  .getClientesGym(userProvider.origenAdministrador),
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                   final users = snapshot.data!;
                   List<DropdownMenuItem<String>> dropdownItems =
                       users.map((user) {
                     final userId = user['usuarioId'] as String;
-                    final userName = user['nombreCompleto'] as String;
+                    final userName = user['email'] as String;
                     return DropdownMenuItem(
                       value: userId,
                       child: Text(userName),
@@ -112,7 +112,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
                             updateClienteSeleccionado(value!);
                           });
                         },
-                        hint: const Text('Select User'),
+                        hint: const Text('Seleccionar Usuario'),
                       ),
                       const SizedBox(height: 20),
                       SubmitButton(
@@ -130,9 +130,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
                                 widget.onClose;
                               }
                             } else {
-                              return const ResultDialog(
-                                  text: "Cliente no seleccionado",
-                                  resultType: ResultType.warning);
+                             _showSuccessModal("Cliente no seleccionado",ResultType.warning);
                             }
                           })
                     ],
@@ -140,7 +138,7 @@ class _AsignarDietaDialogState extends State<AsignarDietaDialog> {
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 }
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               },
             )
           ]),

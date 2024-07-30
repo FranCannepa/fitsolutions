@@ -1,8 +1,8 @@
-import 'dart:developer';
 import 'dart:io';
+import 'package:fitsolutions/components/CommonComponents/input_date_picker.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/CommonComponents/submit_button.dart';
-import 'package:fitsolutions/providers/userData.dart';
+import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -10,8 +10,12 @@ import 'package:provider/provider.dart';
 class EditProfileDialog extends StatefulWidget {
   final Map<String, dynamic> userData;
   final VoidCallback onClose;
-  const EditProfileDialog(
-      {super.key, required this.userData, required this.onClose});
+
+  const EditProfileDialog({
+    super.key,
+    required this.userData,
+    required this.onClose,
+  });
 
   @override
   State<EditProfileDialog> createState() => _EditProfileDialogState();
@@ -23,9 +27,11 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   late TextEditingController _heightController;
   late TextEditingController _weightController;
   late TextEditingController _birthdateController;
+  late DateTime _fechaActividad;
 
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -36,8 +42,9 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         TextEditingController(text: widget.userData['altura'].toString());
     _weightController =
         TextEditingController(text: widget.userData['peso'].toString());
-    _birthdateController = TextEditingController(
-        text: widget.userData['fechaNacimiento'].toString());
+    _birthdateController =
+        TextEditingController(text: widget.userData['fechaNacimiento']);
+    _fechaActividad = DateTime.parse(widget.userData['fechaNacimiento']);
   }
 
   @override
@@ -47,6 +54,14 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     _weightController.dispose();
     _birthdateController.dispose();
     super.dispose();
+  }
+
+  String? validateBirthDate(DateTime? birthDate) {
+    final today = DateTime.now();
+    if (_fechaActividad.isAfter(today)) {
+      return 'La fecha de nacimiento no puede ser en el futuro.';
+    }
+    return null;
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -74,6 +89,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   void _saveChanges() async {
     final provider = context.read<UserData>();
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
       String? imageUrl;
       if (_imageFile != null) {
         imageUrl = await provider.uploadImage(_imageFile!);
@@ -82,11 +101,16 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
         'nombreCompleto': _nameController.text,
         'altura': int.parse(_heightController.text),
         'peso': double.parse(_weightController.text),
-        'fechaNacimiento': _birthdateController.text,
+        'fechaNacimiento':
+            '${_fechaActividad.year}-${_fechaActividad.month.toString().padLeft(2, '0')}-${_fechaActividad.day.toString().padLeft(2, '0')}',
         'profilePic': imageUrl ?? widget.userData['profilePic'],
       };
 
       final result = await provider.perfilUpdate(updatedData);
+      setState(() {
+        _isLoading = false;
+      });
+
       if (result) {
         _showSuccessModal("Perfil Actualizado", ResultType.success);
       } else {
@@ -97,100 +121,150 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: Padding(
+    return Stack(
+      children: [
+        Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-                child: Column(children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  Container(
-                    color: Colors.black,
-                    padding: const EdgeInsets.all(10),
-                    child: const Text(
-                      'Editar Perfil',
-                      style: TextStyle(
-                          fontSize: 25.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        color: Colors.black,
+                        padding: const EdgeInsets.all(10),
+                        child: const Text(
+                          'Editar Perfil',
+                          style: TextStyle(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: widget.onClose,
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: widget.onClose,
+                  const SizedBox(height: 20),
+                  Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          GestureDetector(
+                            onTap: () => _pickImage(ImageSource.gallery),
+                            child: CircleAvatar(
+                              radius: 50.0,
+                              backgroundImage: _imageFile != null
+                                  ? FileImage(_imageFile!)
+                                  : (widget.userData['profilePic'] != null &&
+                                          widget
+                                              .userData['profilePic'].isNotEmpty
+                                      ? NetworkImage(
+                                          widget.userData['profilePic'])
+                                      : null) as ImageProvider<Object>?,
+                              child: _imageFile == null &&
+                                      (widget.userData['profilePic'] == null ||
+                                          widget.userData['profilePic'].isEmpty)
+                                  ? const Icon(Icons.person)
+                                  : null,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => _pickImage(ImageSource.gallery),
+                            child: const Text('Cambiar foto de perfil'),
+                          ),
+                          TextFormField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                                labelText: 'Nombre Completo'),
+                            validator: (value) =>
+                                value!.isEmpty ? 'Campo requerido' : null,
+                          ),
+                          TextFormField(
+                            controller: _heightController,
+                            decoration:
+                                const InputDecoration(labelText: 'Altura'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'El campo no puede ser vacio';
+                              }
+                              if (int.tryParse(value) == null) {
+                                return 'Debe ser un número válido';
+                              }
+                              if (int.parse(value) <= 0) {
+                                return 'El número no puede ser negativo, o cero';
+                              }
+                              return null;
+                            },
+                          ),
+                          TextFormField(
+                            controller: _weightController,
+                            decoration:
+                                const InputDecoration(labelText: 'Peso'),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'El campo no puede ser vacio';
+                              }
+                              if (double.tryParse(value) == null) {
+                                return 'Debe ser un número válido';
+                              }
+                              if (double.tryParse(value)! <= 0) {
+                                return 'El número no puede ser negativo, o cero';
+                              }
+                              return null;
+                            },
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              const Text('Fecha de Nacimiento'),
+                              InputDatePicker(
+                                labelText: "Fecha",
+                                fechaSeleccionada: _fechaActividad,
+                                onDateSelected: (date) {
+                                  setState(() {
+                                    _fechaActividad = date;
+                                  });
+                                },
+                                validator: validateBirthDate,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          SubmitButton(
+                            text: "Guardar",
+                            onPressed: () async {
+                              _saveChanges();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      GestureDetector(
-                        onTap: () => _pickImage(ImageSource.gallery),
-                        child: CircleAvatar(
-                          radius: 50.0,
-                          backgroundImage: _imageFile != null
-                              ? FileImage(_imageFile!) as ImageProvider<Object>
-                              : (widget.userData['profilePic'] != null &&
-                                      widget.userData['profilePic'].isNotEmpty
-                                  ? NetworkImage(widget.userData['profilePic'])
-                                      as ImageProvider<Object>
-                                  : null),
-                          child: _imageFile == null &&
-                                  (widget.userData['profilePic'] == null ||
-                                      widget.userData['profilePic'].isEmpty)
-                              ? const Icon(Icons.person)
-                              : null,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => _pickImage(ImageSource.gallery),
-                        child: const Text('Cambiar foto de perfil'),
-                      ),
-                      TextFormField(
-                        controller: _nameController,
-                        decoration:
-                            const InputDecoration(labelText: 'Nombre Completo'),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Campo requerido' : null,
-                      ),
-                      TextFormField(
-                        controller: _heightController,
-                        decoration: const InputDecoration(labelText: 'Altura'),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Campo requerido' : null,
-                      ),
-                      TextFormField(
-                        controller: _weightController,
-                        decoration: const InputDecoration(labelText: 'Peso'),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Campo requerido' : null,
-                      ),
-                      TextFormField(
-                        controller: _birthdateController,
-                        decoration: const InputDecoration(
-                            labelText: 'Fecha de Nacimiento'),
-                        validator: (value) =>
-                            value!.isEmpty ? 'Campo requerido' : null,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      SubmitButton(
-                        text: "Guardar",
-                        onPressed: () async {
-                          _saveChanges();
-                        },
-                      )
-                    ]),
-                  )),
-            ]))));
+            ),
+          ),
+        ),
+        if (_isLoading)
+          ModalBarrier(
+            dismissible: false,
+            color: Colors.black.withOpacity(0.5),
+          ),
+        if (_isLoading)
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
+      ],
+    );
   }
 }
