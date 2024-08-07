@@ -9,10 +9,10 @@ import 'package:logger/logger.dart';
 class InscriptionProvider extends ChangeNotifier {
   Logger log = Logger();
   final FirebaseFirestore _firebase;
-  final prefs = SharedPrefsHelper();
+  final SharedPrefsHelper prefs;
   final NotificationService _notificationService;
 
-  InscriptionProvider(FirebaseFirestore? firestore, this._notificationService)
+  InscriptionProvider(FirebaseFirestore? firestore, this._notificationService, this.prefs)
       : _firebase = firestore ?? FirebaseFirestore.instance {
     _firebase.collection('gimnasio').snapshots().listen((snapshot) {
       notifyListeners();
@@ -180,7 +180,7 @@ class InscriptionProvider extends ChangeNotifier {
 
   Future<bool> formPending(String ownerId, String basicUserId) async {
     try {
-      var querySnapshot = await FirebaseFirestore.instance
+      var querySnapshot = await _firebase
           .collection('form')
           .where('ownerId', isEqualTo: ownerId)
           .where('basicUserId', isEqualTo: basicUserId)
@@ -216,7 +216,7 @@ class InscriptionProvider extends ChangeNotifier {
           'Tiene un formulario de Inscripcion disponible');
       notifyListeners();
 
-      NotificationProvider(_firebase).addNotification(
+      NotificationProvider(_firebase,SharedPrefsHelper()).addNotification(
           basicUserId,
           'Formulario Disponible',
           'Tiene un formulario de Inscripcion disponible',
@@ -280,7 +280,7 @@ class InscriptionProvider extends ChangeNotifier {
 
       _notificationService.sendNotification(userToken, 'Formulario Completado',
           'El usuario ${user.get('nombreCompleto')} completo el formulario');
-      NotificationProvider(_firebase).addNotification(
+      NotificationProvider(_firebase,SharedPrefsHelper()).addNotification(
           owner.id,
           'Formulario Completado',
           'El usuario ${user.get('nombreCompleto')} completo el formulario',
@@ -319,7 +319,7 @@ class InscriptionProvider extends ChangeNotifier {
     required EvaluationModel evaluationModel,
   }) async {
     try {
-      await FirebaseFirestore.instance.collection('evaluation').add({
+      await _firebase.collection('evaluation').add({
         'gymId': gymId,
         'userId': userId,
         'sentadillaPie': evaluationModel.sentadillaPie,
@@ -350,7 +350,7 @@ class InscriptionProvider extends ChangeNotifier {
           user.get('fcmToken'),
           'Inscripcion Completada',
           'Se finalizo tu inscripcion!');
-      NotificationProvider(_firebase).addNotification(
+      NotificationProvider(_firebase,SharedPrefsHelper()).addNotification(
           user.id,
           'Inscripcion Completada',
           'Se finalizo tu inscripcion!',
@@ -428,7 +428,7 @@ class InscriptionProvider extends ChangeNotifier {
 
   Future<void> allowModification(String userId, String gymId) async {
     try {
-      var querySnapshot = await FirebaseFirestore.instance
+      var querySnapshot = await _firebase
           .collection('form')
           .where('ownerId', isEqualTo: gymId)
           .where('basicUserId', isEqualTo: userId)
@@ -447,7 +447,7 @@ class InscriptionProvider extends ChangeNotifier {
             user.get('fcmToken'),
             'Modificacion de Inscripcion',
             'Se ha habilitado un formulario');
-        NotificationProvider(_firebase).addNotification(
+        NotificationProvider(_firebase,SharedPrefsHelper()).addNotification(
             user.id,
             'Modificacion de Inscripcion',
             'Se ha habilitado un formulario',
@@ -459,4 +459,6 @@ class InscriptionProvider extends ChangeNotifier {
       log.e('Error: $e');
     }
   }
+
+  
 }

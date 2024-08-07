@@ -22,8 +22,8 @@ class UsuarioBasico extends Usuario {
   static UsuarioBasico fromDocument(String docId, Map<String, dynamic> doc) {
     return UsuarioBasico(
         docId: docId,
-        email: doc['email'],
-        nombreCompleto: doc['nombreCompleto'],
+        email: doc['email'] ?? '',
+        nombreCompleto: doc['nombreCompleto'] ?? '',
         telefono: 'TEL',
         fcmToken: doc['fcmToken'] ?? '',
         rutina: doc['rutina'] ?? '',

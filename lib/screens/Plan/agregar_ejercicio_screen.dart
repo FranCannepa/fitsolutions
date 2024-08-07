@@ -1,4 +1,3 @@
-
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/screens/Plan/ejercicio_create_dialogue.dart';
@@ -9,7 +8,8 @@ class AgregarEjercicioScreen extends StatefulWidget {
   final Plan plan;
   final String dia;
   final String week;
-  const AgregarEjercicioScreen({super.key, required this.plan,required this.week, required this.dia});
+  const AgregarEjercicioScreen(
+      {super.key, required this.plan, required this.week, required this.dia});
 
   @override
   State<AgregarEjercicioScreen> createState() => _AgregarEjercicioScreenState();
@@ -52,14 +52,16 @@ class _AgregarEjercicioScreenState extends State<AgregarEjercicioScreen> {
           child: const Icon(Icons.add),
         ),
         body: FutureBuilder<List<Ejercicio>>(
-            future: fitnessProvider.getEjerciciosDelDiaList(widget.plan,widget.week,widget.dia),
+            future: fitnessProvider.getEjerciciosDelDiaList(
+                widget.plan, widget.week, widget.dia),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text('Este dia no tiene Ejercicios'));
+                return const Center(
+                    child: Text('Este dia no tiene Ejercicios'));
               } else {
                 final ejercicios = snapshot.data!;
                 return ListView.builder(
@@ -74,12 +76,18 @@ class _AgregarEjercicioScreenState extends State<AgregarEjercicioScreen> {
                             IconButton(
                                 onPressed: () => {
                                       nameController.text = ejercicio.nombre,
-                                      descController.text = ejercicio.descripcion,
-                                      serieController.text = ejercicio.series.toString(),
-                                      repeticionController.text = ejercicio.repeticiones.toString(),
-                                      cargaController.text = ejercicio.carga.toString(),
-                                      durationController.text = ejercicio.duracion.toString(),
-                                      pausaController.text = ejercicio.pausas.toString(),
+                                      descController.text =
+                                          ejercicio.descripcion,
+                                      serieController.text =
+                                          ejercicio.series.toString(),
+                                      repeticionController.text =
+                                          ejercicio.repeticiones.toString(),
+                                      cargaController.text =
+                                          ejercicio.carga.toString(),
+                                      durationController.text =
+                                          ejercicio.duracion.toString(),
+                                      pausaController.text =
+                                          ejercicio.pausas.toString(),
                                       openNoteBox(ejercicio.id, fitnessProvider)
                                     },
                                 icon: const Icon(Icons.settings)),

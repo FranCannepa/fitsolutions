@@ -72,6 +72,7 @@ dependencies:
   flutter_custom_tabs: ^2.1.0
   flutter_appauth: ^6.0.6
   flutter_secure_storage: ^4.2.1
+  firebase_storage_mocks: ^0.7.0
 
 deep_linking:
   prefixes:

@@ -35,7 +35,7 @@ class Ejercicio {
       pausas: doc['pausa'],
       repeticiones: doc['repeticion'],
       carga: doc['carga'],
-      dia: doc['dia']         
+      dia: doc['dia'] ?? ''         
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:fitsolutions/Utilities/modal_utils.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
-import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:fitsolutions/screens/Plan/time_input_field.dart';
 import 'package:fitsolutions/screens/rutina_basico/confirm_dialog.dart';
@@ -8,7 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../../components/components.dart';
 
-class EjercicioCreateDialogue extends StatefulWidget {
+class EjercicioCreateDialogueAdmin extends StatefulWidget {
   final FitnessProvider fitnessProvider;
   final TextEditingController nameController;
   final TextEditingController descController;
@@ -18,46 +17,33 @@ class EjercicioCreateDialogue extends StatefulWidget {
   final TextEditingController repeticionController;
   final TextEditingController cargaController;
   final String? docId;
-  final Plan? plan;
-  final String? dia;
-  final String? week;
 
-  const EjercicioCreateDialogue(
-      {super.key,
-      required this.fitnessProvider,
-      this.docId,
-      this.plan,
-      this.week,
-      required this.nameController,
-      required this.descController,
-      required this.durationController,
-      required this.pausaController,
-      required this.serieController,
-      required this.repeticionController,
-      required this.cargaController,
-      required this.dia});
+  const EjercicioCreateDialogueAdmin({
+    super.key,
+    required this.fitnessProvider,
+    this.docId,
+    required this.nameController,
+    required this.descController,
+    required this.durationController,
+    required this.pausaController,
+    required this.serieController,
+    required this.repeticionController,
+    required this.cargaController,
+  });
 
   @override
-  State<EjercicioCreateDialogue> createState() =>
-      _EjercicioCreateDialogueState();
+  State<EjercicioCreateDialogueAdmin> createState() =>
+      _EjercicioCreateDialogueAdminState();
 }
 
-class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
+class _EjercicioCreateDialogueAdminState
+    extends State<EjercicioCreateDialogueAdmin> {
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<State> _parentKey = GlobalKey<State>();
-
-  List<Ejercicio>? _ejercicios;
-  Ejercicio? _selectedEjercicio;
 
   @override
   void initState() {
     super.initState();
-    _loadEjercicios();
-  }
-
-  Future<void> _loadEjercicios() async {
-    _ejercicios = await widget.fitnessProvider.getEjercicios();
-    setState(() {});
   }
 
   void _clearFields() {
@@ -68,16 +54,6 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
     widget.repeticionController.clear();
     widget.serieController.clear();
     widget.cargaController.clear();
-  }
-
-  void _setFields(Ejercicio ejercicio) {
-    widget.nameController.text = ejercicio.nombre;
-    widget.descController.text = ejercicio.descripcion;
-    widget.durationController.text = ejercicio.duracion.toString();
-    widget.pausaController.text = ejercicio.pausas.toString();
-    widget.serieController.text = ejercicio.series.toString();
-    widget.repeticionController.text = ejercicio.repeticiones.toString();
-    widget.cargaController.text = ejercicio.carga.toString();
   }
 
   @override
@@ -92,27 +68,6 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
           child: Form(
             key: _formKey,
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              if (widget.docId == null && _ejercicios != null) ...[
-                DropdownButton<Ejercicio>(
-                  hint: const Text('Seleccione un ejercicio'),
-                  value: _selectedEjercicio,
-                  items: _ejercicios!.map((Ejercicio ejercicio) {
-                    return DropdownMenuItem<Ejercicio>(
-                      value: ejercicio,
-                      child: Text(ejercicio.nombre),
-                    );
-                  }).toList(),
-                  onChanged: (Ejercicio? newValue) {
-                    setState(() {
-                      _selectedEjercicio = newValue;
-                      if (_selectedEjercicio != null) {
-                        _setFields(_selectedEjercicio!);
-                      }
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-              ],
               RoundedInputField(
                 controller: widget.nameController,
                 labelText: 'Nombre del Ejercicio',
@@ -209,22 +164,19 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
                           title: 'Crear Ejercicio',
                           content: 'Desea crear el Ejercicio?',
                           onConfirm: () async {
-                            await widget.fitnessProvider.addEjercicioASemana(
-                                widget.plan!,
-                                widget.week!,
-                                widget.nameController.text,
-                                widget.descController.text,
-                                int.parse(widget.serieController.text),
-                                widget.repeticionController.text != ''
-                                    ? int.parse(
-                                        widget.repeticionController.text)
-                                    : null,
-                                widget.cargaController.text != ''
-                                    ? int.parse(widget.cargaController.text)
-                                    : null,
-                                widget.durationController.text,
-                                widget.pausaController.text,
-                                widget.dia);
+                            await widget.fitnessProvider.addEjercicio(
+                              widget.nameController.text,
+                              widget.descController.text,
+                              int.parse(widget.serieController.text),
+                              widget.repeticionController.text != ''
+                                  ? int.parse(widget.repeticionController.text)
+                                  : null,
+                              widget.cargaController.text != ''
+                                  ? int.parse(widget.cargaController.text)
+                                  : null,
+                              widget.durationController.text,
+                              widget.pausaController.text,
+                            );
                             _clearFields();
                           },
                           parentKey: _parentKey);
@@ -238,22 +190,21 @@ class _EjercicioCreateDialogueState extends State<EjercicioCreateDialogue> {
                           title: 'Modificar Ejercicio',
                           content: 'Desea editar el Ejercicio?',
                           onConfirm: () async {
-                            await widget.fitnessProvider.updateEjercicio(
-                                widget.plan!,
-                                widget.docId!,
-                                widget.week!,
-                                widget.nameController.text,
-                                widget.descController.text,
-                                int.parse(widget.serieController.text),
-                                widget.repeticionController.text != ''
-                                    ? int.parse(
-                                        widget.repeticionController.text)
-                                    : null,
-                                widget.cargaController.text != ''
-                                    ? int.parse(widget.cargaController.text)
-                                    : null,
-                                widget.durationController.text,
-                                widget.pausaController.text);
+                            await widget.fitnessProvider
+                                .updateEjercicioCollection(
+                                    widget.docId!,
+                                    widget.nameController.text,
+                                    widget.descController.text,
+                                    int.parse(widget.serieController.text),
+                                    widget.repeticionController.text != ''
+                                        ? int.parse(
+                                            widget.repeticionController.text)
+                                        : null,
+                                    widget.cargaController.text != ''
+                                        ? int.parse(widget.cargaController.text)
+                                        : null,
+                                    widget.durationController.text,
+                                    widget.pausaController.text);
                             _clearFields();
                           },
                           parentKey: _parentKey);

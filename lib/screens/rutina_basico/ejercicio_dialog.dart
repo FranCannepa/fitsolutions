@@ -28,7 +28,7 @@ class EjercicioDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow('Descripción', 'Descripción'),
+            _buildDetailRow('Descripción', ejercicio.descripcion),
             _buildDetailRow('Series', ejercicio.series.toString()),
             _buildDetailRow('Repeticiones', ejercicio.repeticiones.toString()),
             _buildDetailRow('Carga', '${ejercicio.carga} kg'),

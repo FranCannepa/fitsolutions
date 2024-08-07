@@ -10,11 +10,11 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class GimnasioProvider with ChangeNotifier {
   final Logger log = Logger();
-  final SharedPrefsHelper prefs = SharedPrefsHelper();
+  late SharedPrefsHelper prefs;
 
   final FirebaseFirestore _firebase;
 
-  GimnasioProvider(FirebaseFirestore? firestore)
+  GimnasioProvider(FirebaseFirestore? firestore,this.prefs)
       : _firebase = firestore ?? FirebaseFirestore.instance {
     _firebase.collection('gimnasio').snapshots().listen((snapshot) {
       notifyListeners();
@@ -30,13 +30,12 @@ class GimnasioProvider with ChangeNotifier {
   bool showGymForm = false;
 
   Future<Gimnasio?> getGym() async {
-    final prefs = SharedPrefsHelper();
     final esEntrenador = await prefs.esEntrenador();
     String? collection = 'gimnasio';
     if (esEntrenador) {
       collection = 'trainerInfo';
     }
-    final querySnapshot = await FirebaseFirestore.instance
+    final querySnapshot = await _firebase
         .collection(collection)
         .where('propietarioId', isEqualTo: await prefs.getUserId())
         .get();
@@ -52,12 +51,11 @@ class GimnasioProvider with ChangeNotifier {
   }
 
   Future<Gimnasio?> getInfoSubscripto() async {
-    final prefs = SharedPrefsHelper();
     final userId = await prefs.getSubscripcion();
 
     // Check gimnasio collection first
     if (userId != '') {
-      final gimnasioDoc = await FirebaseFirestore.instance
+      final gimnasioDoc = await _firebase
           .collection('gimnasio')
           .doc(userId)
           .get();
@@ -69,7 +67,7 @@ class GimnasioProvider with ChangeNotifier {
       }
 
       // If not found in gimnasio, check trainerInfo collection
-      final trainerDoc = await FirebaseFirestore.instance
+      final trainerDoc = await _firebase
           .collection('trainerInfo')
           .doc(userId)
           .get();
@@ -214,7 +212,7 @@ class GimnasioProvider with ChangeNotifier {
 
   Future<List<Map<String, dynamic>>> getClientesGym(String gymId) async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
+      final querySnapshot = await _firebase
           .collection('usuario')
           .where('asociadoId', isEqualTo: gymId)
           .where('tipo', isEqualTo: 'Basico')
@@ -240,7 +238,7 @@ class GimnasioProvider with ChangeNotifier {
   Future<List<Map<String, dynamic>>> getParticipantesActividad(
       String activityId) async {
     try {
-      final querySnapshot = await FirebaseFirestore.instance
+      final querySnapshot = await _firebase
           .collection('actividadParticipante')
           .where('actividadId', isEqualTo: activityId)
           .get();
@@ -249,7 +247,7 @@ class GimnasioProvider with ChangeNotifier {
         final List<Map<String, dynamic>> usuarios = [];
         for (var doc in querySnapshot.docs) {
           final data = doc.data();
-          final queryUsers = await FirebaseFirestore.instance
+          final queryUsers = await _firebase
               .collection('usuario')
               .doc(data['participanteId'])
               .get();

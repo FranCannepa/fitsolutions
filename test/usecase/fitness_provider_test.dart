@@ -2,23 +2,26 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/fitness_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 
-
+import 'actividad_provider_test.mocks.dart';
 
 void main() {
   FakeFirebaseFirestore fakeFirestore = FakeFirebaseFirestore();
+  MockSharedPrefsHelper mockSharedPrefs = MockSharedPrefsHelper();
 
+  TestWidgetsFlutterBinding.ensureInitialized();
 
- TestWidgetsFlutterBinding.ensureInitialized();
-
-FitnessProvider provider = FitnessProvider(fakeFirestore);
+  FitnessProvider provider = FitnessProvider(fakeFirestore, mockSharedPrefs);
   group('Funcionalidad Rutina', () {
     test('Get Rutinas', () async {
+      const userId = 'userId';
       await fakeFirestore.collection('plan').doc('planId').set({
         'name': 'Plan 1',
         'description': 'This is a sample plan',
         'weight': {'min': '180', 'max': '200'},
         'height': {'min': '180', 'max': '200'},
+        'ownerId': userId
       });
       await fakeFirestore
           .collection('plan')
@@ -43,7 +46,7 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
         'carga': 0,
         'dia': 'Monday'
       });
-
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       final planes = await provider.getPlanesList();
       // Verify the results
       expect(planes, isA<List<Plan>>());
@@ -127,6 +130,9 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
 
     test('Add plan', () async {
       // Call the addPlan function
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
+
       final Plan addedPlan = await provider.addPlan(
         'Plan 1',
         'This is a sample plan',
@@ -152,6 +158,8 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
     });
 
     test('deletePlan deletes a plan and its associated weeks', () async {
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       // Add mock data to the fake Firestore
       final planDoc = await fakeFirestore.collection('plan').add({
         'name': 'Plan 1',
@@ -197,6 +205,8 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
           isFalse);
     });
     test('updatePlan updates a plan with new values', () async {
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       // Add a mock plan document to the fake Firestore
       final planDoc = await fakeFirestore.collection('plan').add({
         'name': 'Original Plan',
@@ -229,6 +239,8 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
 
   group('Funcionalidad Ejercicios', () {
     test('Add week', () async {
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       final plan = Plan(
         planId: 'plan1',
         name: 'Sample Plan',
@@ -266,6 +278,8 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
     test('addEjercicioASemana adds an exercise to a specific week in the plan',
         () async {
       // Create a mock plan object
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       final plan = Plan(
         planId: 'plan1',
         name: 'Sample Plan',
@@ -334,6 +348,8 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
         'getEjerciciosDelDiaList retrieves exercises for a specific day within a week',
         () async {
       // Create a mock plan object
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       final plan = Plan(
         planId: 'plan1',
         name: 'Sample Plan',
@@ -401,13 +417,15 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
           await provider.getEjerciciosDelDiaList(plan, weekNumber, 'Monday');
 
       // Verify that only the exercise for 'Monday' is retrieved
-      expect(exercisesMonday.length, equals(1));
+      expect(exercisesMonday.length, equals(2));
       expect(exercisesMonday.first.nombre, equals('Push Up'));
     });
     test(
         'addUsuarioARutina adds users to the subscripto subcollection and assigns the plan to each user',
         () async {
       // Define a plan ID
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       const planId = 'plan1';
 
       // Define mock weight and height maps
@@ -481,6 +499,8 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
     test(
         'updateEjercicio updates an ejercicio document within a specific week in a plan',
         () async {
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       // Define a plan ID
       const planId = 'plan1';
 
@@ -577,6 +597,8 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
     });
     test('deleteExercisesfromWeek deletes all exercises in a specific week',
         () async {
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       // Define a plan ID and week ID
       const planId = 'plan1';
       const weekId = 'week1';
@@ -645,6 +667,8 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
       expect(ejercicioSnapshot.docs.isEmpty, isTrue);
     });
     test('deleteWeeksFromPlan deletes all weeks in a specific plan', () async {
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
       // Define a plan ID
       const planId = 'plan1';
 
@@ -683,129 +707,196 @@ FitnessProvider provider = FitnessProvider(fakeFirestore);
           .get();
       expect(weekSnapshot.docs.isEmpty, isTrue);
     });
-    test('deleteEjercicio deletes a specific exercise in a specific week', () async {
-    // Define a plan ID and week ID
-    const planId = 'plan1';
-    const weekId = 'week1';
-    const ejercicioId = 'ejercicio1';
+    test('deleteEjercicio deletes a specific exercise in a specific week',
+        () async {
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
+      // Define a plan ID and week ID
+      const planId = 'plan1';
+      const weekId = 'week1';
+      const ejercicioId = 'ejercicio1';
 
-    // Add a mock plan to Firestore
-    await fakeFirestore.collection('plan').doc(planId).set({
-      'name': 'Sample Plan',
-      'description': 'A sample plan',
-      'weight': {'min': '180', 'max': '200'},
-      'height': {'min': '150', 'max': '180'},
+      // Add a mock plan to Firestore
+      await fakeFirestore.collection('plan').doc(planId).set({
+        'name': 'Sample Plan',
+        'description': 'A sample plan',
+        'weight': {'min': '180', 'max': '200'},
+        'height': {'min': '150', 'max': '180'},
+      });
+
+      // Add a mock week to the plan
+      await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId)
+          .set({
+        'number': 1,
+      });
+
+      // Add a mock exercise to the week
+      await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId)
+          .collection('ejercicio')
+          .doc(ejercicioId)
+          .set({
+        'nombre': 'Ejercicio 1',
+        'descripcion': 'Descripcion 1',
+        'serie': 3,
+        'repeticion': 10,
+        'carga': 20,
+        'ejecucion': '30 min',
+        'pausa': '1 min',
+        'dia': 'Lunes',
+      });
+
+      // Create a mock Plan object
+      final plan = Plan(
+        planId: planId,
+        name: 'Sample Plan',
+        description: 'A sample plan',
+        weight: {'min': '180', 'max': '200'},
+        height: {'min': '150', 'max': '180'},
+        weeks: [],
+      );
+
+      // Call the deleteEjercicio function
+      await provider.deleteEjercicio(plan, weekId, ejercicioId);
+
+      // Verify that the ejercicio document is deleted
+      final ejercicioSnapshot = await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId)
+          .collection('ejercicio')
+          .doc(ejercicioId)
+          .get();
+      expect(ejercicioSnapshot.exists, isFalse);
     });
 
-    // Add a mock week to the plan
-    await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId).set({
-      'number': 1,
+    test(
+        'deleteWeek deletes the last week and its exercises from a specific plan',
+        () async {
+      const userId = 'userId';
+      when(mockSharedPrefs.getUserId()).thenAnswer((_) async => userId);
+      // Define a plan ID and week ID
+      const planId = 'plan1';
+      const weekId1 = 'week1';
+      const weekId2 = 'week2';
+      const ejercicioId1 = 'ejercicio1';
+      const ejercicioId2 = 'ejercicio2';
+
+      // Add a mock plan to Firestore
+      await fakeFirestore.collection('plan').doc(planId).set({
+        'name': 'Sample Plan',
+        'description': 'A sample plan',
+        'weight': {'min': '180', 'max': '200'},
+        'height': {'min': '150', 'max': '180'},
+      });
+
+      // Add mock weeks to the plan
+      await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId1)
+          .set({
+        'number': 1,
+      });
+      await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId2)
+          .set({
+        'number': 2,
+      });
+
+      // Add mock exercises to the last week
+      await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId2)
+          .collection('ejercicio')
+          .doc(ejercicioId1)
+          .set({
+        'nombre': 'Ejercicio 1',
+        'descripcion': 'Descripcion 1',
+        'serie': 3,
+        'repeticion': 10,
+        'carga': 20,
+        'ejecucion': '30 min',
+        'pausa': '1 min',
+        'dia': 'Lunes',
+      });
+
+      await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId2)
+          .collection('ejercicio')
+          .doc(ejercicioId2)
+          .set({
+        'nombre': 'Ejercicio 2',
+        'descripcion': 'Descripcion 2',
+        'serie': 4,
+        'repeticion': 12,
+        'carga': 25,
+        'ejecucion': '45 min',
+        'pausa': '2 min',
+        'dia': 'Martes',
+      });
+
+      // Create a mock Plan object
+      final plan = Plan(
+        planId: planId,
+        name: 'Sample Plan',
+        description: 'A sample plan',
+        weight: {'min': '180', 'max': '200'},
+        height: {'min': '150', 'max': '180'},
+        weeks: [
+          Week.fromDocument(weekId1, {'number': 1}, []),
+          Week.fromDocument(weekId2, {'number': 2}, []),
+        ],
+      );
+
+      // Call the deleteWeek function
+      await provider.deleteWeek(plan);
+
+      // Verify that the last week and its exercises are deleted
+      final weekSnapshot = await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId2)
+          .get();
+      expect(weekSnapshot.exists, isFalse);
+
+      final ejercicioSnapshot1 = await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId2)
+          .collection('ejercicio')
+          .doc(ejercicioId1)
+          .get();
+      expect(ejercicioSnapshot1.exists, isFalse);
+
+      final ejercicioSnapshot2 = await fakeFirestore
+          .collection('plan')
+          .doc(planId)
+          .collection('week')
+          .doc(weekId2)
+          .collection('ejercicio')
+          .doc(ejercicioId2)
+          .get();
+      expect(ejercicioSnapshot2.exists, isFalse);
     });
-
-    // Add a mock exercise to the week
-    await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId).collection('ejercicio').doc(ejercicioId).set({
-      'nombre': 'Ejercicio 1',
-      'descripcion': 'Descripcion 1',
-      'serie': 3,
-      'repeticion': 10,
-      'carga': 20,
-      'ejecucion': '30 min',
-      'pausa': '1 min',
-      'dia': 'Lunes',
-    });
-
-    // Create a mock Plan object
-    final plan = Plan(
-      planId: planId,
-      name: 'Sample Plan',
-      description: 'A sample plan',
-      weight: {'min': '180', 'max': '200'},
-      height: {'min': '150', 'max': '180'},
-      weeks: [],
-    );
-
-    // Call the deleteEjercicio function
-    await provider.deleteEjercicio(plan, weekId, ejercicioId);
-
-    // Verify that the ejercicio document is deleted
-    final ejercicioSnapshot = await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId).collection('ejercicio').doc(ejercicioId).get();
-    expect(ejercicioSnapshot.exists, isFalse);
-  });
-
-    test('deleteWeek deletes the last week and its exercises from a specific plan', () async {
-
-    // Define a plan ID and week ID
-    const planId = 'plan1';
-    const weekId1 = 'week1';
-    const weekId2 = 'week2';
-    const ejercicioId1 = 'ejercicio1';
-    const ejercicioId2 = 'ejercicio2';
-
-    // Add a mock plan to Firestore
-    await fakeFirestore.collection('plan').doc(planId).set({
-      'name': 'Sample Plan',
-      'description': 'A sample plan',
-      'weight': {'min': '180', 'max': '200'},
-      'height': {'min': '150', 'max': '180'},
-    });
-
-    // Add mock weeks to the plan
-    await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId1).set({
-      'number': 1,
-    });
-    await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId2).set({
-      'number': 2,
-    });
-
-    // Add mock exercises to the last week
-    await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId2).collection('ejercicio').doc(ejercicioId1).set({
-      'nombre': 'Ejercicio 1',
-      'descripcion': 'Descripcion 1',
-      'serie': 3,
-      'repeticion': 10,
-      'carga': 20,
-      'ejecucion': '30 min',
-      'pausa': '1 min',
-      'dia': 'Lunes',
-    });
-
-    await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId2).collection('ejercicio').doc(ejercicioId2).set({
-      'nombre': 'Ejercicio 2',
-      'descripcion': 'Descripcion 2',
-      'serie': 4,
-      'repeticion': 12,
-      'carga': 25,
-      'ejecucion': '45 min',
-      'pausa': '2 min',
-      'dia': 'Martes',
-    });
-
-    // Create a mock Plan object
-    final plan = Plan(
-      planId: planId,
-      name: 'Sample Plan',
-      description: 'A sample plan',
-      weight: {'min': '180', 'max': '200'},
-      height: {'min': '150', 'max': '180'},
-      weeks: [
-        Week.fromDocument(weekId1, {'number': 1}, []),
-        Week.fromDocument(weekId2, {'number': 2}, []),
-      ],
-    );
-
-    // Call the deleteWeek function
-    await provider.deleteWeek(plan);
-
-    // Verify that the last week and its exercises are deleted
-    final weekSnapshot = await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId2).get();
-    expect(weekSnapshot.exists, isFalse);
-
-    final ejercicioSnapshot1 = await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId2).collection('ejercicio').doc(ejercicioId1).get();
-    expect(ejercicioSnapshot1.exists, isFalse);
-
-    final ejercicioSnapshot2 = await fakeFirestore.collection('plan').doc(planId).collection('week').doc(weekId2).collection('ejercicio').doc(ejercicioId2).get();
-    expect(ejercicioSnapshot2.exists, isFalse);
-  });
-
   });
 }

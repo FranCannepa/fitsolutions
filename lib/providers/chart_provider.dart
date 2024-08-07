@@ -8,9 +8,9 @@ import '../modelo/models.dart';
 class ChartProvider extends ChangeNotifier {
   Logger log = Logger();
   final FirebaseFirestore _firebase;
-  final prefs = SharedPrefsHelper();
+  final SharedPrefsHelper prefs;
 
-  ChartProvider(FirebaseFirestore? firestore)
+  ChartProvider(FirebaseFirestore? firestore, this.prefs)
       : _firebase = firestore ?? FirebaseFirestore.instance;
 
   // Fetch all activities

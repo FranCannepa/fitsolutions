@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
 class PurchasesProvider extends ChangeNotifier {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  late FirebaseFirestore db;
   Logger log = Logger();
+
+  PurchasesProvider(this.db);
+
   Future<void> addPurchase(Map<String, dynamic> purchaseData) async {
     try {
-      await _db.collection('purchases').add(purchaseData);
+      await db.collection('purchases').add(purchaseData);
       notifyListeners();
     } catch (e) {
       log.e('Error adding purchase: $e');
@@ -16,7 +19,7 @@ class PurchasesProvider extends ChangeNotifier {
 
   Future<List<Map<String, dynamic>>> getPurchasesByUser(String userId) async {
     try {
-      final querySnapshot = await _db
+      final querySnapshot = await db
           .collection('purchases')
           .where('usuarioId', isEqualTo: userId)
           .get();
@@ -29,7 +32,7 @@ class PurchasesProvider extends ChangeNotifier {
 
   Future<List<Map<String, dynamic>>> getPurchasesByGym(String gymId) async {
     try {
-      final membresiasSnapshot = await _db
+      final membresiasSnapshot = await db
           .collection('membresia')
           .where('origenMembresia', isEqualTo: gymId)
           .get();
@@ -37,7 +40,7 @@ class PurchasesProvider extends ChangeNotifier {
       final membresiaIds =
           membresiasSnapshot.docs.map((doc) => doc.id).toList();
 
-      final purchasesSnapshot = await _db
+      final purchasesSnapshot = await db
           .collection('purchases')
           .where('productId', whereIn: membresiaIds)
           .get();
@@ -51,7 +54,7 @@ class PurchasesProvider extends ChangeNotifier {
 
   Future<bool> updatePurchaseStatus(String purchaseId, int newStatus) async {
     try {
-      final docRef = _db.collection('purchases').doc(purchaseId);
+      final docRef = db.collection('purchases').doc(purchaseId);
       await docRef.update({'status': newStatus});
       notifyListeners();
       return true;
@@ -63,7 +66,7 @@ class PurchasesProvider extends ChangeNotifier {
 
   Future<bool> deletePurchase(String purchaseId) async {
     try {
-      final docRef = _db.collection('purchases').doc(purchaseId);
+      final docRef = db.collection('purchases').doc(purchaseId);
       await docRef.delete();
       notifyListeners();
       return true;
@@ -75,7 +78,7 @@ class PurchasesProvider extends ChangeNotifier {
 
   Future<String> getStatusName(String statusId) async {
     try {
-      final querySnapshot = await _db
+      final querySnapshot = await db
           .collection('statusIds')
           .where('id', isEqualTo: statusId)
           .get();

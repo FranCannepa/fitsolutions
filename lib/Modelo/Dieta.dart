@@ -14,15 +14,15 @@ class Dieta {
       required this.origenDieta});
 
   static Dieta fromDocument(Map<String, dynamic> doc) {
-    final id = doc['dietaId'];
-    final nombre = doc['nombreDieta'];
-    final caloriasTotales = doc['topeCalorias'];
+    final id = doc['dietaId'] ?? '';
+    final nombre = doc['nombreDieta'] ?? '';
+    final caloriasTotales = doc['topeCalorias'] ?? '';
     List<dynamic> comidasArray = doc['comidas'] ?? [];
     List<Comida> comidasList = comidasArray.map((comida) {
       return Comida.fromMap(comida as Map<String, dynamic>);
     }).toList();
 
-    final origenDieta = doc['origenDieta'];
+    final origenDieta = doc['origenDieta'] ?? '';
     return Dieta(
         id: id,
         nombre: nombre,
