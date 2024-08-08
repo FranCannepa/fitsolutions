@@ -33,11 +33,11 @@ class PaginationButton extends StatelessWidget {
           color: Theme.of(context)
               .colorScheme
               .primary
-              .withOpacity(0.2), // Semi-transparent background
+              .withOpacity(0.2),
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min, // Ensures compact size
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(direccion),
             const SizedBox(width: 4.0),

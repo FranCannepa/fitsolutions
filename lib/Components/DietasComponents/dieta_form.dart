@@ -25,7 +25,7 @@ class _DietaFromState extends State<DietaForm> {
   final List<TextEditingController> mealTypeControllers = [];
   final List<TextEditingController> kcalControllers = [];
 
-  bool _isLoading = false; // Add this state variable
+  bool _isLoading = false;
 
   void _showSuccessModal(String mensaje, ResultType resultado) {
     showDialog(
@@ -43,7 +43,7 @@ class _DietaFromState extends State<DietaForm> {
   Future<void> _createDieta() async {
     if (formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = true; // Show the loading indicator
+        _isLoading = true;
       });
 
       final comidas = [];
@@ -69,7 +69,7 @@ class _DietaFromState extends State<DietaForm> {
       final result = await dietaProvider.agregarDieta(dietaData);
 
       setState(() {
-        _isLoading = false; // Hide the loading indicator
+        _isLoading = false;
       });
 
       if (result) {
@@ -168,7 +168,7 @@ class _DietaFromState extends State<DietaForm> {
                               title: 'Crear Dieta',
                               content: '¿Desea Crear Dieta?',
                               onConfirm: () async {
-                                await _createDieta(); // Proceed with creating dieta
+                                await _createDieta();
                               },
                               parentKey: null,
                             );

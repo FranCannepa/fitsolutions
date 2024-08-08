@@ -36,8 +36,6 @@ class _CalendarioAgregarActividadDialogState
   late DateTime fechaActividad = DateTime.now();
   late TimeOfDay horaInicioActividadSeleccionada = TimeOfDay.now();
   late TimeOfDay horaFinActividadSeleccionada = TimeOfDay.now();
-
-  // Variable para días de la semana seleccionados
   List<bool> diasSeleccionados = List.generate(7, (index) => false);
 
   Map<String, dynamic> actividadData = {};
@@ -92,7 +90,8 @@ class _CalendarioAgregarActividadDialogState
       final nowInMinutes = now.hour * 60 + now.minute;
       final inicioInMinutes = horaInicio.hour * 60 + horaInicio.minute;
       final today = DateTime.now();
-      if (inicioInMinutes < nowInMinutes && (fechaActividad.day == today.day || fechaActividad.isBefore(today))) {
+      if (inicioInMinutes < nowInMinutes &&
+          (fechaActividad.day == today.day || fechaActividad.isBefore(today))) {
         return 'La hora de inicio no puede ser antes de la hora actual.';
       }
     }
@@ -259,15 +258,13 @@ class _CalendarioAgregarActividadDialogState
                                   fechaActividad);
                             },
                           ),
-                          // Selector de días de la semana
-                          // Selector de días de la semana
                           const SizedBox(height: 16.0),
                           const Text('Selecciona los días de la semana:',
                               style: TextStyle(fontSize: 16)),
                           Wrap(
-                            spacing: 8.0, // Espacio horizontal entre chips
+                            spacing: 8.0, 
                             runSpacing:
-                                8.0, // Espacio vertical entre líneas de chips
+                                8.0,
                             children: List.generate(7, (index) {
                               final dias = [
                                 'Dom',

@@ -59,16 +59,12 @@ class RowInputState extends State<RowInput> {
 
   void _validateKcal(int index) {
       String selectedDay = widget.dayControllers[index].text;
-
-      // Calculate total kcal for the selected day
       int totalKcal = 0;
       for (int i = 0; i < widget.comidasController.length; i++) {
         if (widget.dayControllers[i].text == selectedDay) {
           totalKcal += int.tryParse(widget.kcalControllers[i].text) ?? 0;
         }
       }
-
-      // Validate against maxCaloriasController
       int maxCalorias = int.tryParse(widget.maxCaloriasController.text) ?? 0;
       if (totalKcal > maxCalorias) {
         setState(() {
@@ -116,7 +112,7 @@ class RowInputState extends State<RowInput> {
                             if (value == null || value.isEmpty) {
                               return 'Por favor ingrese una comida.';
                             }
-                            return null; // Return null if the input is valid
+                            return null; 
                           },
                         ),
                       ),
