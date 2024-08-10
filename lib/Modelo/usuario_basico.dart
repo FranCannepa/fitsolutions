@@ -8,7 +8,7 @@ class UsuarioBasico extends Usuario {
   int altura = 0;
   double peso = 0.0;
   String fcmToken;
-  String rutina;
+  String rutina;  
   String fechaNacimiento;
 
   UsuarioBasico(

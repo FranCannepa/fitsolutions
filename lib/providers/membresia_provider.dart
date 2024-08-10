@@ -42,7 +42,8 @@ class MembresiaProvider extends ChangeNotifier {
 
   Future<Map<String, dynamic>?> getMembresiaDetails(String membresiaId) async {
     try {
-      final docSnapshot = await _firebase.collection('membresia').doc(membresiaId).get();
+      final docSnapshot =
+          await _firebase.collection('membresia').doc(membresiaId).get();
       return docSnapshot.exists ? docSnapshot.data() : null;
     } catch (e) {
       _log.e("Error al obtener los detalles de la membresía: $e");
@@ -52,7 +53,8 @@ class MembresiaProvider extends ChangeNotifier {
 
   Future<String?> getMembershipName(String membershipId) async {
     try {
-      final docSnapshot = await _firebase.collection('membresia').doc(membershipId).get();
+      final docSnapshot =
+          await _firebase.collection('membresia').doc(membershipId).get();
       if (docSnapshot.exists) {
         return docSnapshot.data()?['nombreMembresia'] as String?;
       } else {
@@ -67,14 +69,19 @@ class MembresiaProvider extends ChangeNotifier {
 
   Future<Map<String, dynamic>?> getOrigenMembresia(String documentId) async {
     try {
-      final usuarioSnapshot = await _firebase.collection('usuario').doc(documentId).get();
+      final usuarioSnapshot =
+          await _firebase.collection('usuario').doc(documentId).get();
       if (usuarioSnapshot.exists) {
         return {...usuarioSnapshot.data()!, 'origenTipo': 'Entrenador'};
       }
 
-      final gimnasioSnapshot = await _firebase.collection('gimnasio').doc(documentId).get();
+      final gimnasioSnapshot =
+          await _firebase.collection('gimnasio').doc(documentId).get();
       if (gimnasioSnapshot.exists) {
-        return {'nombreOrigen': gimnasioSnapshot.data()!['nombreGimnasio'], 'origenTipo': 'Gimnasio'};
+        return {
+          'nombreOrigen': gimnasioSnapshot.data()!['nombreGimnasio'],
+          'origenTipo': 'Gimnasio'
+        };
       }
       return null;
     } catch (e) {
@@ -101,7 +108,7 @@ class MembresiaProvider extends ChangeNotifier {
       if (querySnapshot.docs.isNotEmpty) {
         final dataCred = querySnapshot.docs.first.data();
         return {
-          'publicKey': dataCred['publicKey'],
+          'publicKey': dataCred['accessToken'],
           'accessToken': dataCred['accessToken']
         };
       } else {
@@ -113,13 +120,17 @@ class MembresiaProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> actualizarMembresia(Map<String, dynamic> updatedMembresiaData) async {
+  Future<bool> actualizarMembresia(
+      Map<String, dynamic> updatedMembresiaData) async {
     try {
       final String? membresiaId = updatedMembresiaData.remove('membresiaId');
       if (membresiaId == null) {
         throw Exception('Missing "membresiaId" field in updatedMembresiaData');
       }
-      await _firebase.collection('membresia').doc(membresiaId).update(updatedMembresiaData);
+      await _firebase
+          .collection('membresia')
+          .doc(membresiaId)
+          .update(updatedMembresiaData);
       notifyListeners();
       return true;
     } catch (e) {
@@ -135,7 +146,10 @@ class MembresiaProvider extends ChangeNotifier {
       final docRef = db.collection('membresia').doc(documentId);
       batch.delete(docRef);
 
-      final usuarioMems = await db.collection('usuarioMembresia').where('membresiaId', isEqualTo: documentId).get();
+      final usuarioMems = await db
+          .collection('usuarioMembresia')
+          .where('membresiaId', isEqualTo: documentId)
+          .get();
       for (var um in usuarioMems.docs) {
         batch.delete(db.collection('usuarioMembresia').doc(um.id));
       }
@@ -151,7 +165,8 @@ class MembresiaProvider extends ChangeNotifier {
 
   Future<DocumentSnapshot?> obtenerMembresiaActiva(String usuarioId) async {
     try {
-      final snapshot = await _firebase.collection('usuarioMembresia')
+      final snapshot = await _firebase
+          .collection('usuarioMembresia')
           .where('usuarioId', isEqualTo: usuarioId)
           .where('fechaExpiracion', isGreaterThan: DateTime.now())
           .where('cuposRestantes', isGreaterThan: 0)
@@ -168,9 +183,11 @@ class MembresiaProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<MembresiaAsignada?> obtenerInformacionMembresiaUser(String usuarioId) async {
+  Future<MembresiaAsignada?> obtenerInformacionMembresiaUser(
+      String usuarioId) async {
     try {
-      final snapshot = await _firebase.collection('usuarioMembresia')
+      final snapshot = await _firebase
+          .collection('usuarioMembresia')
           .where('usuarioId', isEqualTo: usuarioId)
           .limit(1)
           .get();
@@ -179,12 +196,15 @@ class MembresiaProvider extends ChangeNotifier {
         final usuarioMembresiaData = snapshot.docs.first.data();
         final membresiaId = usuarioMembresiaData['membresiaId'];
 
-        final membresiaFirestore = await _firebase.collection('membresia').doc(membresiaId).get();
+        final membresiaFirestore =
+            await _firebase.collection('membresia').doc(membresiaId).get();
         if (membresiaFirestore.exists) {
-          final docData = membresiaFirestore.data()!..['membresiaId'] = membresiaFirestore.id;
+          final docData = membresiaFirestore.data()!
+            ..['membresiaId'] = membresiaFirestore.id;
           final membresiaInfo = Membresia.fromDocument(docData);
 
-          return MembresiaAsignada.fromData(snapshot.docs.first.id, usuarioMembresiaData, membresiaInfo);
+          return MembresiaAsignada.fromData(
+              snapshot.docs.first.id, usuarioMembresiaData, membresiaInfo);
         }
       }
       return null;
@@ -197,7 +217,10 @@ class MembresiaProvider extends ChangeNotifier {
   Future<void> cambiarEstadoMembresia(bool estado, String id) async {
     try {
       final newState = estado ? 'activa' : 'inactiva';
-      await _firebase.collection('usuarioMembresia').doc(id).update({'estado': newState});
+      await _firebase
+          .collection('usuarioMembresia')
+          .doc(id)
+          .update({'estado': newState});
       notifyListeners();
     } catch (e) {
       _log.e('Error al cambiar estado: $e');
@@ -218,7 +241,8 @@ class MembresiaProvider extends ChangeNotifier {
 
   Future<bool> asignarMembresia(String membresiaId, String clienteId) async {
     try {
-      final existingMembership = await _firebase.collection('usuarioMembresia')
+      final existingMembership = await _firebase
+          .collection('usuarioMembresia')
           .where('usuarioId', isEqualTo: clienteId)
           .limit(1)
           .get();
@@ -228,7 +252,10 @@ class MembresiaProvider extends ChangeNotifier {
           if (doc['estado'] == 'activa') {
             throw Exception('Este usuario ya tiene una membresia activa');
           } else {
-            await _firebase.collection('usuarioMembresia').doc(doc.id).update({'estado': 'inactiva'});
+            await _firebase
+                .collection('usuarioMembresia')
+                .doc(doc.id)
+                .update({'estado': 'inactiva'});
           }
         }
       }
@@ -239,10 +266,16 @@ class MembresiaProvider extends ChangeNotifier {
         'estado': 'activa',
         'fechaAsignacion': DateTime.now(),
         'fechaExpiracion': getNextMonth(DateTime.now()),
-        'cuposRestantes': (await _firebase.collection('membresia').doc(membresiaId).get()).data()!['numeroEntradas']
+        'cuposRestantes':
+            (await _firebase.collection('membresia').doc(membresiaId).get())
+                .data()!['numeroEntradas']
       };
 
       await _firebase.collection('usuarioMembresia').add(newMembership);
+      await _firebase
+          .collection('usuario')
+          .doc(clienteId)
+          .update({'membresiaId': membresiaId});
       notifyListeners();
       return true;
     } catch (e) {
@@ -250,5 +283,24 @@ class MembresiaProvider extends ChangeNotifier {
       return false;
     }
   }
-}
 
+  Future<bool> membresiaActiva() async {
+    final userId = await _prefs.getUserId();
+    final existingMembership = await _firebase
+        .collection('usuarioMembresia')
+        .where('usuarioId', isEqualTo: userId)
+        .limit(1)
+        .get();
+
+    if (existingMembership.docs.isNotEmpty) {
+      for (var doc in existingMembership.docs) {
+        if (doc['estado'] == 'activa') {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+}

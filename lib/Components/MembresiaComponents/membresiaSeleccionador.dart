@@ -6,7 +6,15 @@ import 'package:flutter/material.dart';
 
 class SeleccionarMembresia extends StatefulWidget {
   final List<Membresia> membresias;
-  const SeleccionarMembresia({super.key, required this.membresias});
+  final VoidCallback? onBackToMembresiaInfo;
+  final Membresia? membresia;
+  final bool? showMembresiaInfo;
+  const SeleccionarMembresia(
+      {super.key,
+      required this.membresias,
+      this.onBackToMembresiaInfo,
+      this.membresia,
+      this.showMembresiaInfo});
 
   @override
   State<SeleccionarMembresia> createState() => _MembresiaSeleccionadorState();
@@ -27,6 +35,13 @@ class _MembresiaSeleccionadorState extends State<SeleccionarMembresia> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
+                    if (!widget.showMembresiaInfo! &&
+                        widget.membresia != null) ...[
+                      ElevatedButton(
+                        onPressed: widget.onBackToMembresiaInfo,
+                        child: const Text('Volver a Mi Membresia'),
+                      ),
+                    ],
                     ...widget.membresias.map(
                       (membresia) => MembershipCard(membresia: membresia),
                     ),
@@ -43,7 +58,8 @@ class _MembresiaSeleccionadorState extends State<SeleccionarMembresia> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  NoDataError(message: "Su gimnasio no tiene membresias"),
+                  NoDataError(
+                      message: "Su gimnasio/entrenador no tiene membresias"),
                 ],
               ),
             ),

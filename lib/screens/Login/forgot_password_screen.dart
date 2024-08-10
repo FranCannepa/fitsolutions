@@ -20,8 +20,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
-      backgroundColor: Colors.amber,
-      appBar: AppBar(title: const Text("RESTABLECER CONTRASEÑA"), backgroundColor: Colors.amber,),
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+      appBar:AppBar(
+        title: const Text(
+          'Restablecer Contraseña',
+          style: TextStyle(color: Colors.white, fontSize: 30),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 30,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -33,6 +47,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 'Te enviaremos un email para restablecer tu contraseña',
                 textAlign: TextAlign.start,
                 style: TextStyle(
+                  color: Colors.white,
                   fontFamily: 'Inter',
                   letterSpacing: 0,
                   fontSize: 30,

@@ -5,6 +5,7 @@ import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class MembresiaDisplayerPropietario extends StatefulWidget {
@@ -18,8 +19,16 @@ class MembresiaDisplayerPropietario extends StatefulWidget {
 
 class _MembresiaDisplayerPropietarioState
     extends State<MembresiaDisplayerPropietario> {
+  late Future<String?> _gymIdFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _gymIdFuture = _fetchGymId();
+  }
 
   Future<String?> _fetchGymId() async {
+    Logger().d('CALLED');
     return await SharedPrefsHelper().getSubscripcion();
   }
 
@@ -87,10 +96,9 @@ class _MembresiaDisplayerPropietarioState
       floatingActionButton: userData.esBasico()
           ? null
           : FutureBuilder<String?>(
-              future: _fetchGymId(),
+              future: _gymIdFuture,
               builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  
                   return const SizedBox();
                 } else if (snapshot.hasError) {
                   return FloatingActionButton(

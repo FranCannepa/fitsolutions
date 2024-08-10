@@ -5,6 +5,7 @@ import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 class MembresiaDetailed extends StatefulWidget {
   final Membresia membresia;
@@ -115,15 +116,19 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
                           final asociadoId = userProvider.origenAdministrador;
                           final email = await prefs.getEmail() as String;
                           try {
+                            if(context.mounted){
                             await paymentService.createPayment(context, costo,
                                 email, membresia.id, asociadoId);
-                            widget.onClose();
+                            widget.onClose;
+                            }
                           } catch (error) {
-                            print('Error creating payment: $error');
+                            if(context.mounted){
+                            Logger().e('Error creating payment: $error');
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     content:
                                         Text('Error al realizar el pago')));
+                            }
                           }
                         },
                       ),

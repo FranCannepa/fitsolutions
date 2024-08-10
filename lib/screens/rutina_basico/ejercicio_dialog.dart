@@ -33,7 +33,7 @@ class EjercicioDialog extends StatelessWidget {
             _buildDetailRow('Repeticiones', ejercicio.repeticiones.toString()),
             _buildDetailRow('Carga', '${ejercicio.carga} kg'),
             _buildDetailRow('Duración', '${ejercicio.duracion} min'),
-            _buildDetailRow('Pausas', '${ejercicio.pausas} min'),
+            _buildDetailRow('Pausas', ejercicio.pausas == '' ? 'Sin Pausas' : '${ejercicio.pausas} min'),
           ],
         ),
       ),

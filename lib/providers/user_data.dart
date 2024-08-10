@@ -7,8 +7,6 @@ import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
-import 'package:provider/provider.dart';
-
 
 class UserData extends ChangeNotifier {
   String nombreCompleto = '';
@@ -73,22 +71,22 @@ class UserData extends ChangeNotifier {
   }
 
   Future<String?> getUserNameById(String userId) async {
-  try {
-    final docRef = FirebaseFirestore.instance.collection('usuario').doc(userId);
-    final docSnapshot = await docRef.get();
-    if (docSnapshot.exists) {
-      final data = docSnapshot.data();
-      return data?['nombreCompleto'] as String?;
-    } else {
-      log.d("No se encontro usuario con ID: $userId");
+    try {
+      final docRef =
+          FirebaseFirestore.instance.collection('usuario').doc(userId);
+      final docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        final data = docSnapshot.data();
+        return data?['nombreCompleto'] as String?;
+      } else {
+        log.d("No se encontro usuario con ID: $userId");
+        return null;
+      }
+    } catch (e) {
+      log.d("Error fetching nombre usuario: $e");
       return null;
     }
-  } catch (e) {
-    log.d("Error fetching nombre usuario: $e");
-    return null;
   }
-}
-
 
   Future<Map<String, dynamic>?> getUserProfile() async {
     final String? userId = await SharedPrefsHelper().getUserId();
@@ -143,44 +141,82 @@ class UserData extends ChangeNotifier {
     }
   }
 
-  Future<void> updateMembresiaId(BuildContext context, String membresiaId) async {
-  final String? userId = await getUserId();
-  if (userId != null) {
-    // Obtengo la membresia
-    final membresiaProvider = Provider.of<MembresiaProvider>(context, listen: false);
-    final membresiaData = await membresiaProvider.getMembresiaDetails(membresiaId);
+  DateTime getNextMonth(DateTime currentDate) {
+    int nextMonth = currentDate.month + 1;
+    int nextYear = currentDate.year;
 
-    if (membresiaData != null) {
-      // Mantengo todavia el asignamiento de la membresiaId al usuario por las dudas
-      await FirebaseFirestore.instance.collection('usuario').doc(userId).update({
-        'membresiaId': membresiaId,
-      });
-      this.membresiaId = membresiaId;
-
-      // Calculo la fecha de expiracion y los cupos restantes
-      int duracion = membresiaData['duracion'] ?? 365;
-      DateTime fechaCompra = DateTime.now();
-      DateTime fechaExpiracion = fechaCompra.add(Duration(days: duracion));
-      int cuposRestantes = membresiaData['cupos'] ?? 0;
-
-      // Agrego la membresia a la tabla usuarioMembresia
-      await FirebaseFirestore.instance.collection('usuarioMembresia').add({
-        'usuarioId': userId,
-        'membresiaId': membresiaId,
-        'fechaCompra': fechaCompra,
-        'fechaExpiracion': fechaExpiracion,
-        'cuposRestantes': cuposRestantes,
-        'estado': 'activa',
-      });
-
-      notifyListeners();
-    } else {
-      log.d("Membresía no encontrada o datos incompletos para ID: $membresiaId");
+    if (nextMonth > 12) {
+      nextMonth = 1;
+      nextYear += 1;
     }
-  } else {
-    log.d("No se pudo actualizar la membresía o el ID de usuario es nulo");
+
+    return DateTime(nextYear, nextMonth, currentDate.day);
   }
-}
+
+  Future<void> updateMembresiaId(String membresiaId) async {
+    final String? userId = await getUserId();
+    if (userId != null) {
+      // Obtengo la membresia
+      final membresiaProvider =
+          MembresiaProvider(FirebaseFirestore.instance, prefs);
+      final membresiaData =
+          await membresiaProvider.getMembresiaDetails(membresiaId);
+
+      if (membresiaData != null) {
+        // Mantengo todavia el asignamiento de la membresiaId al usuario por las dudas
+        await FirebaseFirestore.instance
+            .collection('usuario')
+            .doc(userId)
+            .update({
+          'membresiaId': membresiaId,
+        });
+        this.membresiaId = membresiaId;
+
+        // Calculo la fecha de expiracion y los cupos restantes
+        DateTime fechaCompra = DateTime.now();
+        DateTime fechaExpiracion = getNextMonth(DateTime.now());
+        int cuposRestantes = membresiaData['cupos'] ?? 0;
+
+        //Verificar si existe
+        final doc = await FirebaseFirestore.instance
+            .collection('usuarioMembresia')
+            .where('usuarioId', isEqualTo: userId)
+            .limit(1)
+            .get();
+
+        if (doc.docs.isNotEmpty) {
+          final docId = doc.docs.first.id;
+          await FirebaseFirestore.instance
+              .collection('usuarioMembresia')
+              .doc(docId)
+              .set({
+            'membresiaId':membresiaId,
+            'fechaCompra': fechaCompra,
+            'fechaExpiracion': fechaExpiracion,
+            'cuposRestantes': cuposRestantes,
+            'estado': 'activa',
+          }, SetOptions(merge: true));
+        } else {
+          await FirebaseFirestore.instance.collection('usuarioMembresia').add({
+            'usuarioId': userId,
+            'membresiaId': membresiaId,
+            'fechaCompra': fechaCompra,
+            'fechaExpiracion': fechaExpiracion,
+            'cuposRestantes': cuposRestantes,
+            'estado': 'activa',
+          });
+        }
+        // Agrego la membresia a la tabla usuarioMembresia
+
+        //notifyListeners();
+      } else {
+        log.d(
+            "Membresía no encontrada o datos incompletos para ID: $membresiaId");
+      }
+    } else {
+      log.d("No se pudo actualizar la membresía o el ID de usuario es nulo");
+    }
+  }
 
   bool esPropietarioGym() {
     return gimnasioIdPropietario != '';
@@ -244,7 +280,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-    Future<void> dataFormPropietario(Map<String, dynamic>? userData) async {
+  Future<void> dataFormPropietario(Map<String, dynamic>? userData) async {
     userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Propietario';
@@ -252,7 +288,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-    Future<void> dataFormParticular(Map<String, dynamic>? userData) async {
+  Future<void> dataFormParticular(Map<String, dynamic>? userData) async {
     userId = userData?['userId'] ?? await prefs.getUserId();
     nombreCompleto = userData?['nombreCompleto'];
     tipo = 'Particular';
