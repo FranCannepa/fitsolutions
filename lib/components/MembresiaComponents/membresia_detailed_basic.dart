@@ -58,7 +58,6 @@ class MembresiaDialogBasic extends StatelessWidget {
                     dateFormat
                         .format(membresiaAsignada.fechaExpiracion)
                         .toString()),
-                // Add more fields as needed
               ],
             ),
             actions: [

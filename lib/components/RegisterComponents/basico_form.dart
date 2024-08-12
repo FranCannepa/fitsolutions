@@ -125,7 +125,7 @@ class _BasicoFormState extends State<BasicoForm> {
                 DateTime? birthDate;
                 try {
                   birthDate = DateTime.parse(
-                      value); // assuming the value is in a parseable format
+                      value);
                 } catch (e) {
                   return 'Formato de fecha no válido';
                 }

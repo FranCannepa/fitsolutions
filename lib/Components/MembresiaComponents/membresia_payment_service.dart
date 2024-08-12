@@ -66,7 +66,6 @@ class PaymentService {
       if (response.statusCode == 201) {
         final responseData = json.decode(response.body);
         final String initPoint = responseData['init_point'];
-        //final String preferenceId = responseData['id'];
         final Uri pagoUrl = Uri.parse(initPoint);
 
         return pagoUrl.toString();
@@ -85,7 +84,6 @@ class PaymentService {
         context.read<MembresiaProvider>();
 
     final keys = await membresiaProvider.getKeys(asociadoId);
-    //final publicKey = keys['publicKey']!;
     final accessToken = keys['accessToken']!;
 
     final url =
@@ -155,7 +153,6 @@ class PaymentService {
     final String? membresiaId = prefs.getString('pending_membresia_id');
 
     if (paymentId == null || membresiaId == null) {
-      //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No hay pagos pendientes')));
       return;
     }
     if (context.mounted) {

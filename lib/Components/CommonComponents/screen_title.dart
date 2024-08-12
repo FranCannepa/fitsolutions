@@ -18,7 +18,6 @@ class ScreenTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // Wrap the Text with Padding for spacing
       padding: EdgeInsets.only(top: topSpacing, bottom: bottomSpacing),
       child: Text(
         title,
@@ -26,10 +25,6 @@ class ScreenTitle extends StatelessWidget {
           fontSize: fontSize,
           color: color,
           fontWeight: FontWeight.bold,
-          // You can further customize font style, shadows, etc. here
-          // For example:
-          // shadows: [Shadow(color: Colors.grey[300], blurRadius: 5.0, offset: Offset(0, 2.0))],
-          // fontFamily: 'Pacifico', // Use a custom font family if desired
         ),
       ),
     );
