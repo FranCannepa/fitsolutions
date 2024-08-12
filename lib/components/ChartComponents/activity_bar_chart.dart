@@ -10,23 +10,23 @@ class ActivityBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sort activities by the number of participants
+   
     activities.sort((a, b) => b.participantes.compareTo(a.participantes));
 
-    // Determine the most and least popular activities
+    
     final mostPopularActivity = activities.first;
     final leastPopularActivity = activities.last;
 
     List<BarChartGroupData> barGroups = activities.map((activity) {
       Color barColor;
       if (activity == mostPopularActivity) {
-        barColor = Colors.green; // Highlight the most popular activity
+        barColor = Colors.green;
       } else if (activity == leastPopularActivity) {
-        barColor = Colors.red; // Highlight the least popular activity
+        barColor = Colors.red;
       } else {
         barColor = Theme.of(context)
             .colorScheme
-            .tertiary; // Default color for other activities
+            .tertiary; 
       }
 
       return BarChartGroupData(
@@ -55,7 +55,7 @@ class ActivityBarChart extends StatelessWidget {
               maxY: activities
                       .map((a) => a.participantes.toDouble())
                       .reduce((a, b) => a > b ? a : b) +
-                  5, // Set maxY dynamically
+                  5, 
               titlesData: const FlTitlesData(
                 leftTitles: AxisTitles(
                     sideTitles: SideTitles(reservedSize: 40, showTitles: true)),
@@ -89,7 +89,7 @@ class ActivityBarChart extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 5,
                 blurRadius: 7,
-                offset: const Offset(0, 3), // changes position of shadow
+                offset: const Offset(0, 3), 
               ),
             ],
           ),

@@ -52,7 +52,6 @@ class _ActivitiesDialogState extends State<ActivitiesDialog> {
 
         var activities = snapshot.data!;
         
-        // Filter activities by selected date
         if (_selectedDate != null) {
           activities = activities.where((activity) {
             final activityDate = activity.inicio.toDate();
@@ -109,7 +108,7 @@ class _ActivitiesDialogState extends State<ActivitiesDialog> {
                             BoxShadow(
                               color: Colors.black26,
                               blurRadius: 10,
-                              offset: Offset(0, 5), // changes position of shadow
+                              offset: Offset(0, 5),
                             ),
                           ],
                         ),
@@ -144,7 +143,7 @@ class _ActivitiesDialogState extends State<ActivitiesDialog> {
                                 BoxShadow(
                                   color: Colors.black26,
                                   blurRadius: 10,
-                                  offset: Offset(0, 5), // changes position of shadow
+                                  offset: Offset(0, 5),
                                 ),
                               ],
                             ),

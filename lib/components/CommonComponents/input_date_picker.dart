@@ -73,7 +73,7 @@ class _InputDatePickerState extends State<InputDatePicker> {
                     padding: const EdgeInsets.only(top: 5.0),
                     child: Container(
                       constraints: BoxConstraints(
-                           maxWidth: MediaQuery.of(context).size.width * 0.2), // Adjust the width as needed
+                           maxWidth: MediaQuery.of(context).size.width * 0.2),
                       child: Text(
                         field.errorText!,
                         style: const TextStyle(color: Colors.red, fontSize: 12),

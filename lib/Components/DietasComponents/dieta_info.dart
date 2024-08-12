@@ -15,7 +15,6 @@ class _DietaInfoState extends State<DietaInfo> {
   Widget build(BuildContext context) {
     final dieta = widget.dieta;
 
-    // Sort the comidas list by the day
     final sortedComidas = List.from(dieta.comidas)..sort((a, b) => int.parse(a.dia).compareTo(int.parse(b.dia)));
 
     return Column(
