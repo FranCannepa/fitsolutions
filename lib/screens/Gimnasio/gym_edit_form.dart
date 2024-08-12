@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:fitsolutions/components/CommonComponents/input_time_picker.dart';
 import 'package:fitsolutions/modelo/Gimnasio.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
@@ -308,13 +309,13 @@ class _GymModificationFormState extends State<GymModificationForm> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    RoundedInputField(
                       controller: _nameController,
-                      decoration: InputDecoration(
+                      
                         labelText: esPropietario == true
                             ? 'Nombre Entrenador'
                             : 'Nombre Gimnasio',
-                      ),
+
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return esPropietario == true
@@ -324,11 +325,11 @@ class _GymModificationFormState extends State<GymModificationForm> {
                         return null;
                       },
                     ),
-                    TextFormField(
+                    RoundedInputField(
                       controller: _streetAddressController,
-                      decoration: const InputDecoration(
+                    
                         labelText: 'Calle y Numero',
-                      ),
+
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Ingrese la calle y número';
@@ -336,19 +337,17 @@ class _GymModificationFormState extends State<GymModificationForm> {
                         return null;
                       },
                     ),
-                    TextFormField(
+                    RoundedInputField(
                       controller: _crossStreetController,
-                      decoration: const InputDecoration(
+
                         labelText: 'Esquina',
-                      ),
                       validator: _validateCrossStreet,
                     ),
-                    TextFormField(
+                    RoundedInputField(
                       keyboardType: TextInputType.number,
                       controller: _celularController,
-                      decoration: const InputDecoration(
+
                         labelText: 'Celular',
-                      ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Ingrese el número de celular';
@@ -360,12 +359,11 @@ class _GymModificationFormState extends State<GymModificationForm> {
                         }
                       },
                     ),
-                    TextFormField(
+                    RoundedInputField(
                       keyboardType: TextInputType.number,
                       controller: _telefonoController,
-                      decoration: const InputDecoration(
+                      
                         labelText: 'Teléfono',
-                      ),
                       validator: _validatePhoneNumber,
                     ),
                     const SizedBox(height: 16),

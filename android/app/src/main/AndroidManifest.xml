@@ -35,7 +35,7 @@
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. 
                  
-                                 Esto de aqui rompe las notificaciones (plugin) cuando esta en el intent-filter donde dice MAIN
+                Esto de aqui rompe las notificaciones (plugin) cuando esta en el intent-filter donde dice MAIN
                  <data android:scheme="com.fitsolutions.fitsolutionsapp" /> -->
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
@@ -45,12 +45,14 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="com.fitsolutions.fitsolutionsapp" android:host="oauth2redirect" />
+                <data android:scheme="com.fitsolutions.fitsolutionsapp"/>
             </intent-filter>
+
         </activity>
     
         <meta-data

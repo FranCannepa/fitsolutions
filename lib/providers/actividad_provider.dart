@@ -1,18 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Modelo/Actividad.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/Utilities/utilities.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';
 
 class ActividadProvider extends ChangeNotifier {
-  final prefs = SharedPrefsHelper();
-  final logger = Logger();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  ActividadProvider() {
+  late SharedPrefsHelper prefs;
+  late Logger logger;
+  late final FirebaseFirestore _firestore;
+  late MembresiaProvider membresiaProvider;
+
+  ActividadProvider(this._firestore, this.logger, this.prefs, this.membresiaProvider) {
     // Listen for changes in the 'actividad' collection and notify listeners
     _firestore.collection('actividad').snapshots().listen((snapshot) {
       notifyListeners();
@@ -76,7 +78,6 @@ class ActividadProvider extends ChangeNotifier {
   // Register a new activity
   Future<bool> registrarActividad(Map<String, dynamic> actividadData) async {
   try {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
     final String nombre = actividadData['nombreActividad'];
     final String propietarioActividadId = actividadData['propietarioActividadId'];
     final String tipo = actividadData['tipo'];
@@ -92,7 +93,7 @@ class ActividadProvider extends ChangeNotifier {
 
     if (diasRepeticion.isEmpty) {
       // Creo actividad unica
-      await firestore.collection('actividad').add({
+      await _firestore.collection('actividad').add({
         'nombreActividad': nombre,
         'propietarioActividadId': propietarioActividadId,
         'tipo': tipo,
@@ -110,7 +111,7 @@ class ActividadProvider extends ChangeNotifier {
         // Verifico si el dia de la semana actual es uno de los seleccionados
         int diaDeLaSemana = fechaActual.weekday;
         if (diasRepeticion.contains(diaDeLaSemana)) {
-          await firestore.collection('actividad').add({
+          await _firestore.collection('actividad').add({
             'nombreActividad': nombre,
             'propietarioActividadId': propietarioActividadId,
             'tipo': tipo,
@@ -123,14 +124,14 @@ class ActividadProvider extends ChangeNotifier {
         }
         
         // Avanzo al siguiente dia
-        fechaActual = fechaActual.add(Duration(days: 1));
+        fechaActual = fechaActual.add(const Duration(days: 1));
       }
     }
 
     notifyListeners();
     return true;
   } on FirebaseException catch (e) {
-    print('Error al registrar la actividad: ${e.message}');
+    logger.d('Error al registrar la actividad: ${e.message}');
     return false;
   }
 }
@@ -192,9 +193,9 @@ class ActividadProvider extends ChangeNotifier {
   Future<bool> desinscribirseActividad(
       BuildContext context, String userId, String actividadId) async {
     try {
-      final membresiaSnapshot =
-          await Provider.of<MembresiaProvider>(context, listen: false)
-              .obtenerMembresiaActiva(userId);
+      final membresiaSnapshot = await membresiaProvider.obtenerMembresiaActiva(userId);
+          /*await Provider.of<MembresiaProvider>(context, listen: false)
+              .obtenerMembresiaActiva(userId);*/
 
       if (membresiaSnapshot == null) {
         return false;
@@ -232,9 +233,7 @@ class ActividadProvider extends ChangeNotifier {
     try {
       final activity =
           await _firestore.collection('actividad').doc(actividadId).get();
-      final membresiaSnapshot =
-          await Provider.of<MembresiaProvider>(context, listen: false)
-              .obtenerMembresiaActiva(userId);
+      final membresiaSnapshot = await membresiaProvider.obtenerMembresiaActiva(userId);
 
       if (membresiaSnapshot == null) {
         return false;

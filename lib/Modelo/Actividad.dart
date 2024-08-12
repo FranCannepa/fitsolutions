@@ -23,13 +23,13 @@ class Actividad {
 
   static Actividad fromDocument(Map<String, dynamic> doc) {
     return Actividad(
-        id: doc['actividadId'],
-        propietarioActividadId: doc['propietarioActividadId'],
-        nombre: doc['nombreActividad'],
-        cupos: doc['cupos'],
+        id: doc['actividadId'] ?? '',
+        propietarioActividadId: doc['propietarioActividadId']?? '',
+        nombre: doc['nombreActividad']?? '',
+        cupos: doc['cupos']?? 0,
         participantes: doc['participantes'] ?? 0,
-        inicio: doc['inicio'],
-        fin: doc['fin'],
-        tipo: doc['tipo']);
+        inicio: doc['inicio'] ?? DateTime.now(),
+        fin: doc['fin'] ??  DateTime.now(),
+        tipo: doc['tipo']?? '');
   }
 }

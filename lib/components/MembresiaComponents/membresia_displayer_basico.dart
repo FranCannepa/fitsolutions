@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
 import 'package:fitsolutions/Components/MembresiaComponents/membresiaSeleccionador.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
@@ -22,6 +23,8 @@ class MembresiaDisplayerBasico extends StatefulWidget {
 }
 
 class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
+
+  bool showMembresiaInfo = true;
   @override
   void initState() {
     super.initState();
@@ -57,31 +60,32 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     String? paymentId = uri.queryParameters['payment_id'];
     await prefs.setString('last_handled_link', link);
     final String? membresiaId = prefs.getString('pending_membresia_id');
-    final PurchasesProvider purchasesProvider = context.read<PurchasesProvider>();
+    final PurchasesProvider purchasesProvider =
+        PurchasesProvider(FirebaseFirestore.instance);
     late ResultType result;
     late String resultMsg;
     int statusCode = 4;
 
     final DateTime purchaseDate = DateTime.now();
-    final UserData userProvider = context.read<UserData>();
+    final UserData userProvider = UserData();
 
     final String? userId = await userProvider.getUserId();
 
     if (status == 'approved') {
       statusCode = 1;
       if (membresiaId != null) {
-        await userProvider.updateMembresiaId(context, membresiaId);
+        await userProvider.updateMembresiaId(membresiaId);
       }
-      await await prefs.remove('pending_membresia_id');
+      await prefs.remove('pending_membresia_id');
       await prefs.remove('pending_payment_id');
       result = ResultType.success;
       resultMsg = "Pago Satisfactorio";
     } else if (status == 'pending') {
       statusCode = 2;
-      String? payment_id = uri.queryParameters['payment_id'];
+      String? paymentId = uri.queryParameters['payment_id'];
       final prefs = await SharedPreferences.getInstance();
-      if (payment_id != null) {
-        await prefs.setString('pending_payment_id', payment_id);
+      if (paymentId != null) {
+        await prefs.setString('pending_payment_id', paymentId);
       }
       result = ResultType.warning;
     } else if (status == 'failure' || status == 'rejected') {
@@ -98,19 +102,26 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
       'usuarioId': userId
     });
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ResultDialog(text: resultMsg, resultType: result);
-      },
-    );
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ResultDialog(text: resultMsg, resultType: result);
+        },
+      );
+    }
+  }
+  void toggleMembresiaView() {
+    setState(() {
+      showMembresiaInfo = !showMembresiaInfo;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final UserData userProvider = context.watch<UserData>();
     final PaymentService paymentService = PaymentService();
-        context.watch<MembresiaProvider>();
+    context.watch<MembresiaProvider>();
     paymentService.verifyPayment(context);
     return Scaffold(
       body: Column(
@@ -123,9 +134,11 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
                   return Text('Error: ${snapshot.error}');
                 } else {
                   final membresia = snapshot.data;
-                  return membresia != null
-                      ? MembresiaInfo(membresia: membresia)
-                      : SeleccionarMembresia(membresias: widget.membresias);
+                  if (showMembresiaInfo && membresia != null) {
+                    return MembresiaInfo(membresia: membresia,onChangeMembresia:toggleMembresiaView);
+                  } else {
+                    return SeleccionarMembresia(membresias: widget.membresias,membresia:membresia,showMembresiaInfo:showMembresiaInfo,onBackToMembresiaInfo:toggleMembresiaView);
+                  }
                 }
               },
             ),

@@ -7,10 +7,10 @@ import 'package:fitsolutions/modelo/models.dart';
 class NotificationProvider extends ChangeNotifier {
   Logger log = Logger();
   final FirebaseFirestore _firebase;
-  final prefs = SharedPrefsHelper();
+  late SharedPrefsHelper prefs;
 
   NotificationProvider(
-    FirebaseFirestore? firestore,
+    FirebaseFirestore? firestore,this.prefs
   ) : _firebase = firestore ?? FirebaseFirestore.instance;
   Future<void> addNotification(
       String userId, String title, String message, String route) async {

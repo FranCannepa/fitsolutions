@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Home/home_screen.dart';
 import 'package:fitsolutions/Theme/light_theme.dart';
 import 'package:fitsolutions/firebase_options.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:fitsolutions/providers/user_data.dart';
 
@@ -31,7 +32,6 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   await NotificationService.initializeLocalNotifications();
   await NotificationService.initializeFirebaseMessaging();
   if (Platform.isIOS) {
@@ -56,25 +56,25 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<UserProvider>(
             create: (context) => UserProvider()),
         ChangeNotifierProvider<FitnessProvider>(
-            create: (context) => FitnessProvider(FirebaseFirestore.instance)),
+            create: (context) => FitnessProvider(FirebaseFirestore.instance,SharedPrefsHelper())),
         ChangeNotifierProvider<InscriptionProvider>(
             create: (context) => InscriptionProvider(
-                FirebaseFirestore.instance, NotificationService())),
+                FirebaseFirestore.instance, NotificationService(),SharedPrefsHelper())),
         ChangeNotifierProvider<GimnasioProvider>(
-            create: (context) => GimnasioProvider(FirebaseFirestore.instance)),
+            create: (context) => GimnasioProvider(FirebaseFirestore.instance,SharedPrefsHelper())),
         ChangeNotifierProvider<NotificationProvider>(
             create: (context) =>
-                NotificationProvider(FirebaseFirestore.instance)),
+                NotificationProvider(FirebaseFirestore.instance,SharedPrefsHelper())),
         ChangeNotifierProvider<ActividadProvider>(
-            create: (context) => ActividadProvider()),
+            create: (context) => ActividadProvider(FirebaseFirestore.instance,Logger(),SharedPrefsHelper(),MembresiaProvider(FirebaseFirestore.instance,SharedPrefsHelper()))),
         ChangeNotifierProvider<MembresiaProvider>(
-            create: (context) => MembresiaProvider()),
+            create: (context) => MembresiaProvider(FirebaseFirestore.instance,SharedPrefsHelper())),
         ChangeNotifierProvider<DietaProvider>(
-            create: (context) => DietaProvider()),
+            create: (context) => DietaProvider(FirebaseFirestore.instance,SharedPrefsHelper())),
         ChangeNotifierProvider(
-            create: (context) => ChartProvider(FirebaseFirestore.instance)),
+            create: (context) => ChartProvider(FirebaseFirestore.instance,SharedPrefsHelper())),
         ChangeNotifierProvider<PurchasesProvider>(
-            create: (context) => PurchasesProvider()),
+            create: (context) => PurchasesProvider(FirebaseFirestore.instance)),
         
       ],
       child: MaterialApp(

@@ -9,21 +9,25 @@ import 'package:fitsolutions/providers/notification_provider.dart';
 import 'package:fitsolutions/providers/notification_service.dart';
 
 class DietaProvider extends ChangeNotifier {
-  final prefs = SharedPrefsHelper();
-  final query = FirebaseFirestore.instance;
+  late SharedPrefsHelper prefs;
+  late FirebaseFirestore query;
   Logger log = Logger();
   StreamSubscription<DocumentSnapshot>? _usuarioSubscription;
   StreamSubscription<DocumentSnapshot>? _dietaSubscription;
   final NotificationService _notificationService = NotificationService();
 
-  DietaProvider() {
+  DietaProvider(this.query, this.prefs) {
     _initializeListener();
   }
 
   void _initializeListener() async {
     final userId = await prefs.getUserId();
     if (userId != null) {
-      _usuarioSubscription = query.collection('usuario').doc(userId).snapshots().listen((snapshot) {
+      _usuarioSubscription = query
+          .collection('usuario')
+          .doc(userId)
+          .snapshots()
+          .listen((snapshot) {
         if (snapshot.exists) {
           final userData = snapshot.data() as Map<String, dynamic>;
           if (userData.containsKey('dietaId')) {
@@ -140,21 +144,19 @@ class DietaProvider extends ChangeNotifier {
 
   Future<bool> asignarDieta(String dietaId, String clienteId) async {
     try {
-      final userDocRef =
-          FirebaseFirestore.instance.collection('usuario').doc(clienteId);
+      final userDocRef = query.collection('usuario').doc(clienteId);
       final user = await userDocRef.get();
       final userData = user.data();
       final updateData = {'dietaId': dietaId};
       await userDocRef.update(updateData);
 
-      _notificationService.sendNotification(
-          userData!['fcmToken'], 'NUEVA DIETA', 'Se le fue asignada una nueva rutina');
+      _notificationService.sendNotification(userData!['fcmToken'],
+          'NUEVA DIETA', 'Se le fue asignada una nueva rutina');
 
-      final provider = NotificationProvider(query);
+      final provider = NotificationProvider(query,SharedPrefsHelper());
       provider.addNotification(user.id, 'NUEVA DIETA',
           'Se le fue asignada una nueva dieta', '/dieta');
       return true;
-
     } catch (e) {
       log.d(e.toString());
       return false;
@@ -162,16 +164,15 @@ class DietaProvider extends ChangeNotifier {
   }
 
   Future<bool> eliminarDieta(String documentId) async {
-    final db = FirebaseFirestore.instance;
-    final batch = db.batch();
+    final batch = query.batch();
     try {
-      final docRef = db.collection('dieta').doc(documentId);
+      final docRef = query.collection('dieta').doc(documentId);
 
       batch.delete(docRef);
 
       final usuariosQuery =
-          db.collection('usuario').where('dietaId', isEqualTo: documentId);
-      await db.runTransaction((transaction) async {
+          query.collection('usuario').where('dietaId', isEqualTo: documentId);
+      await query.runTransaction((transaction) async {
         final snapshot = await usuariosQuery.get();
         for (final doc in snapshot.docs) {
           transaction.update(doc.reference, {'dietaId': FieldValue.delete()});

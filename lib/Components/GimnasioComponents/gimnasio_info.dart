@@ -7,6 +7,7 @@ import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/Screens/Plan/plan_screen.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/screens/Gimnasio/gym_edit_form.dart';
+import 'package:fitsolutions/screens/Plan/gestion_ejercicio.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 import 'package:fitsolutions/Screens/Compras/compras_screen.dart';
@@ -124,7 +125,8 @@ class GimnasioInfo extends StatelessWidget {
                             PageRouteBuilder(
                               transitionDuration:
                                   const Duration(milliseconds: 500),
-                              pageBuilder: (_, __, ___) => const GymModificationForm(),
+                              pageBuilder: (_, __, ___) =>
+                                  const GymModificationForm(),
                               transitionsBuilder: (_,
                                   Animation<double> animation,
                                   __,
@@ -178,6 +180,31 @@ class GimnasioInfo extends StatelessWidget {
                           )
                         },
                         child: const Text('Gestion de Rutinas'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              transitionDuration:
+                                  const Duration(milliseconds: 500),
+                              pageBuilder: (_, __, ___) => const EjercicioSistemaScreen(),
+                              transitionsBuilder: (_,
+                                  Animation<double> animation,
+                                  __,
+                                  Widget child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          )
+                        },
+                        child: const Text('Gestion de Ejercicios'),
                       ),
                     ),
                     SizedBox(
