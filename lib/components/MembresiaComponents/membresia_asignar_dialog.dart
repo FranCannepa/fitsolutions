@@ -131,7 +131,7 @@ class _MembresiaAsignarDialogState extends State<MembresiaAsignarDialog> {
                                       ResultType.success);
                                 } else {
                                   _showSuccessModal(
-                                      "Error al asignar membresia",
+                                      "Este usuario ya tiene una membresia activa",
                                       ResultType.error);
                                   widget.onClose;
                                 }

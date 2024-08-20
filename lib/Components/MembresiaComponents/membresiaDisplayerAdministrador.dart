@@ -5,7 +5,6 @@ import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 class MembresiaDisplayerPropietario extends StatefulWidget {
@@ -28,7 +27,6 @@ class _MembresiaDisplayerPropietarioState
   }
 
   Future<String?> _fetchGymId() async {
-    Logger().d('CALLED');
     return await SharedPrefsHelper().getSubscripcion();
   }
 

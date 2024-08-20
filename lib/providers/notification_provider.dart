@@ -46,7 +46,7 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   Future<void> markAsRead(String userId, String notificationId) async {
-    await FirebaseFirestore.instance
+    await _firebase
         .collection('usuario')
         .doc(userId)
         .collection('notification')

@@ -205,6 +205,17 @@ class MembresiaProvider extends ChangeNotifier {
 
           return MembresiaAsignada.fromData(
               snapshot.docs.first.id, usuarioMembresiaData, membresiaInfo);
+        } else {
+          final membresiaInfo = Membresia.fromDocument({
+            'membresiaId': 'Eliminada',
+            'nombreMembresia': 'Membresia elimianda',
+            'origenMembresia': 'Membresia eliminada',
+            'costo': 'Membresia eliminada',
+            'descripcion': 'Sin descripcion',
+            'cupos': 0,
+          });
+          return MembresiaAsignada.fromData(
+              snapshot.docs.first.id, usuarioMembresiaData, membresiaInfo);
         }
       }
       return null;
@@ -247,35 +258,40 @@ class MembresiaProvider extends ChangeNotifier {
           .limit(1)
           .get();
 
-      if (existingMembership.docs.isNotEmpty) {
-        for (var doc in existingMembership.docs) {
-          if (doc['estado'] == 'activa') {
-            throw Exception('Este usuario ya tiene una membresia activa');
-          } else {
-            await _firebase
-                .collection('usuarioMembresia')
-                .doc(doc.id)
-                .update({'estado': 'inactiva'});
-          }
-        }
-      }
+      final membershipData =
+          await _firebase.collection('membresia').doc(membresiaId).get();
+      final cuposRestantes = membershipData.data()?['cupos'];
 
       final newMembership = {
         'usuarioId': clienteId,
         'membresiaId': membresiaId,
         'estado': 'activa',
-        'fechaAsignacion': DateTime.now(),
+        'fechaCompra': DateTime.now(),
         'fechaExpiracion': getNextMonth(DateTime.now()),
-        'cuposRestantes':
-            (await _firebase.collection('membresia').doc(membresiaId).get())
-                .data()!['numeroEntradas']
+        'cuposRestantes': cuposRestantes,
       };
 
-      await _firebase.collection('usuarioMembresia').add(newMembership);
+      if (existingMembership.docs.isNotEmpty) {
+        final doc = existingMembership.docs.first;
+
+        if (doc['estado'] == 'activa') {
+          throw Exception('Este usuario ya tiene una membresía activa');
+        } else {
+          await _firebase
+              .collection('usuarioMembresia')
+              .doc(doc.id)
+              .update(newMembership);
+        }
+      } else {
+        // Add a new membership
+        await _firebase.collection('usuarioMembresia').add(newMembership);
+      }
+
       await _firebase
           .collection('usuario')
           .doc(clienteId)
           .update({'membresiaId': membresiaId});
+
       notifyListeners();
       return true;
     } catch (e) {

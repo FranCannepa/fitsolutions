@@ -127,15 +127,38 @@ class UserData extends ChangeNotifier {
     if (membresiaId == '') {
       return null;
     }
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('membresia')
-        .doc(membresiaId)
-        .get();
-    if (querySnapshot.exists) {
-      final data = querySnapshot.data();
-      data?['membresiaId'] = querySnapshot.id;
-      notifyListeners();
-      return Membresia.fromDocument(data!);
+    Logger().e(membresiaId);
+    final userId = await prefs.getUserId();
+    if (userId != '') {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('usuarioMembresia')
+          .where('usuarioId', isEqualTo: userId)
+          .limit(1)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final membresiaId = querySnapshot.docs.first.data()['membresiaId'];
+        final membresiaQuery = await FirebaseFirestore.instance
+            .collection('membresia')
+            .doc(membresiaId)
+            .get();
+        if (membresiaQuery.exists) {
+          final data = membresiaQuery.data() as Map<String, dynamic>;
+          data['membresiaId'] = membresiaQuery.id;
+          return Membresia.fromDocument(data);
+        } else {
+          return Membresia.fromDocument({
+            'membresiaId': 'Eliminada',
+            'nombreMembresia': 'Membresia eliminada',
+            'origenMembresia': 'Membresia eliminada',
+            'costo': 'Membresia eliminada',
+            'descripcion':
+                'Esta membresia ya no se encuentra en el sistema, una vez su membresia llegue a su vencimiento actualice a una de las membresias disponibles',
+            'cupos': 0,
+          });
+        }
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
@@ -190,7 +213,7 @@ class UserData extends ChangeNotifier {
               .collection('usuarioMembresia')
               .doc(docId)
               .set({
-            'membresiaId':membresiaId,
+            'membresiaId': membresiaId,
             'fechaCompra': fechaCompra,
             'fechaExpiracion': fechaExpiracion,
             'cuposRestantes': cuposRestantes,
@@ -207,8 +230,9 @@ class UserData extends ChangeNotifier {
           });
         }
         // Agrego la membresia a la tabla usuarioMembresia
-
-        //notifyListeners();
+        this.membresiaId = membresiaId;
+        Logger().f(this.membresiaId);
+        notifyListeners();
       } else {
         log.d(
             "Membresía no encontrada o datos incompletos para ID: $membresiaId");

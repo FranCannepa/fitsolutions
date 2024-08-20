@@ -1,4 +1,6 @@
+import 'package:fitsolutions/Utilities/modal_utils.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
+import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_payment_service.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/components/components.dart';
@@ -6,6 +8,7 @@ import 'package:fitsolutions/providers/membresia_provider.dart';
 import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 class MembresiaDetailed extends StatefulWidget {
   final Membresia membresia;
@@ -30,6 +33,7 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
     final UserData userProvider = widget.userProvider;
     final PaymentService paymentService = PaymentService();
     final prefs = SharedPrefsHelper();
+    context.watch<MembresiaProvider>();
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
@@ -93,10 +97,12 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
                     ),
                   ),
                   child: membresia.descripcion.isNotEmpty
-                      ? Text(
-                          membresia.descripcion,
-                          style: const TextStyle(fontSize: 20.0),
-                        )
+                      ? SingleChildScrollView(
+                        child: Text(
+                            membresia.descripcion,
+                            style: const TextStyle(fontSize: 20.0),
+                          ),
+                      )
                       : const ScreenSubTitle(text: 'No hay descripcion'),
                 ),
               ),
@@ -105,38 +111,38 @@ class _MembresiaDetailedState extends State<MembresiaDetailed> {
                 padding: const EdgeInsets.symmetric(
                     vertical: 10.0, horizontal: 10.0),
                 color: Colors.black,
-                child: Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (userProvider.esBasico())
-                      SubmitButton(
-                        text: "Suscribirse",
-                        onPressed: () async {
-                          final costo = double.parse(membresia.costo);
-                          final asociadoId = userProvider.origenAdministrador;
-                          final email = await prefs.getEmail() as String;
-                          try {
-                            if(context.mounted){
-                            await paymentService.createPayment(context, costo,
-                                email, membresia.id, asociadoId);
-                            widget.onClose;
-                            }
-                          } catch (error) {
-                            if(context.mounted){
-                            Logger().e('Error creating payment: $error');
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Error al realizar el pago')));
-                            }
-                          }
-                        },
-                      ),
                     if (userProvider.esBasico())
                       Text(
                         "\$${membresia.costo.toString()}",
                         style: const TextStyle(
                             fontSize: 30.0, color: Colors.white),
+                      ),
+                    if (userProvider.esBasico())
+                      SubmitButton(
+                        text: "Suscribirse",
+                        onPressed: () async {
+                          final costo = double.tryParse(membresia.costo);
+                          final asociadoId = userProvider.origenAdministrador;
+                          final email = await prefs.getEmail() as String;
+                          try {
+                            if (context.mounted) {
+                              await paymentService.createPayment(context, costo!,
+                                  email, membresia.id, asociadoId);
+                              widget.onClose;
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            }
+                          } catch (error) {
+                            if (context.mounted) {
+                              Logger().e('Error creating payment: $error');
+                              ModalUtils.showSuccessModal(context, 'Error al realizar pago', ResultType.error, () => Navigator.pop(context));
+                            }
+                          }
+                        },
                       ),
                   ],
                 ),
