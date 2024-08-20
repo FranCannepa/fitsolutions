@@ -26,7 +26,6 @@ class FitnessProvider extends ChangeNotifier {
 //Seguramente aqui alla que utilizar el id del plan para escuchar cambios en un plan especifico
 // - Ryan
   void _listenToWeekSubcollections(QuerySnapshot planSnapshot) {
-    // Cancel previous subscriptions to avoid duplicate listeners
     _cancelSubscriptions();
 
     for (var doc in planSnapshot.docs) {
@@ -36,34 +35,34 @@ class FitnessProvider extends ChangeNotifier {
       var subscriptoSubcollectionRef =
           _firebase.collection('plan').doc(planId).collection('subscripto');
 
-      // Listen to the 'week' subcollection
+
       var weekSubscription =
           weekSubcollectionRef.snapshots().listen((weekSnapshot) {
-        notifyListeners(); // Notify listeners about changes in the week subcollection
+        notifyListeners(); 
 
-        // Loop through each document in the 'week' subcollection
+   
         for (var weekDoc in weekSnapshot.docs) {
           var weekId = weekDoc.id;
           var ejercicioSubcollectionRef =
               weekSubcollectionRef.doc(weekId).collection('ejercicio');
 
-          // Listen to the 'ejercicio' subcollection
+
           var ejercicioSubscription =
               ejercicioSubcollectionRef.snapshots().listen((ejercicioSnapshot) {
-            notifyListeners(); // Notify listeners about changes in the ejercicio subcollection
+            notifyListeners(); 
           });
 
           _subscriptions.add(ejercicioSubscription);
         }
       });
 
-      // Listen to the 'subscripto' subcollection
+
       var subscriptoSubscription =
           subscriptoSubcollectionRef.snapshots().listen((subscriptoSnapshot) {
-        notifyListeners(); // Notify listeners about changes in the subscripto subcollection
+        notifyListeners(); 
       });
 
-      // Add subscriptions to the list
+
       _subscriptions.add(weekSubscription);
       _subscriptions.add(subscriptoSubscription);
     }
@@ -92,18 +91,18 @@ class FitnessProvider extends ChangeNotifier {
     return plan;
   }
 
-  //tested
+
   Future<Plan?> getPlanById(String? planId) async {
     Logger log = Logger();
     try {
       if (planId == null) return null;
-      // Retrieve the document with the specified planId
+
       DocumentSnapshot planDoc =
           await _firebase.collection('plan').doc(planId).get();
 
-      // Check if the document exists
+
       if (planDoc.exists) {
-        // Retrieve weeks for the plan
+   
         QuerySnapshot weeksSnapshot = await _firebase
             .collection('plan')
             .doc(planId)
@@ -112,7 +111,7 @@ class FitnessProvider extends ChangeNotifier {
             .get();
         List<Week> weeks =
             await Future.wait(weeksSnapshot.docs.map((weekDoc) async {
-          // Retrieve exercises for each week
+
           QuerySnapshot exerciseSnapshot = await _firebase
               .collection('plan')
               .doc(planId)
@@ -129,7 +128,7 @@ class FitnessProvider extends ChangeNotifier {
               weekDoc.id, weekDoc.data() as Map<String, dynamic>, ejercicios);
         }).toList());
 
-        // Create and return the Plan object
+     
         return Plan.fromDocument(
             planDoc.id, planDoc.data() as Map<String, dynamic>, weeks);
       } else {
@@ -186,7 +185,8 @@ class FitnessProvider extends ChangeNotifier {
   }
 
   Future<List<Ejercicio>> getEjercicios() async {
-    final query = await _firebase.collection('ejercicio').get();
+    final ownerId = await prefs.getSubscripcion();
+    final query = await _firebase.collection('ejercicio').where('ownerId',isEqualTo: ownerId).get();
     return query.docs.map((doc) {
       return Ejercicio.fromDocument(doc.id, doc.data());
     }).toList();
@@ -350,7 +350,7 @@ class FitnessProvider extends ChangeNotifier {
         .where('ejecucion', isEqualTo: ejecucion)
         .where('pausa', isEqualTo: pausa)
         .get();
-
+    final ownerId = await prefs.getSubscripcion();
     if (existingDocs.docs.isEmpty) {
       // No existing document with the same values
       await ejercicios.add({
@@ -361,6 +361,7 @@ class FitnessProvider extends ChangeNotifier {
         'carga': carga,
         'ejecucion': ejecucion,
         'pausa': pausa,
+        'ownerId': ownerId
       });
       notifyListeners();
     }
@@ -406,7 +407,7 @@ class FitnessProvider extends ChangeNotifier {
         .get();
     final provider = NotificationProvider(_firebase,SharedPrefsHelper());
 
-    // Fetch the week document to get the value number
+
     DocumentSnapshot weekSnapshot = await _firebase
         .collection('plan')
         .doc(plan.planId)
@@ -802,7 +803,7 @@ class FitnessProvider extends ChangeNotifier {
         final exercises = data['exercises'] as Map<String, dynamic>? ?? {};
 
         if (!exercises.containsKey(ejercicio.id)) {
-          // Add the exercise if it doesn't exist
+
           await docRef.update({
             'exercises.${ejercicio.id}': {
               'completed': false,
@@ -872,7 +873,7 @@ class FitnessProvider extends ChangeNotifier {
 
   Future<bool> isDayCompleted(String weekId, String day) async {
     try {
-      // Fetch the document corresponding to the week
+
       final userId = await prefs.getUserId();
       DocumentSnapshot weekDoc = await _firebase
           .collection('workoutStates')
@@ -882,22 +883,22 @@ class FitnessProvider extends ChangeNotifier {
           .get();
 
       if (weekDoc.exists) {
-        // Retrieve the week document data
+
         Map<String, dynamic> weekData = weekDoc.data() as Map<String, dynamic>;
 
-        // Check if the specific day is completed
+
         if (weekData.containsKey('daysCompleted')) {
           Map<String, bool> daysCompleted =
               Map<String, bool>.from(weekData['daysCompleted']);
           return daysCompleted[day] ?? false;
         } else {
-          return false; // If daysCompleted key is missing
+          return false; 
         }
       } else {
-        return false; // If the document does not exist, treat it as not completed
+        return false; 
       }
     } catch (e) {
-      // Handle any errors (e.g., Firestore permission issues)
+
       log.d('Error checking day completion: $e');
       return false;
     }

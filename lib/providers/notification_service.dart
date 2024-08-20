@@ -61,7 +61,6 @@ class NotificationService {
       provisional: false,
       sound: true,
     ).then((value) {
-      // Handle permission response
     });
   }
 

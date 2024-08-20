@@ -76,7 +76,7 @@ class MembershipCard extends StatelessWidget {
                                 children: [
                                   IconButton(
                                     icon: const Icon(
-                                      Icons.supervised_user_circle,
+                                      Icons.add,
                                       color: Colors.white,
                                     ),
                                     onPressed: () {

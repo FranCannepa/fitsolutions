@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 class MembresiaInfo extends StatefulWidget {
   final Membresia membresia;
   final VoidCallback onChangeMembresia;
-
   const MembresiaInfo(
       {super.key, required this.membresia, required this.onChangeMembresia});
 
@@ -22,7 +21,7 @@ class MembresiaInfo extends StatefulWidget {
 class _MembresiaInfoState extends State<MembresiaInfo> {
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<MembresiaProvider>();
+    final provider = context.watch<MembresiaProvider>();
     return Column(
       children: [
         const ScreenUpperTitle(title: "Mi Membresia"),

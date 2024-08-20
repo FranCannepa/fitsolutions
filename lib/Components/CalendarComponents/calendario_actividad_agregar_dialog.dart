@@ -120,7 +120,7 @@ class _CalendarioAgregarActividadDialogState
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.data == null) {
+        } else if (snapshot.data == null || snapshot.data == '') {
           return AlertDialog(
             title: const Text('Registro no completado'),
             content: const Text(

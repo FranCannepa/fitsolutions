@@ -23,7 +23,6 @@ class MembresiaDisplayerBasico extends StatefulWidget {
 }
 
 class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
-
   bool showMembresiaInfo = true;
   @override
   void initState() {
@@ -67,50 +66,52 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
     int statusCode = 4;
 
     final DateTime purchaseDate = DateTime.now();
-    final UserData userProvider = UserData();
-
-    final String? userId = await userProvider.getUserId();
-
-    if (status == 'approved') {
-      statusCode = 1;
-      if (membresiaId != null) {
-        await userProvider.updateMembresiaId(membresiaId);
-      }
-      await prefs.remove('pending_membresia_id');
-      await prefs.remove('pending_payment_id');
-      result = ResultType.success;
-      resultMsg = "Pago Satisfactorio";
-    } else if (status == 'pending') {
-      statusCode = 2;
-      String? paymentId = uri.queryParameters['payment_id'];
-      final prefs = await SharedPreferences.getInstance();
-      if (paymentId != null) {
-        await prefs.setString('pending_payment_id', paymentId);
-      }
-      result = ResultType.warning;
-    } else if (status == 'failure' || status == 'rejected') {
-      statusCode = 3;
-      result = ResultType.error;
-      resultMsg = "Pago Fallido!";
-    }
-
-    await purchasesProvider.addPurchase({
-      'productId': membresiaId,
-      'purchaseDate': purchaseDate,
-      'status': statusCode,
-      'transactionId': paymentId,
-      'usuarioId': userId
-    });
-
     if (mounted) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return ResultDialog(text: resultMsg, resultType: result);
-        },
-      );
+      final UserData userProvider = context.read<UserData>();
+      final String? userId = await userProvider.getUserId();
+
+      if (status == 'approved') {
+        statusCode = 1;
+        if (membresiaId != null) {
+          await userProvider.updateMembresiaId(membresiaId);
+        }
+        await prefs.remove('pending_membresia_id');
+        await prefs.remove('pending_payment_id');
+        result = ResultType.success;
+        resultMsg = "Pago Satisfactorio";
+      } else if (status == 'pending') {
+        statusCode = 2;
+        String? paymentId = uri.queryParameters['payment_id'];
+        final prefs = await SharedPreferences.getInstance();
+        if (paymentId != null) {
+          await prefs.setString('pending_payment_id', paymentId);
+        }
+        result = ResultType.warning;
+      } else if (status == 'failure' || status == 'rejected') {
+        statusCode = 3;
+        result = ResultType.error;
+        resultMsg = "Pago Fallido!";
+      }
+
+      await purchasesProvider.addPurchase({
+        'productId': membresiaId,
+        'purchaseDate': purchaseDate,
+        'status': statusCode,
+        'transactionId': paymentId,
+        'usuarioId': userId
+      });
+
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ResultDialog(text: resultMsg, resultType: result);
+          },
+        );
+      }
     }
   }
+
   void toggleMembresiaView() {
     setState(() {
       showMembresiaInfo = !showMembresiaInfo;
@@ -135,9 +136,15 @@ class _MembresiaDisplayerBasicoState extends State<MembresiaDisplayerBasico> {
                 } else {
                   final membresia = snapshot.data;
                   if (showMembresiaInfo && membresia != null) {
-                    return MembresiaInfo(membresia: membresia,onChangeMembresia:toggleMembresiaView);
+                    return MembresiaInfo(
+                        membresia: membresia,
+                        onChangeMembresia: toggleMembresiaView);
                   } else {
-                    return SeleccionarMembresia(membresias: widget.membresias,membresia:membresia,showMembresiaInfo:showMembresiaInfo,onBackToMembresiaInfo:toggleMembresiaView);
+                    return SeleccionarMembresia(
+                        membresias: widget.membresias,
+                        membresia: membresia,
+                        showMembresiaInfo: showMembresiaInfo,
+                        onBackToMembresiaInfo: toggleMembresiaView);
                   }
                 }
               },

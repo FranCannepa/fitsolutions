@@ -42,9 +42,11 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
   Future<void> esTrainer() async {
     final prefs = SharedPrefsHelper();
     bool trainerStatus = await prefs.esEntrenador();
-    setState(() {
-      esEntrenador = trainerStatus;
-    });
+    if (mounted) {
+      setState(() {
+        esEntrenador = trainerStatus;
+      });
+    }
   }
 
   final Map<String, TimeOfDay> _openHours = {
@@ -65,9 +67,11 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
         await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _gymLogo = File(pickedFile.path);
-      });
+      if (mounted) {
+        setState(() {
+          _gymLogo = File(pickedFile.path);
+        });
+      }
     }
   }
 
@@ -135,10 +139,11 @@ class _GymRegistrationFormState extends State<GymRegistrationForm> {
           const SnackBar(content: Text('Información registrada exitosamente')),
         );
       }
-
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

@@ -131,51 +131,51 @@ class _HomeScreenState extends State<HomeScreen> {
                   return userProvider.esBasico()
                       ? [
                           BottomNavigationBarItem(
-                            icon: Image.asset('assets/icons/dumbell_icon.png'),
+                            icon: Image.asset('assets/icons/dumbell_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),
                           BottomNavigationBarItem(
-                            icon: Image.asset('assets/icons/profile_icon.png'),
+                            icon: Image.asset('assets/icons/profile_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),
                           BottomNavigationBarItem(
-                            icon: Image.asset('assets/icons/home_icon.png'),
+                            icon: Image.asset('assets/icons/home_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),
                           BottomNavigationBarItem(
-                            icon: Image.asset('assets/icons/diet_icon.png'),
+                            icon: Image.asset('assets/icons/diet_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),
                           BottomNavigationBarItem(
                             icon:
-                                Image.asset('assets/icons/membership_icon.png'),
+                                Image.asset('assets/icons/membership_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),
                         ]
                       : [
                           BottomNavigationBarItem(
-                            icon: Image.asset('assets/icons/dumbell_icon.png'),
+                            icon: Image.asset('assets/icons/dumbell_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),
                           BottomNavigationBarItem(
-                            icon: Image.asset('assets/icons/home_icon.png'),
+                            icon: Image.asset('assets/icons/home_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),
                           BottomNavigationBarItem(
-                            icon: Image.asset('assets/icons/diet_icon.png'),
+                            icon: Image.asset('assets/icons/diet_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),
                           BottomNavigationBarItem(
                             icon:
-                                Image.asset('assets/icons/membership_icon.png'),
+                                Image.asset('assets/icons/membership_icon.png',width: 30,height: 30),
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                           ),

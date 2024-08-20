@@ -77,9 +77,21 @@ class _ComprasScreenState extends State<ComprasScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Compras'),
-      ),
+appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 30,
+              ),
+              onPressed: () => Navigator.pop(context),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            title: const Text(
+              'Compras',
+              style: TextStyle(color: Colors.white, fontSize: 30),
+            ),
+          ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchPurchases(gymId!),
         builder: (context, snapshot) {
