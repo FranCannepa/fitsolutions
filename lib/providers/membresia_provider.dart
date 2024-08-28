@@ -283,7 +283,7 @@ class MembresiaProvider extends ChangeNotifier {
               .update(newMembership);
         }
       } else {
-        // Add a new membership
+
         await _firebase.collection('usuarioMembresia').add(newMembership);
       }
 

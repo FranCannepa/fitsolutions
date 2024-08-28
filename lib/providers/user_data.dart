@@ -179,14 +179,14 @@ class UserData extends ChangeNotifier {
   Future<void> updateMembresiaId(String membresiaId) async {
     final String? userId = await getUserId();
     if (userId != null) {
-      // Obtengo la membresia
+
       final membresiaProvider =
           MembresiaProvider(FirebaseFirestore.instance, prefs);
       final membresiaData =
           await membresiaProvider.getMembresiaDetails(membresiaId);
 
       if (membresiaData != null) {
-        // Mantengo todavia el asignamiento de la membresiaId al usuario por las dudas
+
         await FirebaseFirestore.instance
             .collection('usuario')
             .doc(userId)
@@ -195,12 +195,12 @@ class UserData extends ChangeNotifier {
         });
         this.membresiaId = membresiaId;
 
-        // Calculo la fecha de expiracion y los cupos restantes
+
         DateTime fechaCompra = DateTime.now();
         DateTime fechaExpiracion = getNextMonth(DateTime.now());
         int cuposRestantes = membresiaData['cupos'] ?? 0;
 
-        //Verificar si existe
+
         final doc = await FirebaseFirestore.instance
             .collection('usuarioMembresia')
             .where('usuarioId', isEqualTo: userId)
@@ -229,7 +229,7 @@ class UserData extends ChangeNotifier {
             'estado': 'activa',
           });
         }
-        // Agrego la membresia a la tabla usuarioMembresia
+
         this.membresiaId = membresiaId;
         Logger().f(this.membresiaId);
         notifyListeners();
@@ -327,7 +327,7 @@ class UserData extends ChangeNotifier {
       photoUrl = user.photoURL != null ? user.photoURL as String : '';
       prefs.setEmail(email);
     }
-    //notifyListeners();
+
   }
 
   void updateUserData(Map<String, dynamic>? userData) {

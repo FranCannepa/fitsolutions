@@ -30,7 +30,7 @@ void main() {
 
   group('ActividadProvider', () {
     test('fetchActividades returns a list of activities', () async {
-      // Setup fake Firestore data
+
       await fakeFirestore.collection('actividad').add({
         'propietarioActividadId': 'test_owner',
         'nombreActividad': 'Test Activity',
@@ -40,7 +40,7 @@ void main() {
         'cupos': 10,
       });
 
-      // Setup Shared Preferences mock
+    
       when(mockPrefs.getSubscripcion()).thenAnswer((_) async => 'test_owner');
 
       final actividades =
@@ -95,7 +95,7 @@ void main() {
     });
 
     test('actualizarActividad updates the activity document', () async {
-      // Arrange
+      
       final actividadData = {
         'id': 'actividadId1',
         'nombreActividad': 'Yoga Class',
@@ -106,13 +106,13 @@ void main() {
         'fin': DateTime.now().add(const Duration(hours: 1)),
       };
 
-      // Add initial document to Firestore
+   
       await fakeFirestore
           .collection('actividad')
           .doc('actividadId1')
           .set(actividadData);
 
-      // Update data
+ 
       final updatedActividadData = {
         'id': 'actividadId1',
         'nombreActividad': 'Updated Yoga Class',
@@ -123,11 +123,11 @@ void main() {
         'fin': DateTime.now().add(const Duration(hours: 1)),
       };
 
-      // Act
+  
       final result =
           await actividadProvider.actualizarActividad(updatedActividadData);
 
-      // Assert
+
       expect(result, true);
 
       final updatedDoc =
@@ -140,7 +140,7 @@ void main() {
     test(
         'actualizarActividad returns false and logs error when document ID is missing',
         () async {
-      // Arrange
+
       final actividadData = {
         'nombreActividad': 'Yoga Class',
         'propietarioActividadId': 'mockOwnerId',
@@ -150,19 +150,19 @@ void main() {
         'fin': DateTime.now().add(const Duration(hours: 1)),
       };
 
-      // Act
+
       try {
         await actividadProvider.actualizarActividad(actividadData);
         fail('Expected an exception to be thrown');
       } on Exception catch (_, e) {
         Logger().e(e);
       }
-      // Assert
+ 
     });
 
     test('eliminarActividad deletes the activity and its participants',
         () async {
-      // Arrange
+
       final actividadData = {
         'nombreActividad': 'Yoga Class',
         'propietarioActividadId': 'mockOwnerId',
@@ -186,10 +186,10 @@ void main() {
           .doc('participanteId1');
       await participanteDocRef.set(participanteData);
 
-      // Act
+    
       final result = await actividadProvider.eliminarActividad('actividadId1');
 
-      // Assert
+ 
       expect(result, true);
 
       final actividadDoc =
@@ -215,7 +215,7 @@ void main() {
         'inicio': DateTime.now(),
         'fin': DateTime.now().add(const Duration(hours: 1)),
       });
-      // Act & Assert
+    
       try {
         await actividadDocRef.delete();
         final result =
@@ -229,7 +229,7 @@ void main() {
     test(
         'estaInscripto returns true if the user is registered for the activity',
         () async {
-      // Arrange
+    
       final actividadParticipanteData = {
         'actividadId': 'actividadId1',
         'participanteId': 'userId1',
@@ -239,28 +239,28 @@ void main() {
           .collection('actividadParticipante')
           .add(actividadParticipanteData);
 
-      // Act
+     
       final result =
           await actividadProvider.estaInscripto('userId1', 'actividadId1');
 
-      // Assert
+   
       expect(result, true);
     });
 
     test(
         'estaInscripto returns false if the user is not registered for the activity',
         () async {
-      // Act
+
       final result =
           await actividadProvider.estaInscripto('userId1', 'actividadId1');
 
-      // Assert
+ 
       expect(result, false);
     });
     test(
         'desinscribirseActividad successfully unregisters a user from an activity',
         () async {
-      // Arrange
+
       await fakeFirestore.collection('actividadParticipante').add({
         'actividadId': 'actividadId1',
         'participanteId': 'userId1',
@@ -268,7 +268,7 @@ void main() {
 
       final documentReference = fakeFirestore
           .collection('usuarioMembresia')
-          .doc(); // Create a new document with an auto-generated ID
+          .doc();
       await documentReference.set({
         'usuarioId': 'usuarioId',
         'membresiaId': 'membresiaId1',
@@ -276,18 +276,18 @@ void main() {
         'estado': 'activa',
       });
 
-      // Retrieve the document snapshot
+   
       final documentSnapshot = await documentReference.get();
 
-      // Mock the membership provider to return a valid document with id
+    
       when(mockMembresiaProvider.obtenerMembresiaActiva('userId1'))
           .thenAnswer((_) async => documentSnapshot);
 
-      // Act
+  
       final result = await actividadProvider.desinscribirseActividad(
           mockBuildContext, 'userId1', 'actividadId1');
 
-      // Assert
+
       expect(result, true);
 
       final participantSnapshot = await fakeFirestore
@@ -305,20 +305,20 @@ void main() {
 
     test('desinscribirseActividad fails if no active membership found',
         () async {
-      // Arrange
+
       when(mockMembresiaProvider.obtenerMembresiaActiva('userId1'))
           .thenAnswer((_) async => null);
 
-      // Act
+     
       final result = await actividadProvider.desinscribirseActividad(
           mockBuildContext, 'userId1', 'actividadId1');
 
-      // Assert
+ 
       expect(result, false);
     });
 
     test('actividadesDeParticipante returns the correct activities', () async {
-      // Mock user ID
+     
       when(mockPrefs.getUserId()).thenAnswer((_) async => 'userId1');
 
       await fakeFirestore.collection('actividadParticipante').add({

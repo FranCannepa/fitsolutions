@@ -17,7 +17,7 @@ void main() {
     gimnasioProvider = GimnasioProvider(fakeFirestore, mockPrefs);
   });
   test('getGym returns Gym object if data exists', () async {
-    // Setup initial gym data
+
     final gymData = {
       'propietarioId': 'userId1',
       'nombreGimnasio': 'Test Gym',
@@ -42,14 +42,14 @@ void main() {
 
     await fakeFirestore.collection('gimnasio').add(gymData);
 
-    // Stub the methods of SharedPrefsHelper
+
     when(mockPrefs.getUserId()).thenAnswer((_) async => 'userId1');
     when(mockPrefs.esEntrenador()).thenAnswer((_) async => false);
 
-    // Call the method
+
     final result = await gimnasioProvider.getGym();
 
-    // Verify the results
+
     expect(result, isNotNull);
     expect(result!.nombreGimnasio, 'Test Gym');
     expect(result.direccion, '123 Test Street');
@@ -64,21 +64,21 @@ void main() {
   });
 
   test('getGym returns null if no data exists', () async {
-    // Stub the methods of SharedPrefsHelper
+
     when(mockPrefs.getUserId()).thenAnswer((_) async => 'userId1');
     when(mockPrefs.esEntrenador()).thenAnswer((_) async => false);
 
-    // Call the method
+
     final result = await gimnasioProvider.getGym();
 
-    // Verify the results
+
     expect(result, isNull);
   });
 
   test(
       'getGym returns Gym object from trainerInfo collection if esEntrenador is true',
       () async {
-    // Setup initial gym data
+
     final gymData = {
       'propietarioId': 'userId1',
       'nombreGimnasio': 'Test Gym',
@@ -103,14 +103,14 @@ void main() {
 
     await fakeFirestore.collection('trainerInfo').add(gymData);
 
-    // Stub the methods of SharedPrefsHelper
+
     when(mockPrefs.getUserId()).thenAnswer((_) async => 'userId1');
     when(mockPrefs.esEntrenador()).thenAnswer((_) async => true);
 
-    // Call the method
+
     final result = await gimnasioProvider.getGym();
 
-    // Verify the results
+
     expect(result, isNotNull);
     expect(result!.nombreGimnasio, 'Test Gym');
     expect(result.direccion, '123 Test Street');
@@ -125,7 +125,7 @@ void main() {
   });
   test('getInfoSubscripto returns Gym object from gimnasio collection',
       () async {
-    // Setup initial gym data in gimnasio collection
+
     final gymData = {
       'nombreGimnasio': 'Test Gym',
       'direccion': '123 Test Street',
@@ -149,13 +149,13 @@ void main() {
 
     await fakeFirestore.collection('gimnasio').doc('userId1').set(gymData);
 
-    // Stub the methods of SharedPrefsHelper
+
     when(mockPrefs.getSubscripcion()).thenAnswer((_) async => 'userId1');
 
-    // Call the method
+
     final result = await gimnasioProvider.getInfoSubscripto();
 
-    // Verify the results
+
     expect(result, isNotNull);
     expect(result!.nombreGimnasio, 'Test Gym');
     expect(result.direccion, '123 Test Street');
@@ -171,7 +171,7 @@ void main() {
 
   test('getInfoSubscripto returns Gym object from trainerInfo collection',
       () async {
-    // Setup initial trainer data in trainerInfo collection
+
     final trainerData = {
       'nombreGimnasio': 'Trainer Gym',
       'direccion': '456 Trainer Street',
@@ -198,13 +198,13 @@ void main() {
         .doc('userId1')
         .set(trainerData);
 
-    // Stub the methods of SharedPrefsHelper
+
     when(mockPrefs.getSubscripcion()).thenAnswer((_) async => 'userId1');
 
-    // Call the method
+
     final result = await gimnasioProvider.getInfoSubscripto();
 
-    // Verify the results
+
     expect(result, isNotNull);
     expect(result!.nombreGimnasio, 'Trainer Gym');
     expect(result.direccion, '456 Trainer Street');
@@ -219,13 +219,13 @@ void main() {
   });
 
   test('getInfoSubscripto returns null if no data exists', () async {
-    // Stub the methods of SharedPrefsHelper
+
     when(mockPrefs.getSubscripcion()).thenAnswer((_) async => 'userId1');
 
-    // Call the method
+
     final result = await gimnasioProvider.getInfoSubscripto();
 
-    // Verify the results
+
     expect(result, isNull);
   });
   test('registerGym adds gym data to Firestore', () async {
@@ -273,7 +273,7 @@ void main() {
   });
 
   test('updateGym updates gym data in Firestore', () async {
-    // Set up initial gym data
+
     when(mockPrefs.getSubscripcion()).thenAnswer((_) async => 'gymId1');
     when(mockPrefs.esEntrenador()).thenAnswer((_) async => false);
 
@@ -303,7 +303,7 @@ void main() {
         .doc('gymId1')
         .set(initialGymData);
 
-    // Update gym data
+
     const name = 'Updated Gym';
     const address = '123 Updated Street';
     const contact = '123-456-7890';
@@ -328,7 +328,7 @@ void main() {
       closeHours,
     );
 
-    // Verify the update
+
     final docSnapshot =
         await fakeFirestore.collection('gimnasio').doc('gymId1').get();
     final gymData = docSnapshot.data()!;
@@ -345,7 +345,7 @@ void main() {
     expect(gymData['horario']['Domingo']['close'], '14:00 PM');
   });
   test('getClientesGym returns list of clients for given gymId', () async {
-    // Setup initial client data
+
     const gymId = 'gymId1';
     final userData1 = {
       'asociadoId': gymId,
@@ -361,10 +361,10 @@ void main() {
     await fakeFirestore.collection('usuario').add(userData1);
     await fakeFirestore.collection('usuario').add(userData2);
 
-    // Call the method
+
     final result = await gimnasioProvider.getClientesGym(gymId);
 
-    // Verify the results
+
     expect(result.length, 2);
     expect(result[0]['nombreCompleto'], 'User One');
     expect(result[1]['nombreCompleto'], 'User Two');
@@ -373,20 +373,20 @@ void main() {
   });
 
   test('getClientesGym returns empty list if no clients found', () async {
-    // Setup with no clients
+
     const gymId = 'gymId1';
 
-    // Call the method
+
     final result = await gimnasioProvider.getClientesGym(gymId);
 
-    // Verify the results
+
     expect(result, isEmpty);
   });
 
   test(
       'getParticipantesActividad returns list of participants for given activityId',
       () async {
-    // Setup initial participant data
+
     const activityId = 'activityId1';
     final participantData1 = {
       'actividadId': activityId,
@@ -408,10 +408,10 @@ void main() {
     await fakeFirestore.collection('usuario').doc('userId1').set(userData1);
     await fakeFirestore.collection('usuario').doc('userId2').set(userData2);
 
-    // Call the method
+
     final result = await gimnasioProvider.getParticipantesActividad(activityId);
 
-    // Verify the results
+
     expect(result.length, 2);
     expect(result[0]['nombreCompleto'], 'User One');
     expect(result[1]['nombreCompleto'], 'User Two');
@@ -419,13 +419,13 @@ void main() {
 
   test('getParticipantesActividad returns empty list if no participants found',
       () async {
-    // Setup with no participants
+
     const activityId = 'activityId1';
 
-    // Call the method
+
     final result = await gimnasioProvider.getParticipantesActividad(activityId);
 
-    // Verify the results
+
     expect(result, isEmpty);
   });
 }

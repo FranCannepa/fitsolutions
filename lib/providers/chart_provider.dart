@@ -13,7 +13,7 @@ class ChartProvider extends ChangeNotifier {
   ChartProvider(FirebaseFirestore? firestore, this.prefs)
       : _firebase = firestore ?? FirebaseFirestore.instance;
 
-  // Fetch all activities
+
   Future<List<Actividad>> getAllActivities() async {
     final id = await prefs.getSubscripcion();
     QuerySnapshot snapshot = await _firebase
@@ -65,7 +65,7 @@ class ChartProvider extends ChangeNotifier {
     }
   }
 
-  // Fetch all participants for a specific activity (amount)
+
   Future<int> getParticipantsCount(String activityId) async {
     QuerySnapshot snapshot = await _firebase
         .collection('actividadParticipante')
@@ -75,10 +75,10 @@ class ChartProvider extends ChangeNotifier {
     return snapshot.size;
   }
 
-  // Fetch all participants details
+
   Future<List<UsuarioBasico>> getAllParticipants() async {
     final ownerId = await prefs.getSubscripcion();
-    // Step 1: Fetch activities where propietarioId is equal to gymId
+
     QuerySnapshot activitySnapshot = await _firebase
         .collection('actividad')
         .where('propietarioActividadId', isEqualTo: ownerId)
@@ -90,7 +90,7 @@ class ChartProvider extends ChangeNotifier {
     if (activityIds.isEmpty) {
       return [];
     }
-    // Step 2: Fetch participants for the activities
+
     QuerySnapshot participantSnapshot = await _firebase
         .collection('actividadParticipante')
         .where('actividadId', whereIn: activityIds.toList())
@@ -100,7 +100,7 @@ class ChartProvider extends ChangeNotifier {
     Set<String> userIds = participantSnapshot.docs
         .map((doc) => doc['participanteId'] as String)
         .toSet();
-    // Step 3: Fetch user data for the participants
+
     for (var userId in userIds) {
       DocumentSnapshot userDoc =
           await _firebase.collection('usuario').doc(userId).get();

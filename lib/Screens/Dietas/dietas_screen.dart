@@ -1,5 +1,5 @@
-import 'package:fitsolutions/Components/DietasComponents/dietaAdministrador.dart';
-import 'package:fitsolutions/Components/DietasComponents/dietaDisplayer.dart';
+import 'package:fitsolutions/Components/DietasComponents/dieta_administrador.dart';
+import 'package:fitsolutions/Components/DietasComponents/dieta_displayer.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/DietasComponents/dieta_form.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';

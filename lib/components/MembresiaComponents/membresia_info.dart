@@ -1,6 +1,6 @@
 import 'package:fitsolutions/Utilities/modal_utils.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
-import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/components/CommonComponents/screen_upper_title.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_detailed_dialog.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';

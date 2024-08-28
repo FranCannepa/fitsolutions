@@ -12,5 +12,5 @@ export 'CommonComponents/my_textfield.dart';
 export 'CommonComponents/submit_button.dart';
 export 'MembresiaComponents/membresia_card.dart';
 export 'MembresiaComponents/membresia_displayer_basico.dart';
-export 'MembresiaComponents/membresiaDisplayerAdministrador.dart';
+export 'MembresiaComponents/membresia_diplsay_administrador.dart';
 export 'CommonComponents/screen_sub_title.dart';

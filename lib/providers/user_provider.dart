@@ -5,24 +5,24 @@ import 'package:logger/logger.dart';
 import '../Utilities/utilities.dart';
 
 class UserProvider extends ChangeNotifier {
-  // Shared preferences helper for storing and retrieving user data locally
+
   final SharedPrefsHelper prefs = SharedPrefsHelper();
 
-  // Firebase Auth and Firestore instances
+
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
 
-  // Current user instance
+
   User? _user;
 
-  // Flag to check if this is the user's first login
+
   bool _firstLogin = false;
 
-  // Logger instance for logging events and errors
+
   final Logger log = Logger();
 
-  // Constructor to initialize Firebase Auth and Firestore instances
-  // Listens to authentication state changes to update the current user
+
+
   UserProvider({FirebaseAuth? firebaseAuth, FirebaseFirestore? firestore})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _firestore = firestore ?? FirebaseFirestore.instance {
@@ -33,28 +33,28 @@ class UserProvider extends ChangeNotifier {
     });
   }
 
-  // Getters for user-related properties
+
   User? get user => _user;
   bool get isAuthenticated => _user != null;
   bool get firstLogin => _firstLogin;
   SharedPrefsHelper get pref => prefs;
 
-  // Method to check if a user exists in the Firestore collection 'usuario'
+
   Future<Map<String, dynamic>?> checkUserExistence(User user) async {
     try {
-      // Query Firestore for a user with the provided email
+
       final querySnapshot = await _firestore
           .collection('usuario')
           .where('email', isEqualTo: user.email)
           .limit(1)
           .get();
 
-      // If no user is found, return null
+
       if (querySnapshot.docs.isEmpty) {
         return null;
       }
 
-      // Get the first document and its data
+
       final doc = querySnapshot.docs.first;
       final Map<String, dynamic> userData = doc.data();
       userData['docId'] = doc.id; // Add document ID to user data
@@ -66,13 +66,13 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Method to sign in a user with email and password
+
   Future<void> signIn(String email, String password) async {
     try {
-      // Sign in with Firebase Auth
+
       await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
 
-      // Fetch user data from Firestore
+
       QuerySnapshot querySnapshot = await _firestore
           .collection('usuario')
           .where('email', isEqualTo: email)
@@ -102,7 +102,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Method to sign in a user with Google
+
   Future<User?> signInWithGoogle() async {
     try {
       final UserCredential userCredential = 
@@ -114,7 +114,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Method to sign up a new user with email and password
+
   Future<UserCredential> signUp(String email, String password) async {
     try {
       UserCredential userCred = await _firebaseAuth
@@ -130,7 +130,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Method to reset user password
+
   Future<void> resetPassword(String email) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
@@ -143,7 +143,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Method to sign out the current user
+
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut(); // Sign out from Firebase Auth

@@ -1,5 +1,5 @@
 import 'package:fitsolutions/Utilities/formaters.dart';
-import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/components/CommonComponents/screen_upper_title.dart';
 import 'package:fitsolutions/components/MembresiaComponents/membresia_detailed_basic.dart';
 import 'package:fitsolutions/components/ProfileComponents/actividad_dialogue_perfi.dart';
 import 'package:fitsolutions/components/ProfileComponents/editar_dialogue_perfil.dart';

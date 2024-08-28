@@ -1,5 +1,5 @@
 import 'package:fitsolutions/Components/CommonComponents/no_data_error.dart';
-import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/Components/CommonComponents/screen_upper_title.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/components.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';

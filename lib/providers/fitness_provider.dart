@@ -23,8 +23,8 @@ class FitnessProvider extends ChangeNotifier {
       _listenToWeekSubcollections(snapshot);
     });
   }
-//Seguramente aqui alla que utilizar el id del plan para escuchar cambios en un plan especifico
-// - Ryan
+
+
   void _listenToWeekSubcollections(QuerySnapshot planSnapshot) {
     _cancelSubscriptions();
 
@@ -132,18 +132,18 @@ class FitnessProvider extends ChangeNotifier {
         return Plan.fromDocument(
             planDoc.id, planDoc.data() as Map<String, dynamic>, weeks);
       } else {
-        // Document not found
+
         log.d('Plan with ID $planId does not exist');
         return null;
       }
     } catch (e) {
-      // Handle any errors
+
       log.e('Error retrieving plan: $e');
       return null;
     }
   }
 
-  //tested
+
   Future<List<Plan>> getPlanesList() async {
     final userId = await prefs.getUserId();
     final querySnapshot = await _firebase
@@ -157,7 +157,7 @@ class FitnessProvider extends ChangeNotifier {
       CollectionReference weeksCollectionRef =
           _firebase.collection('plan').doc(doc.id).collection('week');
 
-      // Retrieve weeks sorted by the 'number' field
+
       QuerySnapshot weeksSnapshot = await weeksCollectionRef
           .orderBy('number') // Order weeks by the 'number' field
           .get();
@@ -207,7 +207,7 @@ class FitnessProvider extends ChangeNotifier {
     }).toList();
   }
 
-  //tested
+
   Future<void> addUsuarioARutina(
       String planId, List<UsuarioBasico> usuarios) async {
     for (final user in usuarios) {
@@ -246,23 +246,23 @@ class FitnessProvider extends ChangeNotifier {
 
   Future<void> removeUsuarioDeRutina(String planId, String userId) async {
     try {
-      // Reference to the subscripto document
+
       var subscriptoDocRef = _firebase
           .collection('plan')
           .doc(planId)
           .collection('subscripto')
           .doc(userId);
 
-      // Check if the document exists
+
       DocumentSnapshot subscriptoDoc = await subscriptoDocRef.get();
       if (subscriptoDoc.exists) {
-        // Document exists, proceed with deletion
+
         await subscriptoDocRef.delete();
       } else {
-        // Document does not exist
+
         return;
       }
-      // Perform the deleteFieldFromDocument operation regardless of existence
+
       await deleteFieldFromDocument('usuario', userId, 'rutina');
       notifyListeners(); // Notify listeners after the operations
     } catch (e) {
@@ -318,7 +318,7 @@ class FitnessProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Add Plan
+
   Future<Plan> addPlan(String name, String description,
       Map<String, dynamic> weight, Map<String, dynamic> height) async {
     DocumentReference doc = await _firebase.collection('plan').add({
@@ -352,7 +352,7 @@ class FitnessProvider extends ChangeNotifier {
         .get();
     final ownerId = await prefs.getSubscripcion();
     if (existingDocs.docs.isEmpty) {
-      // No existing document with the same values
+
       await ejercicios.add({
         'nombre': name,
         'descripcion': descripcion,
@@ -583,14 +583,14 @@ class FitnessProvider extends ChangeNotifier {
           if (exercises.containsKey(exerciseId)) {
             exercises.remove(exerciseId);
 
-            // Check if there are no more exercises for that day
+
             bool noExercisesForDay =
                 !exercises.values.any((exercise) => exercise['day'] == day);
             if (noExercisesForDay) {
               weekData['daysCompleted'][day] = true;
             }
 
-            // Check if all days are completed
+
             bool allDaysCompleted = weekData['daysCompleted']
                 .values
                 .every((completed) => completed == true);
@@ -640,10 +640,10 @@ class FitnessProvider extends ChangeNotifier {
 
         final weekRef = userRef.collection('weeks').doc(week.id);
 
-        // Check if the week document exists
+
         final weekSnapshot = await weekRef.get();
         if (!weekSnapshot.exists) {
-          // If the week document doesn't exist, initialize it with empty data
+
           await weekRef.set({});
           Map<String, dynamic> initialDays = {};
           bool weekState = true;
@@ -662,12 +662,12 @@ class FitnessProvider extends ChangeNotifier {
             'weekCompleted': weekState,
           });
         } else {
-          // If the week document exists, ensure each day exists in daysCompleted
+
           final data = weekSnapshot.data() as Map<String, dynamic>;
           final daysCompleted = data['daysCompleted'] as Map<String, dynamic>?;
 
           if (daysCompleted == null) {
-            // If daysCompleted doesn't exist, initialize all days
+
             Map<String, dynamic> initialDays = {};
             for (var day in daysNames) {
               initialDays[day] = false;
@@ -677,7 +677,7 @@ class FitnessProvider extends ChangeNotifier {
               'daysCompleted': initialDays,
             });
           } else {
-            // Initialize any missing days
+
             for (var day in daysNames) {
               if (!daysCompleted.containsKey(day)) {
                 await weekRef.update({
@@ -765,7 +765,7 @@ class FitnessProvider extends ChangeNotifier {
       final exercises = data['exercises'] as Map<String, dynamic>? ?? {};
 
       if (!exercises.containsKey(ejercicio.id)) {
-        // Add the exercise if it doesn't exist
+
         await docRef.update({
           'exercises.${ejercicio.id}': {
             'completed': false,
@@ -830,7 +830,7 @@ class FitnessProvider extends ChangeNotifier {
         .doc(weekId);
     final docSnapshot = await docRef.get();
     final Map<String, dynamic>? workoutState = docSnapshot.data();
-    // Initialize _checkedExercises based on Firestore data
+
     if (workoutState != null && workoutState.containsKey('exercises')) {
       final Map<String, dynamic> exercises = workoutState['exercises'];
       checkedExercises.clear();

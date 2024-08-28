@@ -1,6 +1,6 @@
 import 'package:fitsolutions/Components/MembresiaComponents/membresia_card.dart';
 import 'package:fitsolutions/components/CommonComponents/no_data_error.dart';
-import 'package:fitsolutions/components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/components/CommonComponents/screen_upper_title.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:flutter/material.dart';
 
