@@ -1,5 +1,5 @@
 import 'package:fitsolutions/components/GimnasioComponents/gimnasio_clientes.dart';
-import 'package:fitsolutions/modelo/Gimnasio.dart';
+import 'package:fitsolutions/modelo/gimnasio.dart';
 import 'package:flutter/material.dart';
 import 'package:fitsolutions/screens/Inscription/inscription_screen.dart';
 import 'package:fitsolutions/screens/Plan/plan_screen.dart';

@@ -23,7 +23,7 @@ void main() {
   UserProvider userProvider = UserProvider(firebaseAuth: mockAuth,firestore: mockStore);
 
   setUpAll(() async {
-    //Initiliaze firebase for test
+
     TestWidgetsFlutterBinding.ensureInitialized();
     setupFirebaseCoreMocks();
     await Firebase.initializeApp();
@@ -31,7 +31,7 @@ void main() {
 
   group('UserProvider', () {
     test('INICIAR SESION SUCCESS', () async{
-      // Mock FirebaseAuth signInWithEmailAndPassword
+
       await mockStore.collection('usuario').add({
         'email': 'test@test.com',
       });
@@ -99,16 +99,16 @@ void main() {
             SharedPreferences.setMockInitialValues({});
       await userProvider.signOut();
 
-      // Assert: Verify that signOut was called once
+
       verify(mockAuth.signOut()).called(1);
     });
 
     test('SIGN OUT', () async {
-      // Arrange: Stub the signOut method to throw an exception
+
       when(mockAuth.signOut())
           .thenThrow(FirebaseAuthException(code: 'sign-out-failed'));
       SharedPreferences.setMockInitialValues({});
-      // Act & Assert: Call the signOut method and expect an exception
+
       expect(
         userProvider.signOut(),
         throwsA(isA<FirebaseAuthException>()),

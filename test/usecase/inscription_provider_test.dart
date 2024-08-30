@@ -24,7 +24,7 @@ void main() {
 
   group('InscriptionProvider Tests', () {
     test('gymLoggedIn returns correct gym ID', () async {
-      // Set up fake data
+
       const gymId = 'gym1';
       await firestore.collection('gimnasio').doc(gymId).set({
         'propietarioId': 'user1',
@@ -38,7 +38,7 @@ void main() {
     });
 
     test('usuariosInscriptos returns correct list of users', () async {
-      // Set up fake data
+
       const gymId = 'gym1';
       const userId = 'user1';
       when(prefs.esEntrenador()).thenAnswer((_) async => false);
@@ -63,7 +63,7 @@ void main() {
     });
 
     test('addUserToPending adds user to pending collection', () async {
-      // Set up fake data
+
       const gymId = 'gym1';
       const userId = 'user1';
       when(prefs.esEntrenador()).thenAnswer((_) async => false);
@@ -81,7 +81,7 @@ void main() {
     });
 
         test('usuariosPendientes returns correct list of pending users', () async {
-      // Set up fake data
+
       const gymId = 'gym1';
       const userId = 'user1';
       await firestore.collection('gimnasio').doc(gymId).collection('pendiente').doc('pendiente1').set({
@@ -101,7 +101,7 @@ void main() {
     });
 
      test('getUnsubscribedUsers returns correct list of unsubscribed users', () async {
-      // Set up fake data
+
       const gymId = 'gym1';
       const unsubscribedUserId = 'user1';
       const pendingUserId = 'user2';

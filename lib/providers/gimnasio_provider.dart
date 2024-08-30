@@ -53,7 +53,7 @@ class GimnasioProvider with ChangeNotifier {
   Future<Gimnasio?> getInfoSubscripto() async {
     final userId = await prefs.getSubscripcion();
 
-    // Check gimnasio collection first
+
     if (userId != '') {
       final gimnasioDoc = await _firebase
           .collection('gimnasio')
@@ -66,7 +66,7 @@ class GimnasioProvider with ChangeNotifier {
         return gym;
       }
 
-      // If not found in gimnasio, check trainerInfo collection
+
       final trainerDoc = await _firebase
           .collection('trainerInfo')
           .doc(userId)
@@ -78,7 +78,7 @@ class GimnasioProvider with ChangeNotifier {
         return trainer;
       }
     }
-    // If not found in both collections, return null
+
     return null;
   }
 

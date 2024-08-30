@@ -1,7 +1,7 @@
 export 'actividad.dart';
 export 'dieta.dart';
 export 'ejercicio.dart';
-export 'Gimnasio.dart';
+export 'gimnasio.dart';
 export 'plan.dart';
 export 'usuario_basico.dart';
 export 'usuario_particular.dart';

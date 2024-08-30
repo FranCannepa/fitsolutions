@@ -19,7 +19,7 @@ void main() {
 
   group('DietaProvider', () {
     test('getDieta returns a Dieta', () async {
-      // Prepare data
+
       const userId = 'user1';
       const dietaId = 'dieta1';
       when(mockPrefs.getUserId()).thenAnswer((_) async => userId);
@@ -40,7 +40,7 @@ void main() {
     });
 
     test('getDietas returns a list of Dietas', () async {
-      // Prepare data
+
       const origenMembresia = 'subs1';
       when(mockPrefs.getSubscripcion())
           .thenAnswer((_) async => origenMembresia);
@@ -72,7 +72,7 @@ void main() {
     });
 
     test('actualizarDieta updates an existing Dieta', () async {
-      // Prepare data
+
       const dietaId = 'dieta1';
       await fakeFirestore.collection('dieta').doc(dietaId).set({
         'nombreDieta': 'Old Dieta',
@@ -94,7 +94,7 @@ void main() {
 
     test('asignarDieta assigns a Dieta to a user and sends a notification',
         () async {
-      // Prepare data
+
       const dietaId = 'dieta1';
       const clienteId = 'user1';
       await fakeFirestore.collection('usuario').doc(clienteId).set({
@@ -110,7 +110,7 @@ void main() {
     });
 
     test('eliminarDieta deletes a Dieta and updates user documents', () async {
-      // Prepare data
+
       const dietaId = 'dieta1';
       await fakeFirestore.collection('dieta').doc(dietaId).set({
         'nombreDieta': 'Dieta to delete',

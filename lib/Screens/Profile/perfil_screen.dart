@@ -6,7 +6,7 @@
 //import 'package:fitsolutions/modelo/models.dart';
 //import 'package:fitsolutions/screens/Inscription/form_inscription_screen.dart';
 //import 'package:fitsolutions/Components/CommonComponents/footer_bottom_navigator.dart';
-import 'package:fitsolutions/Components/ProfileComponents/perfilDetailed.dart';
+import 'package:fitsolutions/Components/ProfileComponents/perfil_detailed.dart';
 //import 'package:fitsolutions/Modelo/Screens.dart';
 import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';

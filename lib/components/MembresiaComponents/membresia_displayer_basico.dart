@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsolutions/Components/MembresiaComponents/membresiaInfo.dart';
-import 'package:fitsolutions/Components/MembresiaComponents/membresiaSeleccionador.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresia_info.dart';
+import 'package:fitsolutions/Components/MembresiaComponents/membresia_seleccionador.dart';
 import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/modelo/Membresia.dart';
 import 'package:fitsolutions/providers/membresia_provider.dart';

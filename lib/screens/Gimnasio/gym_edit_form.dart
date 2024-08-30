@@ -3,7 +3,7 @@ import 'package:fitsolutions/Components/CommonComponents/submit_button.dart';
 import 'package:fitsolutions/Utilities/shared_prefs_helper.dart';
 import 'package:fitsolutions/components/CommonComponents/input_round_fields.dart';
 import 'package:fitsolutions/components/CommonComponents/input_time_picker.dart';
-import 'package:fitsolutions/modelo/Gimnasio.dart';
+import 'package:fitsolutions/modelo/gimnasio.dart';
 import 'package:fitsolutions/providers/gimnasio_provider.dart';
 import 'package:fitsolutions/providers/user_data.dart';
 import 'package:flutter/material.dart';

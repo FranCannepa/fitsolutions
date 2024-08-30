@@ -1,3 +1,5 @@
+import 'package:fitsolutions/Utilities/modal_utils.dart';
+import 'package:fitsolutions/components/CommonComponents/result_dialog.dart';
 import 'package:fitsolutions/modelo/models.dart';
 import 'package:fitsolutions/providers/inscription_provider.dart';
 import 'package:fitsolutions/screens/Inscription/evaluation_detail_screen.dart';
@@ -303,9 +305,70 @@ class UserCard extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.edit),
-                    onPressed: ()async {
+                    onPressed: () async {
                       final provider = context.read<InscriptionProvider>();
                       await provider.allowModification(user.docId, gymId);
+                      if (context.mounted) {
+                        ModalUtils.showSuccessModal(
+                            context,
+                            'Modificacion Autorizada',
+                            ResultType.success,
+                            () => Navigator.pop(context));
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      final provider = context.read<InscriptionProvider>();
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text(
+                            'Confirmar eliminación',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          content: const Text(
+                            '¿Está seguro de que desea eliminar la inscripcion?',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                await provider.borrarInscripcion(
+                                    user.docId, gymId);
+                                if (context.mounted) {
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: const Text(
+                                'Eliminar',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                 ],

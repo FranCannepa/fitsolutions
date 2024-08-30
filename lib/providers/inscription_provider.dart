@@ -12,7 +12,8 @@ class InscriptionProvider extends ChangeNotifier {
   final SharedPrefsHelper prefs;
   final NotificationService _notificationService;
 
-  InscriptionProvider(FirebaseFirestore? firestore, this._notificationService, this.prefs)
+  InscriptionProvider(
+      FirebaseFirestore? firestore, this._notificationService, this.prefs)
       : _firebase = firestore ?? FirebaseFirestore.instance {
     _firebase.collection('gimnasio').snapshots().listen((snapshot) {
       notifyListeners();
@@ -47,11 +48,9 @@ class InscriptionProvider extends ChangeNotifier {
     return null;
   }
 
-  //Retorna una lista de usuarios inscriptos a un gimnasio
   Future<List<UsuarioBasico>> usuariosInscriptos(String gymId) async {
     List<UsuarioBasico> users = [];
     try {
-      //Get the ids of subscriced users
       final esEntrenador = await prefs.esEntrenador();
       String? collection = 'gimnasio';
       if (esEntrenador) {
@@ -62,8 +61,6 @@ class InscriptionProvider extends ChangeNotifier {
           .doc(gymId)
           .collection('inscripto')
           .get();
-
-      //Fetch  each user document from the user collection using the ids
 
       for (var doc in inscriptos.docs) {
         String userId = doc['userId'];
@@ -84,7 +81,6 @@ class InscriptionProvider extends ChangeNotifier {
   Future<List<UsuarioBasico>> usuariosPendientes(String gymId) async {
     List<UsuarioBasico> users = [];
     try {
-      //Get the ids of subscriced users
       final esEntrenador = await prefs.esEntrenador();
       String? collection = 'gimnasio';
       if (esEntrenador) {
@@ -95,8 +91,6 @@ class InscriptionProvider extends ChangeNotifier {
           .doc(gymId)
           .collection('pendiente')
           .get();
-
-      //Fetch  each user document from the user collection using the ids
 
       for (var doc in pendientes.docs) {
         String userId = doc['userId'];
@@ -133,7 +127,6 @@ class InscriptionProvider extends ChangeNotifier {
   }
 
   Future<List<UsuarioBasico>> getUnsubscribedUsers(String gymId) async {
-    // Fetch all users
     QuerySnapshot allUsersSnapshot = await _firebase
         .collection('usuario')
         .where('tipo', isEqualTo: 'Basico')
@@ -151,7 +144,7 @@ class InscriptionProvider extends ChangeNotifier {
     if (esEntrenador) {
       collection = 'trainerInfo';
     }
-    // Fetch pending users
+
     QuerySnapshot pendingSnapshot = await _firebase
         .collection(collection)
         .doc(gymId)
@@ -160,7 +153,6 @@ class InscriptionProvider extends ChangeNotifier {
     Set<dynamic> pendingUserIds =
         pendingSnapshot.docs.map((doc) => doc['userId']).toSet();
 
-    // Fetch subscribed users
     QuerySnapshot subscribedSnapshot = await _firebase
         .collection(collection)
         .doc(gymId)
@@ -169,7 +161,6 @@ class InscriptionProvider extends ChangeNotifier {
     Set<dynamic> subscribedUserIds =
         subscribedSnapshot.docs.map((doc) => doc['userId']).toSet();
 
-    // Filter out users who are in pending or subscribed lists
     List<UsuarioBasico> unsubscribedUsers = allUsers.where((user) {
       return !pendingUserIds.contains(user.docId) &&
           !subscribedUserIds.contains(user.docId);
@@ -194,7 +185,6 @@ class InscriptionProvider extends ChangeNotifier {
     }
   }
 
-  //funcionalidad de agregar una form request a la double
   Future<void> addFormRequest(String ownerId, String basicUserId) async {
     try {
       await _firebase.collection('form').add({
@@ -216,7 +206,7 @@ class InscriptionProvider extends ChangeNotifier {
           'Tiene un formulario de Inscripcion disponible');
       notifyListeners();
 
-      NotificationProvider(_firebase,SharedPrefsHelper()).addNotification(
+      NotificationProvider(_firebase, SharedPrefsHelper()).addNotification(
           basicUserId,
           'Formulario Disponible',
           'Tiene un formulario de Inscripcion disponible',
@@ -239,19 +229,15 @@ class InscriptionProvider extends ChangeNotifier {
   }
 
   Future<DocumentSnapshot> fetchGymOrTrainerInfo(String ownerId) async {
-    // Try to get the document from the gimnasio collection
     final gymDoc = await _firebase.collection('gimnasio').doc(ownerId).get();
 
-    // If the document exists, return it
     if (gymDoc.exists) {
       return gymDoc;
     }
 
-    // Otherwise, try to get the document from the trainerInfo collection
     final trainerDoc =
         await _firebase.collection('trainerInfo').doc(ownerId).get();
 
-    // Return the trainerDoc, whether it exists or not
     return trainerDoc;
   }
 
@@ -264,7 +250,6 @@ class InscriptionProvider extends ChangeNotifier {
           .collection('form')
           .doc(formId)
           .update({'formData': formData, 'readOnly': true});
-      //Get the user ID from
 
       final user = await _firebase
           .collection('usuario')
@@ -280,7 +265,7 @@ class InscriptionProvider extends ChangeNotifier {
 
       _notificationService.sendNotification(userToken, 'Formulario Completado',
           'El usuario ${user.get('nombreCompleto')} completo el formulario');
-      NotificationProvider(_firebase,SharedPrefsHelper()).addNotification(
+      NotificationProvider(_firebase, SharedPrefsHelper()).addNotification(
           owner.id,
           'Formulario Completado',
           'El usuario ${user.get('nombreCompleto')} completo el formulario',
@@ -346,11 +331,9 @@ class InscriptionProvider extends ChangeNotifier {
       });
 
       final user = await _firebase.collection('usuario').doc(userId).get();
-      _notificationService.sendNotification(
-          user.get('fcmToken'),
-          'Inscripcion Completada',
-          'Se finalizo tu inscripcion!');
-      NotificationProvider(_firebase,SharedPrefsHelper()).addNotification(
+      _notificationService.sendNotification(user.get('fcmToken'),
+          'Inscripcion Completada', 'Se finalizo tu inscripcion!');
+      NotificationProvider(_firebase, SharedPrefsHelper()).addNotification(
           user.id,
           'Inscripcion Completada',
           'Se finalizo tu inscripcion!',
@@ -367,7 +350,7 @@ class InscriptionProvider extends ChangeNotifier {
       if (esEntrenador) {
         collection = 'trainerInfo';
       }
-      // Get the document from the "pendiente" subcollection
+
       QuerySnapshot pendingSnapshot = await _firebase
           .collection(collection)
           .doc(gymId)
@@ -379,7 +362,6 @@ class InscriptionProvider extends ChangeNotifier {
       if (pendingSnapshot.docs.isNotEmpty) {
         DocumentSnapshot pendingDoc = pendingSnapshot.docs.first;
 
-        // Copy the document data to the "subscripto" subcollection
         await _firebase
             .collection(collection)
             .doc(gymId)
@@ -387,7 +369,6 @@ class InscriptionProvider extends ChangeNotifier {
             .doc(pendingDoc.id)
             .set(pendingDoc.data() as Map<String, dynamic>);
 
-        // Delete the original document from the "pendiente" subcollection
         await _firebase
             .collection(collection)
             .doc(gymId)
@@ -443,11 +424,9 @@ class InscriptionProvider extends ChangeNotifier {
             .update({'readOnly': false});
 
         final user = await _firebase.collection('usuario').doc(userId).get();
-        _notificationService.sendNotification(
-            user.get('fcmToken'),
-            'Modificacion de Inscripcion',
-            'Se ha habilitado un formulario');
-        NotificationProvider(_firebase,SharedPrefsHelper()).addNotification(
+        _notificationService.sendNotification(user.get('fcmToken'),
+            'Modificacion de Inscripcion', 'Se ha habilitado un formulario');
+        NotificationProvider(_firebase, SharedPrefsHelper()).addNotification(
             user.id,
             'Modificacion de Inscripcion',
             'Se ha habilitado un formulario',
@@ -460,5 +439,101 @@ class InscriptionProvider extends ChangeNotifier {
     }
   }
 
-  
+  Future<void> borrarInscripcion(String userId, String gymId) async {
+    try {
+      var querySnapshot = await _firebase
+          .collection('form')
+          .where('ownerId', isEqualTo: gymId)
+          .where('basicUserId', isEqualTo: userId)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        var documentId = querySnapshot.docs.first.id;
+
+        await _firebase.collection('form').doc(documentId).delete();
+
+        var userDocRef = _firebase.collection('usuario').doc(userId);
+
+        await userDocRef.update({
+          'rutina': FieldValue.delete(),
+          'asociadoId': FieldValue.delete(),
+          'dietaId': FieldValue.delete(),
+        });
+
+        var usuarioMembresiaQuerySnapshot = await _firebase
+            .collection('usuarioMembresia')
+            .where('usuarioId', isEqualTo: userId)
+            .limit(1)
+            .get();
+
+        if (usuarioMembresiaQuerySnapshot.docs.isNotEmpty) {
+          var usuarioMembresiaDocId =
+              usuarioMembresiaQuerySnapshot.docs.first.id;
+
+          await _firebase
+              .collection('usuarioMembresia')
+              .doc(usuarioMembresiaDocId)
+              .delete();
+        }
+
+        var actividadParticipanteQuerySnapshot = await _firebase
+            .collection('actividadParticipante')
+            .where('participanteId', isEqualTo: userId)
+            .get();
+
+        for (var doc in actividadParticipanteQuerySnapshot.docs) {
+          await _firebase
+              .collection('actividadParticipante')
+              .doc(doc.id)
+              .delete();
+        }
+
+        final esEntrenador = await prefs.esEntrenador();
+        String? collection = 'gimnasio';
+        if (esEntrenador) {
+          collection = 'trainerInfo';
+        }
+
+        var inscriptoQuerySnapshot = await _firebase
+            .collection(collection)
+            .doc(gymId)
+            .collection('inscripto')
+            .where('userId', isEqualTo: userId)
+            .limit(1)
+            .get();
+
+        if (inscriptoQuerySnapshot.docs.isNotEmpty) {
+          var doc = inscriptoQuerySnapshot.docs.first;
+
+          await _firebase
+              .collection(collection)
+              .doc(gymId)
+              .collection('inscripto')
+              .doc(doc.id)
+              .delete();
+        }
+
+        var weeksSubcollectionSnapshot = await _firebase
+            .collection('workoutStates')
+            .doc(userId)
+            .collection('weeks')
+            .get();
+        if (weeksSubcollectionSnapshot.docs.isNotEmpty) {
+          for (var weekDoc in weeksSubcollectionSnapshot.docs) {
+            await _firebase
+                .collection('workoutStates')
+                .doc(userId)
+                .collection('weeks')
+                .doc(weekDoc.id)
+                .delete();
+          }
+        }
+        await _firebase.collection('workoutStates').doc(userId).delete();
+        notifyListeners();
+      }
+    } catch (e) {
+      log.e('Error: $e');
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:fitsolutions/Components/CommonComponents/info_item.dart';
 import 'package:fitsolutions/Components/CommonComponents/inputs_screen.dart';
-import 'package:fitsolutions/Components/CommonComponents/screenUpperTitle.dart';
+import 'package:fitsolutions/Components/CommonComponents/screen_upper_title.dart';
 import 'package:fitsolutions/Components/GimnasioComponents/gimnasio_clientes.dart';
 import 'package:fitsolutions/components/ChartComponents/chart_display.dart';
 import 'package:fitsolutions/modelo/models.dart';

@@ -15,7 +15,6 @@ void main() {
     fakeFirestore = FakeFirebaseFirestore();
     mockPrefs = MockSharedPrefsHelper();
     chartProvider = ChartProvider(fakeFirestore, mockPrefs);
-    // Mock SharedPrefsHelper if needed
     // e.g., when(prefs.getSubscripcion()).thenAnswer((_) async => 'mockId');
   });
 
@@ -49,7 +48,7 @@ void main() {
 
     test('getAllActivitiesByDate returns activities within the date range',
         () async {
-      // Prepare data
+
       const activityId = 'activity2';
       const userId = 'user2';
 
@@ -80,7 +79,7 @@ void main() {
     test(
         'getParticipantsCount returns the number of participants for an activity',
         () async {
-      // Prepare data
+  
       const activityId = 'activity3';
       await fakeFirestore
           .collection('actividadParticipante')
@@ -95,7 +94,7 @@ void main() {
     });
 
     test('getAllParticipants returns a list of participants', () async {
-      // Prepare data
+
       const userId = 'user3';
       const activityId = 'activity4';
 

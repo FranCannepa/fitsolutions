@@ -130,7 +130,7 @@ void main() {
       final result = await provider.obtenerMembresiaActiva('user2');
 
       expect(result, isNotNull);
-      //expect(result!.data()!['membresiaId'], membresiaRef.id);
+
     });
 
     test('cambiarEstadoMembresia updates the membership status', () async {

@@ -15,13 +15,13 @@ class ActividadProvider extends ChangeNotifier {
   late MembresiaProvider membresiaProvider;
 
   ActividadProvider(this._firestore, this.logger, this.prefs, this.membresiaProvider) {
-    // Listen for changes in the 'actividad' collection and notify listeners
+
     _firestore.collection('actividad').snapshots().listen((snapshot) {
       notifyListeners();
     });
   }
 
-  // Get the number of participants for a given activity
+
   Future<int> cantidadParticipantes(String actividadId) async {
     final querySnapshot = await _firestore
         .collection('actividadParticipante')
@@ -30,7 +30,7 @@ class ActividadProvider extends ChangeNotifier {
     return querySnapshot.docs.length;
   }
 
-  // Fetch activities for a given date
+
   Future<List<Actividad>> fetchActividades(DateTime fecha) async {
     String? ownerActividades = await prefs.getSubscripcion();
     try {
@@ -38,7 +38,7 @@ class ActividadProvider extends ChangeNotifier {
       DateTime start;
       DateTime end;
 
-      // Determine start and end times for the specified date
+
       if (fecha.year == now.year &&
           fecha.month == now.month &&
           fecha.day == now.day) {
@@ -49,7 +49,7 @@ class ActividadProvider extends ChangeNotifier {
         end = DateTime(fecha.year, fecha.month, fecha.day, 23, 59, 59);
       }
 
-      // Fetch activities that match the owner ID and fall within the specified time range
+
       final querySnapshot = await _firestore
           .collection('actividad')
           .where('propietarioActividadId', isEqualTo: ownerActividades)
@@ -58,7 +58,7 @@ class ActividadProvider extends ChangeNotifier {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        // Map the fetched activities to a list of Actividad objects
+
         final fetchedActividades = querySnapshot.docs.map((doc) async {
           final actividadData = doc.data();
           actividadData['actividadId'] = doc.id;
@@ -75,7 +75,7 @@ class ActividadProvider extends ChangeNotifier {
     }
   }
 
-  // Register a new activity
+
   Future<bool> registrarActividad(Map<String, dynamic> actividadData) async {
   try {
     final String nombre = actividadData['nombreActividad'];
@@ -87,12 +87,12 @@ class ActividadProvider extends ChangeNotifier {
     final List<int> diasRepeticion = List<int>.from(actividadData['dias']);
     const int duracionMeses = 1;
 
-    // Calculo la fecha final basada en la duracion en meses
+
     DateTime now = DateTime.now();
     DateTime fechaFinal = DateTime(now.year, now.month + duracionMeses, now.day);
 
     if (diasRepeticion.isEmpty) {
-      // Creo actividad unica
+
       await _firestore.collection('actividad').add({
         'nombreActividad': nombre,
         'propietarioActividadId': propietarioActividadId,
@@ -104,11 +104,11 @@ class ActividadProvider extends ChangeNotifier {
         'diasRepeticion': diasRepeticion,
       });
     } else {
-      // Recorro desde la fecha de inicio hasta la fecha final
+
       DateTime fechaActual = inicio;
 
       while (fechaActual.isBefore(fechaFinal)) {
-        // Verifico si el dia de la semana actual es uno de los seleccionados
+
         int diaDeLaSemana = fechaActual.weekday;
         if (diasRepeticion.contains(diaDeLaSemana)) {
           await _firestore.collection('actividad').add({
@@ -123,7 +123,7 @@ class ActividadProvider extends ChangeNotifier {
           });
         }
         
-        // Avanzo al siguiente dia
+
         fechaActual = fechaActual.add(const Duration(days: 1));
       }
     }
@@ -136,7 +136,7 @@ class ActividadProvider extends ChangeNotifier {
   }
 }
 
-  // Update an existing activity
+
   Future<bool> actualizarActividad(Map<String, dynamic> actividadData) async {
     try {
       String? documentId = actividadData['id'];
@@ -156,7 +156,7 @@ class ActividadProvider extends ChangeNotifier {
     }
   }
 
-  // Delete an activity and its participants
+
   Future<bool> eliminarActividad(String documentId) async {
     try {
       final docRef = _firestore.collection('actividad').doc(documentId);
@@ -179,7 +179,7 @@ class ActividadProvider extends ChangeNotifier {
     }
   }
 
-  // Check if a user is registered for a specific activity
+
   Future<bool> estaInscripto(String userId, String actividadId) async {
     final querySnapshot = await _firestore
         .collection('actividadParticipante')
@@ -189,7 +189,7 @@ class ActividadProvider extends ChangeNotifier {
     return querySnapshot.docs.isNotEmpty;
   }
 
-  // Unregister a user from an activity and update their membership
+
   Future<bool> desinscribirseActividad(
       BuildContext context, String userId, String actividadId) async {
     try {
@@ -227,7 +227,7 @@ class ActividadProvider extends ChangeNotifier {
     }
   }
 
-  // Register a user for an activity and update their membership
+
   Future<bool> anotarseActividad(
       BuildContext context, String userId, String actividadId) async {
     try {
@@ -266,7 +266,7 @@ class ActividadProvider extends ChangeNotifier {
     }
   }
 
-  // Fetch activities for the logged-in participant
+
   Future<List<Actividad>> actividadesDeParticipante() async {
     final userId = await prefs.getUserId();
     try {
